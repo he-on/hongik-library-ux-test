@@ -1,302 +1,379 @@
-/* Hongik library public catalog search (JSONP). No hard-coded search terms. */
+/* Hongik University Central Library: public, read-only JSONP search.
+ * Search terms always come from the input box. Each result category loads independently.
+ */
 (function () {
   'use strict';
 
-  var API_HOST = 'https://honors.hongik.ac.kr';
-  var API_PATH = '/n2prema/public/searchapi/';
+  var API_ORIGIN = 'https://honors.hongik.ac.kr';
+  var API_ENDPOINT = '/n2prema/public/searchapi/';
   var TIMEOUT_MS = 10000;
-  var requestSequence = 0;
-  var activeRequest = null;
+  var SECTIONS = [
+    {key:'database', label:'추천 데이터베이스', type:'데이터베이스', optional:true},
+    {key:'book', label:'소장자료', type:'도서'},
+    {key:'articles', label:'학술논문', type:'학술논문'},
+    {key:'ebook', label:'전자책/오디오북', type:'전자책'},
+    {key:'journal', label:'전자저널', type:'전자저널'},
+    {key:'riss_course', label:'공개 온라인 강의 콘텐츠', type:'공개강의'},
+    {key:'riss_thesis', label:'국내, 외 학위논문', type:'학위논문'}
+  ];
   var root = null;
-  var listenersBound = false;
   var state = null;
+  var listenerRoot = null;
+  var jobs = Object.create(null);
+  var revision = 0;
+  var requestId = 0;
 
-  function escapeHtml(value) {
-    return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
-    });
+  function esc(s) {
+    return String(s === undefined || s === null ? '' : s)
+      .replace(/[&<>"']/g, function (ch) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];
+      });
   }
-
-  function plainText(element) {
-    return element ? (element.textContent || '').replace(/\s+/g, ' ').trim() : '';
+  function textOf(node) {
+    return node ? String(node.textContent || '').replace(/\s+/g, ' ').trim() : '';
   }
-
-  function originalSiteUrl(path) {
+  function allowUrl(path) {
     if (!path) return '';
     try {
-      var url = new URL(path, API_HOST);
-      if (url.protocol !== 'https:' || url.hostname !== 'honors.hongik.ac.kr') return '';
-      return url.href;
-    } catch (_) {
-      return '';
-    }
+      var url = new URL(path, API_ORIGIN);
+      return url.protocol === 'https:' && url.hostname === 'honors.hongik.ac.kr' ? url.href : '';
+    } catch (_) { return ''; }
+  }
+  function countOf(v) {
+    return Math.max(0, Number(String(v === undefined ? 0 : v).replace(/,/g,'')) || 0);
+  }
+  function sectionByKey(key) {
+    return SECTIONS.filter(function (s) { return s.key === key; })[0] || null;
   }
 
-  function parseBookResponse(response) {
+  function parseResponse(response, key) {
     if (!response || response.success !== true || typeof response.html !== 'string') {
-      throw new Error('검색 응답 형식이 올바르지 않습니다.');
+      throw new Error('검색 서버가 올바른 응답을 반환하지 않았습니다.');
     }
-
-    // The API returns an HTML fragment inside a JSONP object.
-    // Parse as inert DOM and read text only; never execute or inject its markup.
     var doc = new DOMParser().parseFromString(response.html, 'text/html');
-    var items = Array.from(doc.querySelectorAll('.serp-item')).map(function (item) {
-      var titleNode = item.querySelector('h4.title a');
-      var pubinfo = Array.from(item.querySelectorAll('.pubinfo'));
-      var picture = item.querySelector('.th-group img');
-      var availability = plainText(item.querySelector('.misc'));
-      var holdings = Array.from(item.querySelectorAll('.status-item h5')).map(plainText).filter(Boolean);
-      var publication = plainText(pubinfo[1]);
-      var yearMatch = publication.match(/(?:19|20)\d{2}/);
+    var section = sectionByKey(key);
+    if (!section) throw new Error('알 수 없는 자료 유형입니다.');
+    // DOMParser creates a separate, inert document. Never insert API HTML into the site.
+    var resultNodes = Array.from(doc.querySelectorAll('.serp-item'));
+    if (!resultNodes.length) {
+      resultNodes = Array.from(doc.querySelectorAll('.search-item, .result-item'));
+    }
+    var items = resultNodes.map(function (node) {
+      var title = node.querySelector('h4.title a, h4.title, h3.title a, .sr-status .title a, .sr-status .title');
+      var infos = Array.from(node.querySelectorAll('.pubinfo')).map(textOf).filter(Boolean);
+      var thumb = node.querySelector('.th-group img, .image img');
+      var misc = node.querySelector('.misc');
+      var labelNode = misc && misc.querySelector('[class*="type-"]');
+      var label = textOf(labelNode) || section.type;
+      var statusNode = misc && misc.querySelector('.status-available, .status-unavailable, .status-out');
+      var statusText = textOf(statusNode) || textOf(misc);
+      var availability = statusText.includes('이용불가') || statusText.includes('대출중') ? '이용불가' :
+        (statusText.includes('이용가능') ? '이용가능' : '상태 미확인');
+      var holdings = Array.from(node.querySelectorAll('.status-item h5')).map(textOf).filter(Boolean);
+      var extraNode = node.querySelector('.abstract, .description, .summary, .desc-text, .content-summary, .item-description');
+      var yearMatch = infos.join(' ').match(/(?:19|20)\d{2}/);
       return {
-        title: plainText(titleNode),
-        author: plainText(pubinfo[0]),
-        publication: publication,
-        year: yearMatch ? Number(yearMatch[0]) : null,
-        availability: availability.includes('이용불가') ? '이용불가' :
-          (availability.includes('이용가능') ? '이용가능' : '상태 미확인'),
-        holdings: holdings,
-        cover: originalSiteUrl(picture && picture.getAttribute('src')),
-        originalLink: originalSiteUrl(titleNode && titleNode.getAttribute('href'))
+        type:label,
+        title:textOf(title),
+        author:infos[0] || '',
+        publication:infos[1] || '',
+        extra:infos.slice(2).join(' · '),
+        description:textOf(extraNode),
+        year:yearMatch ? Number(yearMatch[0]) : null,
+        availability:availability,
+        holdings:holdings,
+        cover:allowUrl(thumb && thumb.getAttribute('src')),
+        originalLink:allowUrl(title && title.getAttribute('href'))
       };
-    }).filter(function (b) { return !!b.title; });
-
+    }).filter(function (entry) { return Boolean(entry.title); });
+    var count = countOf(response.hitcount);
+    if (count && !items.length) {
+      throw new Error('검색 결과의 HTML 형식을 해석할 수 없습니다.');
+    }
     return {
-      items: items,
-      hitcount: Math.max(0, Number(response.hitcount) || 0),
-      page: Math.max(1, Number(response.pg) || 1),
-      totalPages: Math.max(1, Number(response.totpage) || 1)
+      key:key,
+      hitcount:count,
+      items:items,
+      page:Math.max(1,Number(response.pg)||1),
+      totalPages:Math.max(1,Number(response.totpage)||1),
+      fallback:false
     };
   }
 
-  function requestBooks(query, page) {
-    var resolvePromise, rejectPromise;
-    var promise = new Promise(function (resolve, reject) {
-      resolvePromise = resolve;
-      rejectPromise = reject;
-    });
-    var callbackName = 'jQuery' + Math.floor(Math.random() * 1e12) + '_' + Date.now();
-    var url = new URL(API_PATH, API_HOST);
-    url.searchParams.set('section', 'book');
+  function requestSection(key, query, page) {
+    var cb = 'jQuery' + (Date.now() + (++requestId)) + '_' + Math.floor(Math.random() * 1000000000);
+    var url = new URL(API_ENDPOINT, API_ORIGIN);
+    url.searchParams.set('section', key);
     url.searchParams.set('site_id', '1');
     url.searchParams.set('q', query);
     url.searchParams.set('pg', String(page));
-    url.searchParams.set('callback', callbackName);
+    url.searchParams.set('callback', cb);
     url.searchParams.set('_', String(Date.now()));
-    var script = document.createElement('script');
-    var timer = null;
-    var completed = false;
-    var job = {
-      cancel: function () { finish(new Error('검색 요청이 취소되었습니다.')); }
-    };
-
-    function finish(error, response) {
-      if (completed) return;
-      completed = true;
+    var script = document.createElement('script'), timer, done = false, rejectJob;
+    var promise = new Promise(function(resolve,reject) {
+      rejectJob = reject;
+      window[cb] = function (response) { finish(null,response,resolve,reject); };
+      script.async = true;
+      script.src = url.href;
+      script.onerror = function () { finish(new Error('검색 서버 연결 실패'),null,resolve,reject); };
+      timer = setTimeout(function () {
+        finish(new Error('검색 요청이 10초를 초과했습니다.'),null,resolve,reject);
+      }, TIMEOUT_MS);
+      document.head.appendChild(script);
+    });
+    var job = {cancel: function() {
+      finish(new Error('요청 취소'),null,null,rejectJob);
+    }};
+    jobs[key] = job;
+    function finish(error,response,resolve,reject) {
+      if (done) return;
+      done = true;
       clearTimeout(timer);
       script.onerror = null;
       if (script.parentNode) script.parentNode.removeChild(script);
-      try { delete window[callbackName]; } catch (_) { window[callbackName] = undefined; }
-      if (activeRequest === job) activeRequest = null;
-      if (error) rejectPromise(error);
-      else resolvePromise(response);
+      try { delete window[cb]; } catch (_) { window[cb] = undefined; }
+      if (jobs[key] === job) delete jobs[key];
+      if (error) reject(error);
+      else resolve(response);
     }
-
-    window[callbackName] = function (response) { finish(null, response); };
-    script.async = true;
-    script.src = url.href;
-    script.onerror = function () { finish(new Error('검색 서버에 연결하지 못했습니다.')); };
-    activeRequest = job;
-    timer = setTimeout(function () {
-      finish(new Error('검색 제한시간(10초)을 초과했습니다.'));
-    }, TIMEOUT_MS);
-    document.head.appendChild(script);
     return promise;
   }
 
-  function shell(query, view) {
+  function fallbackFor(key, query, page) {
+    var data = window.HongikCatalogFallback;
+    if (page !== 1 || !data || query !== data.query) return null;
+    var source = data.sections && data.sections[key];
+    if (!source && key === 'book' && Array.isArray(data.items)) source = data;
+    if (!source || !Array.isArray(source.items)) return null;
+    return {
+      key:key, hitcount:source.hitcount, items:source.items,
+      page:1, totalPages:1, fallback:true
+    };
+  }
+
+  function sectionShell(section) {
+    var id=section.key;
+    return '<section class="resultcard live-resultcard live-section" data-live-section="' + id +
+      '" id="live-section-' + id + '" ' + (section.optional ? 'hidden' : '') + '>' +
+      '<div class="cardhead"><h2>' + esc(section.label) + '</h2><span data-part="count">조회 중...</span>' +
+      '<button type="button" data-live-all="' + id + '">전체보기</button></div>' +
+      '<div class="live-status" data-part="status" role="status" aria-live="polite">검색 중...</div>' +
+      '<div data-part="items"></div><div class="live-pager" data-part="pager"></div></section>';
+  }
+
+  function shell(query,view) {
     var isCatalog = view === 'catalog';
     return '<div class="wrap live-search-page">' +
-      '<div class="resulthead"><h1>' + (isCatalog ? '자료 검색' : '통합검색 결과') + '</h1>' +
-      (!isCatalog ? '<button id="liveSwitch" class="switch" type="button">통합화면으로 전환 ❯</button>' : '') +
+      '<div class="resulthead"><h1>' + (isCatalog?'자료 검색':'통합검색 결과') + '</h1>' +
+      (!isCatalog ? '<button class="switch" data-live-switch="catalog" type="button">통합화면으로 전환 ❯</button>' : '') +
+      '</div><div class="querybar">키워드 <b>‘' + esc(query) + '’</b>(으)로 검색한 결과</div>' +
+      (isCatalog ? '<div class="live-filterbar"><label><input type="checkbox" id="liveAvailable"> 이용가능만</label>' +
+      '<label>정렬 <select id="liveSort"><option value="relevance">관련도순</option>' +
+      '<option value="new">최신순</option><option value="old">오래된순</option></select></label>' +
+      '<small>현재 페이지의 소장자료에 적용되는 필터입니다.</small></div>' : '') +
+      '<div class="live-results">' +
+      (isCatalog ? sectionShell(sectionByKey('book')) : SECTIONS.map(sectionShell).join('')) +
       '</div>' +
-      '<div class="querybar">키워드 <b>‘' + escapeHtml(query) + '’</b>(으)로 검색한 결과</div>' +
-      (isCatalog ?
-        '<div class="live-filterbar"><label><input type="checkbox" id="liveAvailable"> 이용가능만</label>' +
-        '<label>정렬 <select id="liveSort" aria-label="현재 페이지 결과 정렬">' +
-        '<option value="relevance">관련도순</option><option value="new">최신순</option><option value="old">오래된순</option>' +
-        '</select></label><small>필터와 정렬은 현재 페이지의 자료에 적용됩니다.</small></div>' : '') +
-      '<section class="resultcard live-resultcard" aria-label="소장자료 검색 결과">' +
-      '<div class="cardhead"><h2>소장자료</h2><span id="liveCount">조회 중...</span>' +
-      (!isCatalog ? '<button id="liveShowAll" type="button">전체보기</button>' : '') + '</div>' +
-      '<div id="liveStatus" class="live-status" role="status" aria-live="polite">도서관 자료 검색 중...</div>' +
-      '<div id="liveBooks"></div><div id="livePager" class="live-pager"></div>' +
-      '</section><p class="live-scope-note">소장자료는 홍익대학교 중앙도서관의 공개 검색 API에서 조회합니다. 다른 검색 영역은 현재 재현 범위에 포함되지 않습니다.</p>' +
-      '</div>';
+      '<div class="find"><h2>찾는 자료가 없으신가요?</h2><h3>더 찾아보기</h3>' +
+      '<input aria-label="추가 검색어" id="liveSecondQuery" placeholder="검색어를 입력하세요.">' +
+      '<button type="button" data-live-search-again="1">검색</button>' +
+      '<h3>자료 신청하기</h3>' +
+      ['자료구입신청','타도서관 자료대출 신청','타도서관 자료복사 신청'].map(function(n) {
+        return '<button type="button" data-info="' + esc(n) + '">' + esc(n) + '</button>';
+      }).join('') + '</div></div>';
   }
 
-  function bookMarkup(book, index) {
-    var cover = book.cover ?
-      '<img loading="lazy" src="' + escapeHtml(book.cover) + '" alt="" onerror="this.hidden=true">' :
+  function sectionNode(key) {
+    return root && root.querySelector('#live-section-' + key);
+  }
+  function part(section,partName) {
+    return section && section.querySelector('[data-part="' + partName + '"]');
+  }
+  function renderItem(book,key,index) {
+    var image = book.cover ?
+      '<img loading="lazy" src="' + esc(book.cover) + '" alt="" onerror="this.hidden=true">' :
       '<span>HONGIK<br>LIBRARY</span>';
-    var isAvailable = book.availability === '이용가능';
-    var holdingMarkup = book.holdings.length ?
-      book.holdings.map(function (h) { return '<p>' + escapeHtml(h) + '</p>'; }).join('') :
-      '<p>표시된 소장 위치가 없습니다.</p>';
+    var type = book.type || sectionByKey(key).type;
+    var avail=book.availability||'상태 미확인';
+    var hasHoldings = Array.isArray(book.holdings) && book.holdings.length > 0;
+    var holdings = hasHoldings ? '<button class="holdings" type="button" data-live-hold="' + key +
+      ':' + index + '" aria-expanded="false" aria-controls="live-holding-' + key + '-' + index +
+      '">소장정보 ⌄</button><div class="holding hidden" id="live-holding-' + key + '-' + index + '">' +
+      book.holdings.map(function(h) { return '<p>' + esc(h) + '</p>'; }).join('') + '</div>' : '';
     return '<article class="book live-book">' +
-      '<div class="cover live-cover" aria-hidden="true">' + cover + '</div>' +
-      '<div class="live-book-body"><span class="tag">도서</span> ' +
-      '<span class="tag ' + (isAvailable ? 'available' : 'unavailable') + '">' + escapeHtml(book.availability) + '</span>' +
-      '<h3><button type="button" data-live-detail="' + index + '">' + escapeHtml(book.title) + '</button></h3>' +
-      '<p>' + escapeHtml(book.author) + (book.publication ? '<br>' + escapeHtml(book.publication) : '') + '</p>' +
-      '<button type="button" class="holdings" data-live-hold="' + index + '" aria-expanded="false" aria-controls="live-holding-' + index + '">소장정보 ⌄</button>' +
-      '<div class="holding hidden" id="live-holding-' + index + '">' + holdingMarkup + '</div></div></article>';
+      '<div class="cover live-cover" aria-hidden="true">' + image + '</div>' +
+      '<div class="live-book-body"><span class="tag">' + esc(type) + '</span> ' +
+      '<span class="tag ' + (avail==='이용가능'?'available':'unavailable') + '">' + esc(avail) + '</span>' +
+      '<h3><button type="button" data-live-detail="' + key + ':' + index + '">' + esc(book.title) + '</button></h3>' +
+      (book.author || book.publication ? '<p>' + (book.author?esc(book.author):'') +
+        (book.publication?'<br>'+esc(book.publication):'') + '</p>' : '') +
+      (book.extra?'<p>'+esc(book.extra)+'</p>':'') +
+      (book.description?'<p class="live-description">'+esc(book.description)+'</p>':'') +
+      holdings + '</div></article>';
   }
 
-  function filteredItems() {
-    var rows = state.data ? state.data.items.slice() : [];
-    if (state.availableOnly) rows = rows.filter(function (b) { return b.availability === '이용가능'; });
-    if (state.sort === 'new') rows.sort(function (a, b) { return (b.year || 0) - (a.year || 0); });
-    if (state.sort === 'old') rows.sort(function (a, b) { return (a.year || 9999) - (b.year || 9999); });
-    return rows;
+  function visibleRows(key) {
+    var sectionData = state && state.sections[key];
+    var items = sectionData && sectionData.data ? sectionData.data.items.slice() : [];
+    if (state.view === 'catalog' && key === 'book') {
+      if (state.availableOnly) items=items.filter(function(b){return b.availability==='이용가능';});
+      if (state.sort === 'new') items.sort(function(a,b){return (b.year||0)-(a.year||0);});
+      if (state.sort === 'old') items.sort(function(a,b){return (a.year||9999)-(b.year||9999);});
+    }
+    return items;
   }
-
-  function paint() {
-    if (!root || !state || !state.data) return;
-    var data = state.data;
-    var rows = filteredItems();
-    state.visibleRows = rows;
-    root.querySelector('#liveCount').textContent = data.hitcount.toLocaleString('ko-KR') + ' 건';
-    root.querySelector('#liveStatus').textContent = data.fallback ?
-      '실시간 검색 서버 연결 실패: 제공된 2026.11.14 아몬드 응답의 첫 페이지 5건을 표시합니다. (전체 ' + data.hitcount + '건, 저장 자료)' :
-      data.hitcount ?
-      '전체 ' + data.hitcount.toLocaleString('ko-KR') + '건 중 ' +
-      ((data.page - 1) * 5 + 1) + '–' + ((data.page - 1) * 5 + data.items.length) +
-      '건 (현재 ' + data.page + '/' + data.totalPages + '페이지)' :
-      '검색 결과가 없습니다.';
-    root.querySelector('#liveBooks').innerHTML = rows.length ?
-      rows.map(bookMarkup).join('') :
-      '<div class="empty">' + (data.hitcount ? '현재 페이지에서 조건에 맞는 자료가 없습니다.' : '검색 결과가 없습니다.') + '</div>';
-    root.querySelector('#livePager').innerHTML = data.totalPages > 1 ?
-      '<button type="button" data-live-page="' + (data.page - 1) + '" ' + (data.page === 1 ? 'disabled' : '') + '>‹ 이전 페이지</button>' +
+  function paintSection(key) {
+    var section = sectionNode(key);
+    var entry = state && state.sections[key];
+    if (!section || !entry || !entry.data) return;
+    var data = entry.data, rows=visibleRows(key), meta=sectionByKey(key);
+    // Recommended databases are not shown when there are no actual results.
+    if (meta.optional && data.hitcount===0) {section.hidden=true;return;}
+    section.hidden=false;
+    entry.visible=rows;
+    part(section,'count').textContent=countOf(data.hitcount).toLocaleString('ko-KR')+' 건';
+    part(section,'status').textContent=data.fallback ?
+      '실시간 조회 실패 · 저장된 검색 결과 (' + (window.HongikCatalogFallback.capturedAt||'') +
+      ' 기준, 첫 페이지 ' + rows.length + '건)' : '';
+    part(section,'items').innerHTML=rows.length ?
+      rows.map(function(book,i){return renderItem(book,key,i);}).join('') :
+      '<div class="empty">' + (data.hitcount ? '현재 조건에 맞는 결과가 없습니다.' : '결과가 없습니다.') + '</div>';
+    // A captured first-page snapshot does not justify synthesizing further pages.
+    part(section,'pager').innerHTML = data.fallback ? '' :
+      '<button type="button" data-live-page="' + key + ':' + (data.page-1) +
+      '" ' + (data.page<=1?'disabled':'') + '>‹ 이전 페이지</button>' +
       '<span>' + data.page + ' / ' + data.totalPages + '</span>' +
-      '<button type="button" data-live-page="' + (data.page + 1) + '" ' + (data.page >= data.totalPages ? 'disabled' : '') + '>다음 페이지 ›</button>' : '';
+      '<button type="button" data-live-page="' + key + ':' + (data.page+1) +
+      '" ' + (data.page>=data.totalPages?'disabled':'') + '>다음 페이지 ›</button>';
   }
 
-  function fail(error) {
-    if (!root || !state) return;
-    var fallback = window.HongikCatalogFallback;
-    if (state.page === 1 && fallback && state.query === fallback.query && Array.isArray(fallback.items)) {
-      state.data = fallback;
-      paint();
-      return;
-    }
-    root.querySelector('#liveCount').textContent = '조회 실패';
-    root.querySelector('#liveStatus').innerHTML =
-      '<span>공개 검색 API 요청에 실패했습니다. (' + escapeHtml(error.message) + ')</span> ' +
-      '<button type="button" class="live-retry" id="liveRetry">다시 시도</button>';
-    root.querySelector('#liveBooks').innerHTML = '';
-    root.querySelector('#livePager').innerHTML = '';
+  function failSection(key,error) {
+    var section=sectionNode(key), entry=state && state.sections[key];
+    if (!section || !entry) return;
+    var fallback=fallbackFor(key,state.query,entry.page);
+    if (fallback) {entry.data=fallback; paintSection(key);return;}
+    if (sectionByKey(key).optional) {section.hidden=true;return;}
+    section.hidden=false;
+    part(section,'count').textContent='조회 실패';
+    part(section,'status').innerHTML='<span>검색 서버 요청 실패: ' + esc(error.message) + '</span> ' +
+      '<button type="button" class="live-retry" data-live-retry="' + key + '">다시 시도</button>';
+    part(section,'items').innerHTML='';
+    part(section,'pager').innerHTML='';
   }
 
-  function load(page, updateUrl) {
+  function loadSection(key,page) {
     if (!root || !state) return;
-    requestSequence++;
-    var sequence = requestSequence;
-    if (activeRequest) { activeRequest.cancel(); activeRequest = null; }
-    page = Math.max(1, Math.floor(Number(page) || 1));
-    state.page = page;
-    state.data = null;
-    state.visibleRows = [];
-    root.querySelector('#liveCount').textContent = '조회 중...';
-    root.querySelector('#liveStatus').textContent = '도서관 자료 검색 중...';
-    root.querySelector('#liveBooks').innerHTML = '';
-    root.querySelector('#livePager').innerHTML = '';
-    if (updateUrl) {
-      var currentUrl = new URL(window.location.href);
-      currentUrl.searchParams.set('pg', String(page));
-      window.history.pushState({}, '', currentUrl.pathname + currentUrl.search);
-    }
-    requestBooks(state.query, page).then(function (response) {
-      if (sequence !== requestSequence || !root) return;
-      state.data = parseBookResponse(response);
-      state.page = state.data.page;
-      paint();
-    }).catch(function (error) {
-      if (sequence !== requestSequence) return;
-      fail(error);
+    var section=sectionNode(key);
+    if (!section) return;
+    if (jobs[key]) jobs[key].cancel();
+    var context=state, entry=state.sections[key];
+    entry.page=Math.max(1,Math.floor(Number(page)||1));
+    entry.data=null;entry.visible=[];
+    entry.sequence=(entry.sequence||0)+1;
+    var generation=revision, sequence=entry.sequence;
+    part(section,'count').textContent='조회 중...';
+    part(section,'status').textContent='검색 중...';
+    part(section,'items').innerHTML='';
+    part(section,'pager').innerHTML='';
+    requestSection(key,context.query,entry.page).then(function(response){
+      if (generation!==revision || context!==state || sequence!==entry.sequence) return;
+      try { entry.data=parseResponse(response,key);paintSection(key); }
+      catch(e){failSection(key,e);}
+    }).catch(function(e){
+      if (generation!==revision || context!==state || sequence!==entry.sequence) return;
+      failSection(key,e);
     });
   }
 
-  function click(event) {
-    var button = event.target.closest('button');
+  function openDetail(key,index) {
+    var entry=state && state.sections[key];
+    var b=entry && entry.visible[index];
+    if (!b || typeof window.show!=='function') return;
+    var details='<p>자료유형　'+esc(b.type||sectionByKey(key).type)+'</p>' +
+      '<p>저자　'+esc(b.author)+'</p><p>발행사항　'+esc(b.publication)+'</p>' +
+      (b.description?'<p>'+esc(b.description)+'</p>':'') +
+      (b.holdings && b.holdings.length ? '<h3>소장정보</h3>' +
+        b.holdings.map(function(h){return '<p>'+esc(h)+'</p>';}).join('') : '') +
+      (b.originalLink?'<p><a href="'+esc(b.originalLink)+'" target="_blank" rel="noopener noreferrer">원본 자료 자세히 보기</a></p>':'');
+    window.show(b.title,details);
+  }
+  function onClick(event) {
+    if (!root || !state) return;
+    var button=event.target.closest('button');
     if (!button || !root.contains(button)) return;
-    if (button.id === 'liveSwitch' || button.id === 'liveShowAll') {
+    if (button.hasAttribute('data-live-switch')) {
       window.search(state.query, 'catalog');
-    } else if (button.id === 'liveRetry') {
-      load(state.page, false);
+    } else if (button.hasAttribute('data-live-all')) {
+      var selected=button.getAttribute('data-live-all');
+      if (selected==='book') window.search(state.query,'catalog');
+      else {
+        var section=sectionNode(selected);
+        if(section) section.scrollIntoView({block:'start',behavior:'smooth'});
+      }
+    } else if (button.hasAttribute('data-live-retry')) {
+      var retry=button.getAttribute('data-live-retry');
+      loadSection(retry,state.sections[retry].page);
     } else if (button.hasAttribute('data-live-page')) {
-      var next = Number(button.getAttribute('data-live-page'));
-      if (state.data && next >= 1 && next <= state.data.totalPages) {
-        load(next, true);
-        root.querySelector('.live-resultcard').scrollIntoView({block:'start'});
+      var value=button.getAttribute('data-live-page').split(':');
+      var key=value[0], next=Number(value[1]), entry=state.sections[key];
+      if (entry && entry.data && next>=1 && next<=entry.data.totalPages && !entry.data.fallback) {
+        loadSection(key,next);
+        sectionNode(key).scrollIntoView({block:'start',behavior:'smooth'});
       }
     } else if (button.hasAttribute('data-live-hold')) {
-      var i = Number(button.getAttribute('data-live-hold'));
-      var content = root.querySelector('#live-holding-' + i);
-      if (!content) return;
-      content.classList.toggle('hidden');
-      button.setAttribute('aria-expanded', String(!content.classList.contains('hidden')));
+      var p=button.getAttribute('data-live-hold').split(':');
+      var box=root.querySelector('#live-holding-'+p[0]+'-'+p[1]);
+      if (!box) return;
+      box.classList.toggle('hidden');
+      button.setAttribute('aria-expanded',String(!box.classList.contains('hidden')));
     } else if (button.hasAttribute('data-live-detail')) {
-      var index = Number(button.getAttribute('data-live-detail'));
-      var book = state.visibleRows[index];
-      if (!book || typeof window.show !== 'function') return;
-      var details = '<p>저자　' + escapeHtml(book.author) + '</p>' +
-        '<p>발행사항　' + escapeHtml(book.publication) + '</p>' +
-        '<h3>소장정보</h3>' +
-        (book.holdings.length ? book.holdings.map(function (h) {
-          return '<p>' + escapeHtml(h) + '</p>';
-        }).join('') : '<p>표시된 소장 위치가 없습니다.</p>') +
-        (book.originalLink ? '<p><a href="' + escapeHtml(book.originalLink) +
-          '" target="_blank" rel="noopener noreferrer">도서관 원문 상세보기 ↗</a></p>' : '');
-      window.show(book.title, details);
+      var parts=button.getAttribute('data-live-detail').split(':');
+      openDetail(parts[0],Number(parts[1]));
+    } else if (button.hasAttribute('data-live-search-again')) {
+      var newQuery=root.querySelector('#liveSecondQuery').value.trim();
+      if (newQuery) window.search(newQuery,'results');
     }
   }
-
-  function change(event) {
-    if (!state || !state.data) return;
-    if (event.target.id === 'liveAvailable') {
-      state.availableOnly = event.target.checked;
-      paint();
-    } else if (event.target.id === 'liveSort') {
-      state.sort = event.target.value;
-      paint();
+  function onChange(e) {
+    if (!state || !state.sections.book || !state.sections.book.data) return;
+    if (e.target.id==='liveAvailable') {
+      state.availableOnly=e.target.checked;paintSection('book');
+    } else if (e.target.id==='liveSort') {
+      state.sort=e.target.value;paintSection('book');
     }
   }
-
-  function render(query, view, container) {
-    root = container;
-    state = {
-      query: String(query || '').trim(),
-      view: view === 'catalog' ? 'catalog' : 'results',
-      page: 1, data: null, visibleRows: [], availableOnly: false, sort:'relevance'
+  function render(query,view,container) {
+    cancel();
+    root=container;
+    state={
+      query:String(query||'').trim(),
+      view:view==='catalog'?'catalog':'results',
+      sections:Object.create(null),availableOnly:false,sort:'relevance'
     };
-    if (!listenersBound) {
-      root.addEventListener('click', click);
-      root.addEventListener('change', change);
-      listenersBound = true;
+    SECTIONS.forEach(function(section) {
+      state.sections[section.key]={page:1,data:null,visible:[],sequence:0};
+    });
+    if (listenerRoot!==root) {
+      root.addEventListener('click',onClick);
+      root.addEventListener('change',onChange);
+      listenerRoot=root;
     }
-    root.innerHTML = shell(state.query, state.view);
-    var p = Number(new URLSearchParams(window.location.search).get('pg') || 1);
-    load(p, false);
+    root.innerHTML=shell(state.query,state.view);
+    var selected=state.view==='catalog'?SECTIONS.filter(function(s){return s.key==='book';}):SECTIONS;
+    selected.forEach(function(section){loadSection(section.key,1);});
   }
-
   function cancel() {
-    requestSequence++;
-    if (activeRequest) { activeRequest.cancel(); activeRequest = null; }
-    state = null;
-    root = null;
+    revision++;
+    Object.keys(jobs).forEach(function(key){jobs[key].cancel();});
+    jobs=Object.create(null);
+    root=null;state=null;
   }
 
-  window.HongikLiveSearch = {render: render, cancel: cancel, parseBookResponse: parseBookResponse};
+  window.HongikLiveSearch={
+    render:render,
+    cancel:cancel,
+    parseBookResponse:function(response){return parseResponse(response,'book');},
+    parseSectionResponse:parseResponse,
+    categories:SECTIONS.map(function(s){return s.key;})
+  };
 }());
