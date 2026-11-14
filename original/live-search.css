@@ -32,3 +32,23 @@
 .live-filterbar select{padding:7px 9px;border:1px solid #ccc;background:#fff}
 .live-filterbar small{color:#777;font-size:11px}
 @media(max-width:800px){.live-resultcard{padding:18px}.live-book{gap:15px}.live-book .live-cover{width:76px;min-width:76px;height:110px}.live-book .live-book-body h3{font-size:14px}.live-search-page .resulthead h1{font-size:24px}}
+
+/* Multi-category result page: the original library uses vertical, full-width sections. */
+.live-results{display:flex;flex-direction:column;gap:24px;min-width:0}
+.live-results .live-section{width:100%;max-width:none}
+.live-section[hidden]{display:none !important}
+.live-section .cardhead h2{font-size:21px;font-weight:700}
+.live-section .cardhead span{font-size:12px}
+.live-section .cardhead button{margin-left:auto}
+.live-section .live-status:empty{display:none}
+.live-section .live-status{font-size:11px;line-height:1.6;padding:12px 0 5px;color:#6d6d6d}
+.live-section .live-book{padding:24px 0;min-height:152px}
+.live-section .live-book:last-of-type{border-bottom:none}
+.live-section .live-description{font-size:12px;line-height:1.55;color:#777;margin-top:9px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.live-section .live-pager{border-top:1px solid #e5e5e5;margin-top:5px;padding:18px 2px 0}
+.live-section .live-pager button:disabled{color:#aaa;background:#fafafa}
+.live-section .empty{padding:26px 4px}
+.live-search-page .find{margin-top:35px}
+.live-search-page #liveSecondQuery{padding:11px 12px;border:1px solid #bbb;border-radius:5px;max-width:300px;width:65%;margin-right:5px}
+.live-search-page .find [data-live-search-again]{border-radius:5px;background:#1000d9;color:white;padding:11px 16px}
+@media (max-width:720px){.live-results{gap:15px}.live-section .live-book{padding:18px 0}.live-section .cardhead h2{font-size:17px}}
