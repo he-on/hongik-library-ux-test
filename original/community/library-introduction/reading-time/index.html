@@ -87,6 +87,30 @@ dialog::backdrop{background:#0005}
 .dialog-close{float:right;font-size:24px}
 @media(max-width:900px){.top{padding:0 15px;height:65px}.brand{font-size:17px}.tools{gap:9px}.tools .optional{display:none}.searcharea{padding:15px;gap:10px;height:110px}.searchwrap{width:100%}.searchbox select{width:104px;padding:0 7px}.advanced{font-size:11px;white-space:nowrap}nav>a,nav>button{font-size:12px}nav>button:last-child{margin-right:0;flex-basis:35px}.wrap{padding:0 16px}.page-layout{grid-template-columns:1fr;gap:18px}.side{display:none}.mega-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.mega-grid{grid-template-columns:1fr}.mega-shell{width:calc(100% - 30px)}}
+
+/* Original library reading-time page: neutral table and small typography. */
+.reading-page{width:100%;max-width:1400px;margin:0 auto;padding:28px 26px 60px}
+.reading-page .page-title{font-size:18px;font-weight:700;line-height:24px;margin:0;padding:0 0 12px;border-bottom:2px solid #333}
+.reading-layout{display:grid;grid-template-columns:190px minmax(0,1fr);gap:13px;align-items:start;margin-top:30px}
+.reading-page h2.section-title{font-size:15px;line-height:20px;font-weight:700;letter-spacing:-.3px;padding:0;margin:0}
+.reading-page h2.section-title::before{content:none}
+.reading-main{min-width:0}
+.reading-page .table-scroll{overflow-x:auto}
+.reading-page .hours-table{width:100%;min-width:590px;border-collapse:collapse;table-layout:fixed;text-align:center;font-size:10px;line-height:1.3;border:0}
+.reading-page .hours-table th,.reading-page .hours-table td{border:1px solid #d9d9d9;padding:7px 5px;font-size:10px;line-height:1.4;font-weight:400}
+.reading-page .hours-table thead th{height:34px;background:#f0f0f0;font-weight:700;font-size:10px}
+.reading-page .hours-table tbody tr:not(.reading-room){height:66px}
+.reading-page .hours-table tbody tr.reading-room{height:47px}
+.reading-page .hours-table .slot-name{background:#f0f0f0;font-size:10px;font-weight:700;text-align:center;padding:6px}
+.reading-page .hours-table .break-note{color:#f01818;font-size:9px;line-height:15px;font-weight:700;display:block;margin-top:6px}
+.reading-page .hours-table .closed{color:#1b00e9;font-weight:700}
+.reading-page .hours-table .always-open{color:#1000d9;font-weight:700}
+.reading-page .hours-table small{font-size:9px;display:block;line-height:1.4;color:#222;margin-top:1px}
+.reading-page .reading-notes{font-size:10px;line-height:16px;padding:0;margin-top:7px;color:#161616}
+.reading-page .reading-notes p{margin:0;position:relative;padding:0 0 0 17px;min-height:16px}
+.reading-page .reading-notes p:before{content:'!';position:absolute;top:2px;left:0;width:12px;height:12px;line-height:12px;text-align:center;border-radius:50%;font-weight:700;font-size:9px;color:#fff;background:#1000d9}
+@media(max-width:700px){.reading-page{padding:22px 16px 40px}.reading-layout{display:block;margin-top:20px}.reading-page h2.section-title{margin-bottom:15px}.reading-page .hours-table{min-width:590px}}
+
 </style>
 </head>
 <body>
@@ -96,35 +120,36 @@ dialog::backdrop{background:#0005}
 <nav aria-label="주 메뉴"><a href="../../../">자료이용</a><a href="../../../">연구학습지원</a><a href="../../../">컬렉션</a><a href="../../../">시설 · 기기 이용</a><a href="./">커뮤니티</a><button id="allmenu" aria-label="전체 메뉴" aria-expanded="false">☰</button></nav>
 </header>
 <div id="mega" class="mega" role="dialog" aria-label="전체 메뉴" aria-modal="true"></div>
-<main class="wrap">
-<div class="breadcrumb"><a href="../../../">홈</a>　›　커뮤니티　›　도서관 안내 및 소식　›　열람시간</div>
-<div class="page-layout">
-<aside class="side" aria-label="커뮤니티 메뉴"><h2>커뮤니티</h2><h3>도서관 안내 및 소식</h3><button data-info="도서관 소개">도서관 소개</button><button data-info="공지사항">공지사항</button><a class="active" aria-current="page" href="./">열람시간</a><button data-info="이용자별 안내">이용자별 안내</button><button data-info="Q&A / FAQ">Q&A / FAQ</button><button data-info="자료 기증">자료 기증</button><button data-info="문의 / 연락처">문의 / 연락처</button></aside>
-<article>
+
+<main class="wrap reading-page">
 <h1 class="page-title">열람시간</h1>
+<div class="reading-layout">
 <h2 class="section-title">중앙도서관 운영 시간</h2>
-<div class="term-info"><span>학기 중 / 방학 중 도서관별 운영 시간을 확인할 수 있습니다.</span><span class="term-badge">방학 중 시간 강조</span></div>
+<div class="reading-main">
 <div class="table-scroll">
-<table class="hours-table">
-<thead><tr><th rowspan="2" scope="col">구분</th><th colspan="2" scope="colgroup">학기 중</th><th colspan="2" class="vacation" scope="colgroup">방학 중</th><th rowspan="2" scope="col">비고</th></tr><tr><th scope="col">평일</th><th scope="col">토요일</th><th class="vacation" scope="col">평일</th><th class="vacation" scope="col">토요일</th></tr></thead>
+<table class="hours-table" aria-label="중앙도서관 학기중 및 방학중 열람시간">
+<colgroup><col style="width:30%"><col style="width:15%"><col style="width:15%"><col style="width:15%"><col style="width:15%"><col style="width:10%"></colgroup>
+<thead>
+<tr><th rowspan="2" scope="col">구분</th><th colspan="2" scope="colgroup">학기중</th><th colspan="2" scope="colgroup">방학중</th><th rowspan="2" scope="col">비고</th></tr>
+<tr><th scope="col">평일</th><th scope="col">토요일</th><th scope="col">평일</th><th scope="col">토요일</th></tr>
+</thead>
 <tbody>
-<tr><th class="slot-name" scope="row">크리에이티브 라운지<br>대출자료실</th><td>09:00 ~ 20:00</td><td>09:00 ~ 15:00</td><td class="vacation">09:00 ~ 17:00<span class="break-note">단축 10:00 ~ 16:00</span></td><td class="vacation">09:00 ~ 15:00</td><td rowspan="3">공휴일 휴실</td></tr>
-<tr><th class="slot-name" scope="row">참고자료실<br>정기간행물실</th><td>09:00 ~ 20:00</td><td>09:00 ~ 15:00</td><td class="vacation">09:00 ~ 17:00<span class="break-note">단축 10:00 ~ 16:00</span></td><td class="vacation">미운영</td></tr>
-<tr><th class="slot-name" scope="row">학위논문실<br>멀티자료실</th><td>09:00 ~ 20:00</td><td>09:00 ~ 15:00</td><td class="vacation">09:00 ~ 17:00<span class="break-note">단축 10:00 ~ 16:00</span></td><td class="vacation"><small>공지사항 참고</small></td></tr>
-<tr><th class="slot-name" scope="row">일반열람실</th><td colspan="4">06:00 ~ 23:00<br><small>※ T동 제4공학관 3층 24시간 개방</small></td><td>공지사항 참고</td></tr>
+<tr><th scope="row" class="slot-name">크리에이티브 라운지<br>대출자료실</th><td>09:00-20:00</td><td>09:00-15:00</td><td>09:00-17:00<span class="break-note">[단축10:00-16:00]</span></td><td>09:00-15:00</td><td rowspan="3">공휴일<br>휴실</td></tr>
+<tr><th scope="row" class="slot-name">참고자료실<br>정기간행물실</th><td>09:00-20:00</td><td>09:00-15:00</td><td>09:00-17:00<span class="break-note">[단축10:00-16:00]</span></td><td class="closed" rowspan="2">미운영</td></tr>
+<tr><th scope="row" class="slot-name">학위논문실<br>멀티자료실</th><td>09:00-20:00</td><td>09:00-15:00</td><td>09:00-17:00<span class="break-note">[단축10:00-16:00]</span></td></tr>
+<tr class="reading-room"><th scope="row" class="slot-name">일반열람실</th><td colspan="4"><span class="always-open">[연중무휴]</span> 06:00-23:00<small>* 제4공학관(T동) 3층 또는 4층 : 24시간 개방(매 학기 변경)</small></td><td>공지사항<br>참조</td></tr>
 </tbody>
 </table>
 </div>
-<div class="notes">
-<p>• 법학도서관 및 대학로도서관은 별도 시간대로 운영합니다. 학기 중 09:00~17:00이며 세부 운영은 공지사항을 참고합니다.</p>
-<p>• 관장이 필요하다고 인정할 때에는 개관시간을 연장 또는 단축할 수 있습니다.</p>
-<p>• 방학 중 개관시간은 학교 정책에 따라 달라질 수 있습니다. 단축 운영 여부는 공지사항을 확인하시기 바랍니다.</p>
+<div class="reading-notes">
+<p>법학도서관 및 대학로도서관은 별도 시간대로 운영함(학기중 09시 - 17시 / 홈페이지 공지사항 참조)</p>
+<p>관장이 필요하다고 인정할 때에는 개관 시간을 연장 또는 단축할 수 있습니다.</p>
+<p>방학 중 개관 시간은 학교 정책에 따라 달라질 수 있으며 자세한 내용은 공지사항을 참고하시기 바랍니다.</p>
 </div>
-<p class="source-note">UX 평가용 재현 페이지입니다. 원본 근거: <a href="https://honors.hongik.ac.kr/community/library-introduction/reading-time/" target="_blank" rel="noopener noreferrer">홍익대학교 중앙도서관 열람시간 안내</a>. 실제 시설 운영 여부와 현재 일정은 공식 안내를 우선합니다.</p>
-</article>
+</div>
 </div>
 </main>
-<footer><b>홍익대학교 중앙도서관　 |　 문정도서관</b><p>04066 서울시 마포구 와우산로 94(상수동) 홍익대학교 중앙도서관</p><div class="testnote">UX 비교 실험용 기존 UI 재현본 · 공식 도서관 서비스가 아닙니다. 로그인·실제 신청은 제공하지 않습니다.</div></footer>
+<footer><b>홍익대학교 중앙도서관　 |　 문정도서관</b><p>04066 서울시 마포구 와우산로 94(상수동) 홍익대학교 중앙도서관</p><div class="testnote">UX 비교 실험용 기존 UI 재현본 · 공식 도서관 서비스가 아닙니다. 로그인·실제 신청은 제공하지 않습니다. 참고: <a href="https://honors.hongik.ac.kr/community/library-introduction/reading-time/" target="_blank" rel="noopener noreferrer">원본 열람시간 안내</a></div></footer>
 <dialog id="infoDialog"><button class="dialog-close" aria-label="닫기">×</button><h2 id="dialogTitle"></h2><p>이 기능은 UX 평가용 재현본의 실험 범위에 포함되지 않습니다.</p></dialog>
 <script>
 const megaData=[{"title":"자료이용","groups":[{"name":"자료검색","items":["통합검색","소장자료","전자자료(학술지 논문)","학술 DB(교외접속)","전자저널(다이름)","학위논문","전자책/이러닝/전자잡지","정부/공공기관 보고서"]},{"name":"자료 이용안내","items":["대출/반납","자료 구입 신청","상호대차","원문복사","외국학술지지원센터","협력기관 자료 이용","장애학생지원 서비스"]}]},{"title":"연구학습지원","groups":[{"name":"연구학습지원 서비스","items":["연구단계별 가이드","주제별 가이드","학술질의응답","연구지원 FAQ","수업교재 정보","이용교육","연구성과 분석"]},{"name":"논문작성 지원 도구","items":["서지 관리 도구(EndNote Fusion)","연구윤리 및 표절예방/AI 활용","S2 Journal(학술지 종합정보)","저널 투고지원/OA 출판지원","학위논문 제출(학위논문 제제)","AI Research"]}]},{"title":"컬렉션","groups":[{"name":"홍익 컬렉션","items":["신착자료","인기자료","교수저서","홍익대 발간자료","홍익신문 - 교수추천도서","홍익 Hot Paper"]},{"name":"테마별 컬렉션","items":["중앙도서관 북큐레이션","법학도서관 북큐레이션","정기간행물 큐레이션","미술/건축/예술 큐레이션","독서·문화프로그램/이벤트 큐레이션","서평쓰기대회 수상작","미디어 추천자료","우수학술도서"]}]},{"title":"시설 · 기기 이용","groups":[{"name":"시설 이용 안내","items":["시설 안내","공동학습실","일반 열람실","크리에이티브 라운지","THE H READING LOUNGE","법학도서관","대학로도서관","찾아오시는 길"]},{"name":"기기 이용 안내","items":["모바일 학생증","노트북/기기대여","PC/Wi-fi·모바일","인쇄·복사·스캔"]}]},{"title":"커뮤니티","groups":[{"name":"도서관 안내 및 소식","items":["도서관 소개","공지사항","열람시간","이용자별 안내(졸업/수료생)","Q&A / FAQ","자료 기증","열람증 신청/연장/환불","도서관 SNS(인스타/유튜브)"]},{"name":"독서문화 프로그램","items":["독서로드맵","프로그램 성과 보고서","도서관 우수 이용자","북토크","학생 작품 전시 신청"]}]},{"title":"My Library","groups":[{"name":"내 서재","items":["대출/연장 현황","예약 현황","연체 현황"],"extra":[{"name":"시설/서비스 신청 현황","items":["공동학습실신청 현황","이용교육신청 현황"]}]},{"name":"자료신청현황","items":["자료구입신청 현황","서가에 없는 도서신청 현황","보존서고신청 현황","타기관 자료신청 현황"]}]}];
