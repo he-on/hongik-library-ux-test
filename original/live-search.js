@@ -167,7 +167,9 @@
     var rows = filteredItems();
     state.visibleRows = rows;
     root.querySelector('#liveCount').textContent = data.hitcount.toLocaleString('ko-KR') + ' 건';
-    root.querySelector('#liveStatus').textContent = data.hitcount ?
+    root.querySelector('#liveStatus').textContent = data.fallback ?
+      '실시간 검색 서버 연결 실패: 제공된 2026.11.14 아몬드 응답의 첫 페이지 5건을 표시합니다. (전체 ' + data.hitcount + '건, 저장 자료)' :
+      data.hitcount ?
       '전체 ' + data.hitcount.toLocaleString('ko-KR') + '건 중 ' +
       ((data.page - 1) * 5 + 1) + '–' + ((data.page - 1) * 5 + data.items.length) +
       '건 (현재 ' + data.page + '/' + data.totalPages + '페이지)' :
@@ -182,7 +184,13 @@
   }
 
   function fail(error) {
-    if (!root) return;
+    if (!root || !state) return;
+    var fallback = window.HongikCatalogFallback;
+    if (state.page === 1 && fallback && state.query === fallback.query && Array.isArray(fallback.items)) {
+      state.data = fallback;
+      paint();
+      return;
+    }
     root.querySelector('#liveCount').textContent = '조회 실패';
     root.querySelector('#liveStatus').innerHTML =
       '<span>공개 검색 API 요청에 실패했습니다. (' + escapeHtml(error.message) + ')</span> ' +
