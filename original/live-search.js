@@ -283,5 +283,12 @@
     load(p, false);
   }
 
-  window.HongikLiveSearch = {render: render, parseBookResponse: parseBookResponse};
+  function cancel() {
+    requestSequence++;
+    if (activeRequest) { activeRequest.cancel(); activeRequest = null; }
+    state = null;
+    root = null;
+  }
+
+  window.HongikLiveSearch = {render: render, cancel: cancel, parseBookResponse: parseBookResponse};
 }());
