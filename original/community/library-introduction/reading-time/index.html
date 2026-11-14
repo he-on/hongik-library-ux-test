@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>열람시간 | 홍익대학교 중앙도서관 기존 UI 재현</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:#2c2c2c;font:14px Arial,'Malgun Gothic',sans-serif}
+body.menu-open{overflow:hidden}
+button,input,select{font:inherit}
+button,a{cursor:pointer}
+a{color:inherit;text-decoration:none}
+button{border:0;background:none;color:inherit}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid #efa82a;outline-offset:3px}
+.top{height:80px;border-bottom:1px solid #ddd;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.brand{color:#0900d5;font-size:23px;font-weight:900;letter-spacing:-1px}
+.tools{display:flex;align-items:center;gap:22px}
+.login{border:1px solid #0900d5;border-radius:4px;color:#0900d5;padding:5px 9px;font-weight:700}
+.language{background:#0900d5;color:#fff;border-radius:50%;padding:8px;font-size:11px}
+.searcharea{height:106px;display:flex;align-items:center;justify-content:center;gap:20px}
+.searchwrap{width:510px}
+.ra{color:#0900d5;font-size:16px;font-weight:bold;margin:0 0 4px}
+.searchbox{height:50px;border:2px solid #151515;border-radius:12px;display:flex;overflow:hidden}
+.searchbox select{width:125px;border:0;padding:0 18px;background:white;font-weight:700}
+.searchbox input{border:0;min-width:0;flex:1;padding:0 12px;outline:0}
+.searchbox button{width:50px;background:#1000d9;color:white;font-size:27px}
+.advanced{font-weight:bold}
+nav{height:51px;border-top:1px solid #aaa;border-bottom:1px solid #aaa;display:flex;align-items:stretch;justify-content:space-around}
+nav>a,nav>button{flex:1;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px}
+nav>button:last-child{flex:0 0 50px;background:#1000d9;color:white;margin-right:24px}
+.wrap{max-width:1400px;margin:0 auto;padding:0 32px}
+.breadcrumb{padding:30px 0 10px;color:#777;font-size:12px}
+.breadcrumb a:hover{text-decoration:underline}
+.page-layout{display:grid;grid-template-columns:220px minmax(0,1fr);gap:42px;padding:18px 0 65px}
+.side{border-top:2px solid #1000d9;min-width:0}
+.side h2{font-size:23px;margin:23px 17px 17px}
+.side h3{margin:0;font-size:15px;padding:14px 17px;border-bottom:1px solid #d2d2d2;background:#f5f5f5}
+.side a,.side button{display:block;width:100%;text-align:left;padding:13px 18px;font-size:13px;border-bottom:1px solid #eee}
+.side .active{color:#1000d9;background:#e6edff;font-weight:bold;border-left:3px solid #1000d9;padding-left:15px}
+.side a:hover,.side button:hover{text-decoration:underline}
+article{min-width:0}
+.page-title{font-size:31px;font-weight:750;border-bottom:2px solid #252525;padding:4px 0 19px;margin:0 0 34px}
+h2.section-title{font-size:23px;margin:0 0 14px;padding-left:12px;position:relative}
+h2.section-title::before{content:'';width:4px;height:20px;background:#1000d9;position:absolute;left:0;top:4px}
+.term-info{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 17px;color:#666;font-size:13px}
+.term-badge{border-radius:3px;color:#1000d9;background:#e6edff;padding:5px 9px;font-size:12px;font-weight:bold}
+.table-scroll{overflow-x:auto}
+.hours-table{border-collapse:collapse;width:100%;min-width:760px;table-layout:fixed;text-align:center;font-size:14px;border-top:2px solid #222}
+.hours-table th,.hours-table td{border:1px solid #ddd;padding:18px 12px;line-height:1.55}
+.hours-table th{background:#f5f5f7;font-weight:bold}
+.hours-table thead tr:first-child th{font-size:15px}
+.hours-table th:first-child{width:26%}
+.hours-table th:last-child{width:12%}
+.hours-table .vacation{background:#f1f5ff}
+.hours-table thead .vacation{color:#1000d9;background:#e5edff}
+.hours-table .slot-name{font-weight:bold;background:#fafafa;text-align:left;padding-left:22px}
+.hours-table small{font-size:12px;color:#666}
+.hours-table .break-note{color:#1000d9;font-size:12px;display:block;margin-top:3px}
+.notes{padding:24px 25px;background:#f7f8fb;margin-top:25px;border:1px solid #e7e7eb;font-size:13px;line-height:1.8}
+.notes p{margin:7px 0}
+.notes li{margin-bottom:3px}
+.source-note{margin-top:22px;color:#777;font-size:12px;line-height:1.7}
+.source-note a{color:#1000d9;text-decoration:underline}
+footer{background:#efefef;margin-top:30px;padding:35px;line-height:2;color:#666;font-size:13px}
+footer p{margin:10px 0}
+.testnote{border-top:1px solid #ccc;padding-top:12px;margin-top:14px;font-size:12px}
+.mega{display:none;position:fixed;inset:0;z-index:1000;background:#fff;border-top:2px solid #1000d9;overflow-y:auto}
+.mega.open{display:block}
+.mega-shell{width:calc(100% - 58px);max-width:1360px;min-height:100%;margin:0 auto;padding:45px 0;display:flex;flex-direction:column;justify-content:center}
+.mega-brand{display:block;text-align:center;color:#0900d5;font-size:13px;font-weight:900;line-height:18px;margin:0 0 31px}
+.mega-close{position:fixed;right:16px;top:12px;width:28px;height:28px;font-size:24px;color:#555;z-index:2}
+.mega-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:12px;row-gap:47px}
+.mega-section{min-width:0}
+.mega-section h3{height:31px;display:flex;align-items:center;justify-content:center;margin:0;background:#e3ecff;border-radius:3px;color:#111;font-size:12px;font-weight:700}
+.mega-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:10px;padding:10px 5px 0}
+.mega-group{min-width:0}
+.mega-group h4{font-size:11px;font-weight:700;line-height:15px;margin:0 0 6px}
+.mega-group ul{padding:0;margin:0;list-style:none}
+.mega-group li{padding-left:11px;position:relative;min-width:0}
+.mega-group li::before{content:'•';position:absolute;left:0;top:0;font-size:11px;line-height:17px}
+.mega-group a,.mega-group button{display:block;width:100%;text-align:left;margin:0;padding:0;line-height:17px;height:17px;font-size:9px;color:#666;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mega-group a:hover,.mega-group button:hover{text-decoration:underline;color:#1000d9}
+.mega-group .mega-group{margin-top:9px}
+dialog{max-width:600px;width:90%;border:1px solid #ddd;border-radius:8px;padding:28px;box-shadow:0 10px 60px #0003}
+dialog::backdrop{background:#0005}
+.dialog-close{float:right;font-size:24px}
+@media(max-width:900px){.top{padding:0 15px;height:65px}.brand{font-size:17px}.tools{gap:9px}.tools .optional{display:none}.searcharea{padding:15px;gap:10px;height:110px}.searchwrap{width:100%}.searchbox select{width:104px;padding:0 7px}.advanced{font-size:11px;white-space:nowrap}nav>a,nav>button{font-size:12px}nav>button:last-child{margin-right:0;flex-basis:35px}.wrap{padding:0 16px}.page-layout{grid-template-columns:1fr;gap:18px}.side{display:none}.mega-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.mega-grid{grid-template-columns:1fr}.mega-shell{width:calc(100% - 30px)}}
+</style>
+</head>
+<body>
+<header>
+<div class="top"><a class="brand" href="../../../">▣ 홍익대학교 | 중앙도서관</a><div class="tools"><button class="optional" data-info="문의 / 연락처">❔</button><button class="optional" data-info="홍익대학교 홈페이지">▣</button><button class="login" data-info="LOGIN">LOGIN</button><button class="language" data-info="English">EN</button><button id="focusSearch" aria-label="검색창으로 이동">⌕</button></div></div>
+<div class="searcharea"><div class="searchwrap"><div class="ra">✣ PRIMO RA</div><form class="searchbox" action="../../../" method="get"><select aria-label="검색 범위"><option>통합검색</option><option>소장자료</option><option>전자자료</option></select><input id="query" type="search" name="q" aria-label="검색어" placeholder="도서, 학술논문, 저널 등을 검색하세요." required><input type="hidden" name="view" value="results"><button aria-label="검색" type="submit">⌕</button></form></div><button class="advanced" data-info="고급검색">☷ 고급검색</button></div>
+<nav aria-label="주 메뉴"><a href="../../../">자료이용</a><a href="../../../">연구학습지원</a><a href="../../../">컬렉션</a><a href="../../../">시설 · 기기 이용</a><a href="./">커뮤니티</a><button id="allmenu" aria-label="전체 메뉴" aria-expanded="false">☰</button></nav>
+</header>
+<div id="mega" class="mega" role="dialog" aria-label="전체 메뉴" aria-modal="true"></div>
+<main class="wrap">
+<div class="breadcrumb"><a href="../../../">홈</a>　›　커뮤니티　›　도서관 안내 및 소식　›　열람시간</div>
+<div class="page-layout">
+<aside class="side" aria-label="커뮤니티 메뉴"><h2>커뮤니티</h2><h3>도서관 안내 및 소식</h3><button data-info="도서관 소개">도서관 소개</button><button data-info="공지사항">공지사항</button><a class="active" aria-current="page" href="./">열람시간</a><button data-info="이용자별 안내">이용자별 안내</button><button data-info="Q&A / FAQ">Q&A / FAQ</button><button data-info="자료 기증">자료 기증</button><button data-info="문의 / 연락처">문의 / 연락처</button></aside>
+<article>
+<h1 class="page-title">열람시간</h1>
+<h2 class="section-title">중앙도서관 운영 시간</h2>
+<div class="term-info"><span>학기 중 / 방학 중 도서관별 운영 시간을 확인할 수 있습니다.</span><span class="term-badge">방학 중 시간 강조</span></div>
+<div class="table-scroll">
+<table class="hours-table">
+<thead><tr><th rowspan="2" scope="col">구분</th><th colspan="2" scope="colgroup">학기 중</th><th colspan="2" class="vacation" scope="colgroup">방학 중</th><th rowspan="2" scope="col">비고</th></tr><tr><th scope="col">평일</th><th scope="col">토요일</th><th class="vacation" scope="col">평일</th><th class="vacation" scope="col">토요일</th></tr></thead>
+<tbody>
+<tr><th class="slot-name" scope="row">크리에이티브 라운지<br>대출자료실</th><td>09:00 ~ 20:00</td><td>09:00 ~ 15:00</td><td class="vacation">09:00 ~ 17:00<span class="break-note">단축 10:00 ~ 16:00</span></td><td class="vacation">09:00 ~ 15:00</td><td rowspan="3">공휴일 휴실</td></tr>
+<tr><th class="slot-name" scope="row">참고자료실<br>정기간행물실</th><td>09:00 ~ 20:00</td><td>09:00 ~ 15:00</td><td class="vacation">09:00 ~ 17:00<span class="break-note">단축 10:00 ~ 16:00</span></td><td class="vacation">미운영</td></tr>
+<tr><th class="slot-name" scope="row">학위논문실<br>멀티자료실</th><td>09:00 ~ 20:00</td><td>09:00 ~ 15:00</td><td class="vacation">09:00 ~ 17:00<span class="break-note">단축 10:00 ~ 16:00</span></td><td class="vacation"><small>공지사항 참고</small></td></tr>
+<tr><th class="slot-name" scope="row">일반열람실</th><td colspan="4">06:00 ~ 23:00<br><small>※ T동 제4공학관 3층 24시간 개방</small></td><td>공지사항 참고</td></tr>
+</tbody>
+</table>
+</div>
+<div class="notes">
+<p>• 법학도서관 및 대학로도서관은 별도 시간대로 운영합니다. 학기 중 09:00~17:00이며 세부 운영은 공지사항을 참고합니다.</p>
+<p>• 관장이 필요하다고 인정할 때에는 개관시간을 연장 또는 단축할 수 있습니다.</p>
+<p>• 방학 중 개관시간은 학교 정책에 따라 달라질 수 있습니다. 단축 운영 여부는 공지사항을 확인하시기 바랍니다.</p>
+</div>
+<p class="source-note">UX 평가용 재현 페이지입니다. 원본 근거: <a href="https://honors.hongik.ac.kr/community/library-introduction/reading-time/" target="_blank" rel="noopener noreferrer">홍익대학교 중앙도서관 열람시간 안내</a>. 실제 시설 운영 여부와 현재 일정은 공식 안내를 우선합니다.</p>
+</article>
+</div>
+</main>
+<footer><b>홍익대학교 중앙도서관　 |　 문정도서관</b><p>04066 서울시 마포구 와우산로 94(상수동) 홍익대학교 중앙도서관</p><div class="testnote">UX 비교 실험용 기존 UI 재현본 · 공식 도서관 서비스가 아닙니다. 로그인·실제 신청은 제공하지 않습니다.</div></footer>
+<dialog id="infoDialog"><button class="dialog-close" aria-label="닫기">×</button><h2 id="dialogTitle"></h2><p>이 기능은 UX 평가용 재현본의 실험 범위에 포함되지 않습니다.</p></dialog>
+<script>
+const megaData=[{"title":"자료이용","groups":[{"name":"자료검색","items":["통합검색","소장자료","전자자료(학술지 논문)","학술 DB(교외접속)","전자저널(다이름)","학위논문","전자책/이러닝/전자잡지","정부/공공기관 보고서"]},{"name":"자료 이용안내","items":["대출/반납","자료 구입 신청","상호대차","원문복사","외국학술지지원센터","협력기관 자료 이용","장애학생지원 서비스"]}]},{"title":"연구학습지원","groups":[{"name":"연구학습지원 서비스","items":["연구단계별 가이드","주제별 가이드","학술질의응답","연구지원 FAQ","수업교재 정보","이용교육","연구성과 분석"]},{"name":"논문작성 지원 도구","items":["서지 관리 도구(EndNote Fusion)","연구윤리 및 표절예방/AI 활용","S2 Journal(학술지 종합정보)","저널 투고지원/OA 출판지원","학위논문 제출(학위논문 제제)","AI Research"]}]},{"title":"컬렉션","groups":[{"name":"홍익 컬렉션","items":["신착자료","인기자료","교수저서","홍익대 발간자료","홍익신문 - 교수추천도서","홍익 Hot Paper"]},{"name":"테마별 컬렉션","items":["중앙도서관 북큐레이션","법학도서관 북큐레이션","정기간행물 큐레이션","미술/건축/예술 큐레이션","독서·문화프로그램/이벤트 큐레이션","서평쓰기대회 수상작","미디어 추천자료","우수학술도서"]}]},{"title":"시설 · 기기 이용","groups":[{"name":"시설 이용 안내","items":["시설 안내","공동학습실","일반 열람실","크리에이티브 라운지","THE H READING LOUNGE","법학도서관","대학로도서관","찾아오시는 길"]},{"name":"기기 이용 안내","items":["모바일 학생증","노트북/기기대여","PC/Wi-fi·모바일","인쇄·복사·스캔"]}]},{"title":"커뮤니티","groups":[{"name":"도서관 안내 및 소식","items":["도서관 소개","공지사항","열람시간","이용자별 안내(졸업/수료생)","Q&A / FAQ","자료 기증","열람증 신청/연장/환불","도서관 SNS(인스타/유튜브)"]},{"name":"독서문화 프로그램","items":["독서로드맵","프로그램 성과 보고서","도서관 우수 이용자","북토크","학생 작품 전시 신청"]}]},{"title":"My Library","groups":[{"name":"내 서재","items":["대출/연장 현황","예약 현황","연체 현황"],"extra":[{"name":"시설/서비스 신청 현황","items":["공동학습실신청 현황","이용교육신청 현황"]}]},{"name":"자료신청현황","items":["자료구입신청 현황","서가에 없는 도서신청 현황","보존서고신청 현황","타기관 자료신청 현황"]}]}];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const mega=document.getElementById('mega'), allmenu=document.getElementById('allmenu'), dialog=document.getElementById('infoDialog');
+function renderGroup(g){return '<div class="mega-group"><h4>'+esc(g.name)+'</h4><ul>'+g.items.map(n=>'<li>'+(n==='열람시간'?'<a aria-current="page" href="./">'+esc(n)+'</a>':'<button data-info="'+esc(n)+'">'+esc(n)+'</button>')+'</li>').join('')+'</ul>'+(g.extra||[]).map(renderGroup).join('')+'</div>'}
+mega.innerHTML='<div class="mega-shell"><button class="mega-close" id="megaClose" type="button" aria-label="전체 메뉴 닫기">×</button><a href="../../../" class="mega-brand">▣ 홍익대학교 | 중앙도서관</a><div class="mega-grid">'+megaData.map(m=>'<section class="mega-section"><h3>'+esc(m.title)+'</h3><div class="mega-columns">'+m.groups.map(renderGroup).join('')+'</div></section>').join('')+'</div></div>';
+function toggleMenu(force){let open=force===undefined?!mega.classList.contains('open'):force;mega.classList.toggle('open',open);document.body.classList.toggle('menu-open',open);allmenu.setAttribute('aria-expanded',String(open));if(open)document.getElementById('megaClose').focus();else allmenu.focus()}
+allmenu.onclick=()=>toggleMenu();
+document.getElementById('megaClose').onclick=()=>toggleMenu(false);
+document.getElementById('focusSearch').onclick=()=>document.getElementById('query').focus();
+document.querySelector('.dialog-close').onclick=()=>dialog.close();
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&mega.classList.contains('open'))toggleMenu(false)});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-info]');if(b){document.getElementById('dialogTitle').textContent=b.dataset.info;if(mega.classList.contains('open'))toggleMenu(false);dialog.showModal()}});
+dialog.onclick=e=>{if(e.target===dialog)dialog.close()};
+</script>
+</body>
+</html>
