@@ -163,16 +163,19 @@
 
   function shell(query,view) {
     var isCatalog = view === 'catalog';
+    var single = view.indexOf('section-') === 0 ? sectionByKey(view.slice(8)) : null;
+    var headline = single ? single.label + ' 검색 결과' : (isCatalog ? '자료 검색' : '통합검색 결과');
     return '<div class="wrap live-search-page">' +
-      '<div class="resulthead"><h1>' + (isCatalog?'자료 검색':'통합검색 결과') + '</h1>' +
-      (!isCatalog ? '<button class="switch" data-live-switch="catalog" type="button">통합화면으로 전환 ❯</button>' : '') +
+      '<div class="resulthead"><h1>' + esc(headline) + '</h1>' +
+      (single || isCatalog ? '<button class="switch" data-live-back="1" type="button">통합검색 결과로 돌아가기 ❯</button>' :
+        '<button class="switch" data-live-switch="catalog" type="button">통합화면으로 전환 ❯</button>') +
       '</div><div class="querybar">키워드 <b>‘' + esc(query) + '’</b>(으)로 검색한 결과</div>' +
       (isCatalog ? '<div class="live-filterbar"><label><input type="checkbox" id="liveAvailable"> 이용가능만</label>' +
       '<label>정렬 <select id="liveSort"><option value="relevance">관련도순</option>' +
       '<option value="new">최신순</option><option value="old">오래된순</option></select></label>' +
       '<small>현재 페이지의 소장자료에 적용되는 필터입니다.</small></div>' : '') +
       '<div class="live-results">' +
-      (isCatalog ? sectionShell(sectionByKey('book')) : SECTIONS.map(sectionShell).join('')) +
+      (single ? sectionShell(single) : isCatalog ? sectionShell(sectionByKey('book')) : SECTIONS.map(sectionShell).join('')) +
       '</div>' +
       '<div class="find"><h2>찾는 자료가 없으신가요?</h2><h3>더 찾아보기</h3>' +
       '<input aria-label="추가 검색어" id="liveSecondQuery" placeholder="검색어를 입력하세요.">' +
@@ -303,13 +306,11 @@
     if (!button || !root.contains(button)) return;
     if (button.hasAttribute('data-live-switch')) {
       window.search(state.query, 'catalog');
+    } else if (button.hasAttribute('data-live-back')) {
+      window.search(state.query,'results');
     } else if (button.hasAttribute('data-live-all')) {
       var selected=button.getAttribute('data-live-all');
-      if (selected==='book') window.search(state.query,'catalog');
-      else {
-        var section=sectionNode(selected);
-        if(section) section.scrollIntoView({block:'start',behavior:'smooth'});
-      }
+      window.search(state.query,selected==='book'?'catalog':'section-'+selected);
     } else if (button.hasAttribute('data-live-retry')) {
       var retry=button.getAttribute('data-live-retry');
       loadSection(retry,state.sections[retry].page);
@@ -347,7 +348,8 @@
     root=container;
     state={
       query:String(query||'').trim(),
-      view:view==='catalog'?'catalog':'results',
+      view:view==='catalog'?'catalog':
+        (String(view).indexOf('section-')===0 && sectionByKey(String(view).slice(8)) ? String(view) : 'results'),
       sections:Object.create(null),availableOnly:false,sort:'relevance'
     };
     SECTIONS.forEach(function(section) {
@@ -359,7 +361,9 @@
       listenerRoot=root;
     }
     root.innerHTML=shell(state.query,state.view);
-    var selected=state.view==='catalog'?SECTIONS.filter(function(s){return s.key==='book';}):SECTIONS;
+    var focused=state.view.indexOf('section-')===0 ? sectionByKey(state.view.slice(8)) : null;
+    var selected=focused?[focused]:state.view==='catalog'?
+      SECTIONS.filter(function(s){return s.key==='book';}):SECTIONS;
     selected.forEach(function(section){loadSection(section.key,1);});
   }
   function cancel() {
