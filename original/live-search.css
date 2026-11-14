@@ -1,0 +1,34 @@
+/* Real-time public catalog search, matching the original result list density. */
+.live-search-page .resulthead{padding:36px 0 25px}
+.live-search-page .resulthead h1{font-size:26px;margin-bottom:10px}
+.live-search-page .querybar{border-radius:8px;padding:15px 22px;margin-bottom:25px}
+.live-resultcard{padding:22px 26px 20px;max-width:100%;min-width:0}
+.live-resultcard .cardhead{gap:9px}
+.live-resultcard .cardhead h2{font-size:21px}
+.live-resultcard .cardhead span{font-size:12px;color:#777}
+.live-resultcard .cardhead button{font-size:12px}
+.live-status{padding:15px 0 5px;color:#727272;font-size:12px}
+.live-status .live-retry{margin-left:8px;border:1px solid #1000d9;color:#1000d9;background:#fff;border-radius:4px;padding:7px 12px;font-size:12px}
+.live-status .live-retry:hover{background:#eff2ff}
+.live-book{gap:28px;align-items:flex-start;min-height:190px}
+.live-book .live-cover{width:94px;min-width:94px;height:132px;padding:0;border:1px solid #ddd;background:#e6edfb;overflow:hidden;font-size:11px}
+.live-book .live-cover img{width:100%;height:100%;object-fit:contain;background:#e9f0fb}
+.live-book .live-cover span{font-size:10px;line-height:1.5}
+.live-book .live-book-body{flex:1;min-width:0}
+.live-book .live-book-body h3{font-size:16px;line-height:1.5;margin:10px 0 5px}
+.live-book .live-book-body h3 button{font-size:inherit;font-weight:700;text-align:left;padding:0;line-height:inherit}
+.live-book .live-book-body h3 button:hover{text-decoration:underline;color:#1000d9}
+.live-book .live-book-body p{font-size:12px;color:#777;line-height:1.6;overflow-wrap:anywhere}
+.live-book .holdings{font-size:12px;margin-top:3px}
+.live-book .holding{border:1px solid #e5e9f3;border-radius:5px;font-size:12px;margin-top:12px}
+.live-book .holding p{color:#444;margin:5px 0;font-size:12px}
+.live-pager{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:22px 4px 4px;font-size:13px;color:#777}
+.live-pager button{border:1px solid #cfd2df;border-radius:5px;background:white;padding:9px 13px;color:#252525}
+.live-pager button:hover:not(:disabled){border-color:#1000d9;color:#1000d9}
+.live-pager button:disabled{opacity:.35;cursor:default}
+.live-scope-note{color:#777;font-size:12px;line-height:1.7;margin:18px 0 38px}
+.live-filterbar{display:flex;align-items:center;flex-wrap:wrap;gap:18px;margin:0 0 20px;font-size:13px}
+.live-filterbar label{display:flex;align-items:center;gap:6px}
+.live-filterbar select{padding:7px 9px;border:1px solid #ccc;background:#fff}
+.live-filterbar small{color:#777;font-size:11px}
+@media(max-width:800px){.live-resultcard{padding:18px}.live-book{gap:15px}.live-book .live-cover{width:76px;min-width:76px;height:110px}.live-book .live-book-body h3{font-size:14px}.live-search-page .resulthead h1{font-size:24px}}
