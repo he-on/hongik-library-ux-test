@@ -79,11 +79,9 @@
         (status === '이용가능' ? '' : ' is-unavailable') + '">' + esc(status) + '</span>' +
         '<span class="live-holding-location">' + esc(location) + '</span></div>';
     }).join('');
-    var url=primoDetailUrl(book);
-    var footer=url ?
-      '<a class="live-holding-detail" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">' +
-      '자세히 보기</a>' :
-      '<span class="live-holding-no-detail">상세보기 링크 없음</span>';
+    // The holdings popover opens the same local bibliographic dialog that titles used to open.
+    var footer='<button class="live-holding-detail" type="button" data-live-popup-detail="'+
+      key+':'+index+'">자세히 보기</button>';
     return '<div class="live-holding-anchor">' +
       '<button class="holdings" type="button" data-live-hold="'+key+':'+index+
       '" aria-haspopup="true" aria-expanded="false" aria-controls="'+popupId+'">소장정보 ⌄</button>' +
@@ -261,7 +259,10 @@
     return '<article class="book live-book' + (hasCover ? ' has-cover' : ' no-cover') + '">' +
       coverHtml + '<div class="live-book-body"><span class="tag">' + esc(type) + '</span> ' +
       '<span class="tag ' + (avail==='이용가능'?'available':'unavailable') + '">' + esc(avail) + '</span>' +
-      '<h3><button type="button" data-live-detail="' + key + ':' + index + '">' + esc(book.title) + '</button></h3>' +
+      '<h3>' + (primoDetailUrl(book) ?
+        '<a class="live-title-link" href="' + esc(primoDetailUrl(book)) +
+        '" target="_blank" rel="noopener noreferrer">' + esc(book.title) + '</a>' :
+        '<span class="live-title-text">' + esc(book.title) + '</span>') + '</h3>' +
       (book.author || book.publication ? '<p>' + (book.author?esc(book.author):'') +
         (book.publication?'<br>'+esc(book.publication):'') + '</p>' : '') +
       (book.extra?'<p>'+esc(book.extra)+'</p>':'') +
@@ -405,8 +406,8 @@
       closeHoldings(button);
       box.classList.toggle('hidden',!willOpen);
       button.setAttribute('aria-expanded',String(willOpen));
-    } else if (button.hasAttribute('data-live-detail')) {
-      var parts=button.getAttribute('data-live-detail').split(':');
+    } else if (button.hasAttribute('data-live-popup-detail')) {
+      var parts=button.getAttribute('data-live-popup-detail').split(':');
       openDetail(parts[0],Number(parts[1]));
     } else if (button.hasAttribute('data-live-search-again')) {
       var newQuery=root.querySelector('#liveSecondQuery').value.trim();
