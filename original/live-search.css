@@ -165,3 +165,27 @@
 #main .live-search-page .live-results > [hidden]{
   display:none !important;
 }
+
+/* Original-site style holdings popup: white floating panel and blue action footer. */
+#main .live-search-page .live-section{overflow:visible}
+.live-search-page .live-book,
+.live-search-page .live-book-body{overflow:visible;position:relative}
+.live-search-page .live-holding-anchor{display:inline-block;position:relative;vertical-align:top;max-width:100%}
+.live-search-page .live-holding-anchor>.holdings{display:inline-block;font-size:12px;color:#1000d9;font-weight:700;line-height:18px;padding:0 2px 3px 0;text-align:left}
+.live-search-page .live-holding-anchor>.holdings:hover{text-decoration:underline}
+.live-search-page .live-holding-popover{position:absolute;left:0;top:calc(100% + 7px);width:200px;max-width:calc(100vw - 30px);z-index:100;background:#fff;border:1px solid #e9e9e9;border-radius:2px;box-shadow:0 8px 25px rgba(0,0,0,.18);text-align:left}
+.live-search-page .live-holding-content{padding:11px 12px 12px;max-height:240px;overflow-y:auto}
+.live-search-page .live-holding-row{display:flex;align-items:flex-start;gap:5px;line-height:1.55;margin:0 0 10px;overflow-wrap:anywhere}
+.live-search-page .live-holding-row:last-child{margin-bottom:0}
+.live-search-page .live-holding-badge{display:inline-block;flex:none;font-size:9px;font-weight:700;line-height:15px;padding:0 3px;color:#42aa2b;background:#fff;border:1px solid #61c649;border-radius:2px;white-space:nowrap}
+.live-search-page .live-holding-badge.is-unavailable{color:#91654b;border-color:#c1a492}
+.live-search-page .live-holding-location{display:block;min-width:0;flex:1;color:#2e2e2e;font-size:10px;font-weight:600;line-height:1.55}
+.live-search-page .live-holding-footer{display:flex;align-items:stretch;justify-content:flex-end;min-height:37px;padding:0 16px;background:#1000d9}
+.live-search-page .live-holding-detail{display:inline-flex;align-items:center;justify-content:center;min-height:35px;background:#fff;border:1px solid #1000d9;padding:0 13px;color:#1000d9;font-size:11px;font-weight:700;white-space:nowrap}
+.live-search-page .live-holding-detail:hover{background:#e8eeff}
+.live-search-page .live-holding-no-detail{display:flex;align-items:center;color:#fff;font-size:10px}
+@media(max-width:600px){
+  .live-search-page .live-holding-popover{width:175px}
+  .live-search-page .live-holding-content{padding:9px}
+  .live-search-page .live-holding-location{font-size:9px}
+}
