@@ -189,3 +189,10 @@
   .live-search-page .live-holding-content{padding:9px}
   .live-search-page .live-holding-location{font-size:9px}
 }
+
+/* Title uses the real Primo page; local bibliographic dialog now belongs to holdings → details. */
+.live-section .live-book h3 .live-title-link,
+.live-section .live-book h3 .live-title-text{font:inherit;color:#171717;line-height:inherit;overflow-wrap:anywhere}
+.live-section .live-book h3 .live-title-link:hover{text-decoration:underline;color:#1000d9}
+.live-search-page .live-holding-detail{font-family:inherit;cursor:pointer}
+.live-search-page .live-holding-detail:focus-visible{outline:2px solid #f5a623;outline-offset:2px}
