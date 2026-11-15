@@ -204,7 +204,9 @@
     });
     const link=$id('primo-link');
     if(d.sourceUrl){link.href=d.sourceUrl;link.style.display='block'}else{link.removeAttribute('href');link.style.display='none'}
-    $id('detail-map').onclick=()=>openMap(d);
+    const mapButton=$id('detail-map');
+    mapButton.hidden=d.type!=='단행본';
+    mapButton.onclick=()=>openMap(d);
     dialog.showModal();
   }
   function openMap(d){
