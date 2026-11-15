@@ -39,11 +39,12 @@
     const branch=location.includes('문정도서관')?'문정도서관':location.includes('중앙도서관')?'중앙도서관':'전자도서관';
     const no=(location.match(/\(([^()]+)\)\s*$/)||[])[1]||'미제공';
     const statusText=String(record.availability||'');
-    const available=!(statusText.includes('이용불가')||statusText.includes('대출중'));
+    const available=statusText.includes('이용가능') ? true :
+      (statusText.includes('이용불가')||statusText.includes('대출중') ? false : null);
     const kind=typeMap[key]||'단행본';
     const common={
       t:String(record.title||''),by:String(record.author||'저자 정보 없음'),type:kind,
-      lib:key==='book'?branch:'전자도서관',st:available?'이용 가능':'대출 중',
+      lib:key==='book'?branch:'전자도서관',st:available===null?'확인 필요':available?'이용 가능':'대출 중',
       sourceUrl:trustedUrl(record.originalLink),holdings:holdings,
       originalType:record.type||'',fromSection:key
     };
