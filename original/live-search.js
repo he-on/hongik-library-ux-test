@@ -84,12 +84,12 @@
       '<a class="live-holding-detail" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">' +
       '자세히 보기</a>' :
       '<span class="live-holding-no-detail">상세보기 링크 없음</span>';
-    return '<span class="live-holding-anchor">' +
+    return '<div class="live-holding-anchor">' +
       '<button class="holdings" type="button" data-live-hold="'+key+':'+index+
       '" aria-haspopup="true" aria-expanded="false" aria-controls="'+popupId+'">소장정보 ⌄</button>' +
-      '<span class="live-holding-popover hidden" id="'+popupId+'" role="region" aria-label="소장정보">' +
-      '<span class="live-holding-content">'+rows+'</span>' +
-      '<span class="live-holding-footer">'+footer+'</span></span></span>';
+      '<div class="live-holding-popover hidden" id="'+popupId+'" role="region" aria-label="소장정보">' +
+      '<div class="live-holding-content">'+rows+'</div>' +
+      '<div class="live-holding-footer">'+footer+'</div></div></div>';
   }
 
   function countOf(v) {
