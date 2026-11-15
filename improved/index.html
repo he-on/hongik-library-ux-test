@@ -191,28 +191,9 @@ const A="이용 가능",B="대출 중",CEN="중앙도서관",MJ="문정도서관
 const book=(t,by,pub,yr,ed,tr,lib,st,loc,call)=>({t,by,type:"단행본",lib,st,L:"판본 정보",l:[["출판사",pub],["출판연도",yr],["판차",ed],["번역",tr]],R:"소장 정보",r:[["위치",loc],["청구기호",call]]});
 const art=(t,by,jr,vol,pg,lib,st,how,kw)=>({t,by,type:"학술논문",lib,st,kw,L:"논문 정보",l:[["수록지",jr],["권호",vol],["쪽수",pg]],R:"이용 정보",r:[["이용 방법",how]]});
 const eres=(t,by,kind,pub,yr,lib,st,how,kw)=>({t,by,type:"전자자료",lib,st,kw,L:"자료 정보",l:[["자료 형태",kind],["제공처",pub],["발행연도",yr]],R:"이용 정보",r:[["이용 방법",how]]});
-const DATA=[
- book("아몬드","손원평","창비","2017","초판","번역자 없음",CEN,A,"H동 4층","예시기호 A–123.4"),
- book("아몬드 (영문판 등 다른 판본 예시)","손원평","출판정보 확인 필요","확인 필요","판본 확인 필요","확인 필요",CEN,B,"H동 4층","예시기호 A–123.4"),
- book("아몬드 관련 자료 (유사 검색어)","예시 자료","서지 정보 예시","예시","판본 정보 없음","해당 없음",MJ,A,"별도 자료실","예시기호 A–123.4"),
- book("아몬드","손원평","창비","2017","초판 12쇄(예시)","번역자 없음",MJ,B,"문학 서가 2열","예시기호 A–123.4 c.2"),
- book("아몬드나무 아래서","정서윤","소담북스","2021","초판","번역자 없음",CEN,A,"H동 4층","예시기호 A–123.9"),
- book("아몬드 한 줌의 건강학","박도윤","푸른식탁","2019","개정판","번역자 없음",CEN,A,"E동 2층","예시기호 C–517.2"),
- book("총, 균, 쇠","재레드 다이아몬드","문학사상","2005","개정판","김진준 옮김",CEN,A,"G동 3층","예시기호 B–456.7"),
- book("문명의 붕괴","재레드 다이아몬드","김영사","2005","초판","강주헌 옮김",MJ,B,"사회과학 서가","예시기호 B–456.8"),
- book("다이아몬드 연마의 과학","이하준","한빛사이언스","2016","초판","번역자 없음",CEN,A,"F동 5층","예시기호 D–548.3"),
- art("소설 『아몬드』에 나타난 감정 표현과 공감의 서사","김서린","서사와 공감 연구","제24권 제2호 (2021)","45–72쪽",EL,A,"학술DB 원문 보기"),
- art("청소년 소설 읽기와 정서 인식: 『아몬드』를 중심으로","한지우","청소년문학교육논집","제17권 제1호 (2020)","101–128쪽",EL,A,"학술DB 원문 보기"),
- art("아몬드(Prunus dulcis) 섭취가 혈중 지질에 미치는 영향: 체계적 문헌고찰","최민재 외","한국영양연구","제52권 제4호 (2019)","311–326쪽",EL,A,"학술DB 원문 보기"),
- art("베스트셀러 청소년 소설의 독서 수용 양상 연구","오세린","독서문화연구","제12권 제3호 (2022)","77–103쪽",CEN,A,"정기간행물실 (관내 열람)","아몬드"),
- art("감정 표현 불능증의 문학적 재현과 독자 반응","윤하린","서사와 공감 연구","제25권 제1호 (2022)","9–34쪽",EL,A,"학술DB 원문 보기","아몬드"),
- art("다이아몬드 박막의 열전도 특성에 관한 연구","장우석","재료물성학회지","제33권 제1호 (2018)","15–24쪽",EL,A,"학술DB 원문 보기"),
- eres("아몬드","손원평","전자책","창비","2017",EL,A,"온라인 열람 (학내외 접속)"),
- eres("아몬드","손원평","오디오북","예시 오디오 플랫폼","2019",EL,B,"동시 이용 한도 도달, 대기 후 이용"),
- eres("아몬드 영양 성분 데이터베이스","식품영양 데이터","데이터베이스","식품정보센터","2024",EL,A,"온라인 접속"),
- eres("다이아몬드 산업 동향 연간 리포트","광물자원 연구기관","보고서 (PDF)","광물자원연구소","2023",EL,A,"PDF 내려받기"),
- eres("문학 서평 아카이브 2017–2022","서평 아카이브 편집부","서평 데이터베이스","예시 서평 DB","2022",EL,A,"온라인 접속","아몬드 서평 수록"),
-];
+/* Live API data only. The original designer's synthetic records are intentionally
+   excluded so that experiments never show invented catalog holdings. */
+const DATA=[];
 const GROUPS=[["lib","소장 도서관",[CEN,MJ,EL]],["st","대출 상태",[A,B]],["type","자료 유형",["단행본","학술논문","전자자료"]]];
 const LABEL={[A]:"대출 가능",[EL]:"전자도서관 (온라인)"};
 const safeHtml=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -224,7 +205,8 @@ const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
 const cell=(d,k)=>(d.l.concat(d.r).find(x=>x[0]===k)||[0,""])[1];
 const norm=t=>t.replace(/[『』「」()\[\]:,]/g," ").replace(/\s+/g," ").trim();
 function score(d,q){if(!q)return 0;const t=norm(d.t);if(d.t===q)return 100;if(t.startsWith(q))return 80;if(t.split(" ").some(w=>w.startsWith(q)))return 60;if(t.includes(q))return 40;if(d.by.includes(q))return 30;return 20}
-function found(d,q){if(!q)return true;const f=$("#field").value;const h={제목:d.t+" "+(d.kw||"")+" "+d.by,저자:d.by,출판사:cell(d,"출판사"),청구기호:cell(d,"청구기호")}[f];return h.toLowerCase().includes(q.toLowerCase())}
+let fieldTouched=false;
+function found(d,q){if(!q||!fieldTouched)return true;const f=$("#field").value;const h={제목:d.t,저자:d.by,출판사:cell(d,"출판사"),청구기호:cell(d,"청구기호")}[f]||"";return String(h).toLowerCase().includes(q.toLowerCase())}
 const base=()=>{const q=Q();return DATA.map((d,i)=>({...d,rowId:i,s:score(d,q)})).filter(d=>found(d,q))};
 function filtered(skip){return base().filter(d=>GROUPS.every(([k])=>k===skip||!sel[k].size||sel[k].has(d[k])))}
 function renderFilters(){
@@ -262,7 +244,7 @@ function render(){
 }
 function reset(){Object.values(sel).forEach(s=>s.clear());render()}
 $("#filters").addEventListener("change",e=>{const i=e.target;if(!i.dataset.k)return;i.checked?sel[i.dataset.k].add(i.value):sel[i.dataset.k].delete(i.value);render()});
-$("#reset").onclick=reset;$("#sort").onchange=render;$("#go").onclick=render;$("#field").onchange=render;
+$("#reset").onclick=reset;$("#sort").onchange=render;$("#go").onclick=render;$("#field").onchange=()=>{fieldTouched=true;render()};
 $("#q").addEventListener("keydown",e=>{if(e.key==="Enter")render()});
 document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t))});
 render();
