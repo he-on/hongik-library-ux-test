@@ -34,7 +34,7 @@
 @media(max-width:800px){.live-resultcard{padding:18px}.live-book{gap:15px}.live-book .live-cover{width:76px;min-width:76px;height:110px}.live-book .live-book-body h3{font-size:14px}.live-search-page .resulthead h1{font-size:24px}}
 
 /* Multi-category result page: the original library uses vertical, full-width sections. */
-.live-results{display:flex;flex-direction:column;gap:24px;min-width:0}
+.live-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:34px 30px;min-width:0}
 .live-results .live-section{width:100%;max-width:none}
 .live-section[hidden]{display:none !important}
 .live-section .cardhead h2{font-size:21px;font-weight:700}
@@ -140,11 +140,28 @@
  .live-request-options button{flex-direction:row;min-height:34px}
 }
 @media(max-width:420px){
- .live-results,.live-help-grid{grid-template-columns:1fr}
+ .live-results,.live-help-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
  .live-section>.cardhead h2{font-size:17px}
  .live-book .live-cover{flex-basis:90px;width:90px;min-width:90px;height:125px}
  .live-section .live-book h3{font-size:13px}
  .live-section .live-book p{font-size:11px}
  .live-request-options{grid-template-columns:repeat(3,minmax(0,1fr))}
  .live-request-options button{flex-direction:column}
+}
+
+/* Stable layout for normal/zoomed browser widths. Always preserve two search columns. */
+#main .live-search-page .live-results,
+#main .live-search-page .live-help-grid{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+}
+#main .live-search-page .live-results > .live-section {
+  min-width:0;
+  max-width:none;
+}
+#main .live-search-page .live-results > [data-live-section="database"]{
+  grid-column:1/-1;
+}
+#main .live-search-page .live-results > [hidden]{
+  display:none !important;
 }
