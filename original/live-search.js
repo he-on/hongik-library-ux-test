@@ -39,6 +39,59 @@
       return url.protocol === 'https:' && url.hostname === 'honors.hongik.ac.kr' ? url.href : '';
     } catch (_) { return ''; }
   }
+
+  // Convert the site's Primo redirect into the direct bibliographic detail URL.
+  // Only records with an actual Alma/Primo identifier get a clickable link.
+  function primoDetailUrl(book) {
+    if (!book || !book.originalLink) return '';
+    try {
+      var source = new URL(book.originalLink, API_ORIGIN);
+      if (source.hostname === 'honors.hongik.ac.kr' &&
+          source.pathname === '/site-linker/') {
+        var nested = source.searchParams.get('url');
+        if (!nested) return '';
+        source = new URL(nested);
+      }
+      if (source.protocol !== 'https:' ||
+          source.hostname !== 'hongik.primo.exlibrisgroup.com' ||
+          source.pathname !== '/discovery/fulldisplay') return '';
+      var docid = source.searchParams.get('docid');
+      if (!docid || !/^[A-Za-z0-9_.:-]{5,120}$/.test(docid)) return '';
+      var direct = new URL('https://hongik.primo.exlibrisgroup.com/discovery/fulldisplay');
+      direct.searchParams.set('docid', docid);
+      direct.searchParams.set('context', source.searchParams.get('context') || 'L');
+      direct.searchParams.set('vid', '82HUN_INST:HONGIK');
+      direct.searchParams.set('lang', 'ko');
+      return direct.href;
+    } catch (_) { return ''; }
+  }
+
+  function holdingsPopup(book,key,index) {
+    var holdings = book.holdings || [];
+    if (!holdings.length) return '';
+    var popupId='live-holding-'+key+'-'+index;
+    var rows=holdings.map(function(h) {
+      var original=String(h);
+      var matched=original.match(/\s*\((이용가능|이용불가|대출중)\)\s*$/);
+      var status=matched ? matched[1] : (book.availability || '상태 미확인');
+      var location=matched ? original.slice(0,matched.index).trim() : original;
+      return '<div class="live-holding-row"><span class="live-holding-badge' +
+        (status === '이용가능' ? '' : ' is-unavailable') + '">' + esc(status) + '</span>' +
+        '<span class="live-holding-location">' + esc(location) + '</span></div>';
+    }).join('');
+    var url=primoDetailUrl(book);
+    var footer=url ?
+      '<a class="live-holding-detail" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">' +
+      '자세히 보기</a>' :
+      '<span class="live-holding-no-detail">상세보기 링크 없음</span>';
+    return '<span class="live-holding-anchor">' +
+      '<button class="holdings" type="button" data-live-hold="'+key+':'+index+
+      '" aria-haspopup="true" aria-expanded="false" aria-controls="'+popupId+'">소장정보 ⌄</button>' +
+      '<span class="live-holding-popover hidden" id="'+popupId+'" role="region" aria-label="소장정보">' +
+      '<span class="live-holding-content">'+rows+'</span>' +
+      '<span class="live-holding-footer">'+footer+'</span></span></span>';
+  }
+
   function countOf(v) {
     return Math.max(0, Number(String(v === undefined ? 0 : v).replace(/,/g,'')) || 0);
   }
@@ -203,11 +256,8 @@
     var coverHtml = hasCover ? '<div class="cover live-cover" aria-hidden="true">' + image + '</div>' : '';
     var type = book.type || sectionByKey(key).type;
     var avail=book.availability||'상태 미확인';
-    var hasHoldings = Array.isArray(book.holdings) && book.holdings.length > 0;
-    var holdings = hasHoldings ? '<button class="holdings" type="button" data-live-hold="' + key +
-      ':' + index + '" aria-expanded="false" aria-controls="live-holding-' + key + '-' + index +
-      '">소장정보 ⌄</button><div class="holding hidden" id="live-holding-' + key + '-' + index + '">' +
-      book.holdings.map(function(h) { return '<p>' + esc(h) + '</p>'; }).join('') + '</div>' : '';
+    var holdings = Array.isArray(book.holdings) && book.holdings.length ?
+      holdingsPopup(book,key,index) : '';
     return '<article class="book live-book' + (hasCover ? ' has-cover' : ' no-cover') + '">' +
       coverHtml + '<div class="live-book-body"><span class="tag">' + esc(type) + '</span> ' +
       '<span class="tag ' + (avail==='이용가능'?'available':'unavailable') + '">' + esc(avail) + '</span>' +
@@ -302,11 +352,31 @@
       (b.description?'<p>'+esc(b.description)+'</p>':'') +
       (b.holdings && b.holdings.length ? '<h3>소장정보</h3>' +
         b.holdings.map(function(h){return '<p>'+esc(h)+'</p>';}).join('') : '') +
-      (b.originalLink?'<p><a href="'+esc(b.originalLink)+'" target="_blank" rel="noopener noreferrer">원본 자료 자세히 보기</a></p>':'');
+      (primoDetailUrl(b)?'<p><a href="'+esc(primoDetailUrl(b))+
+        '" target="_blank" rel="noopener noreferrer">Primo에서 자세히 보기</a></p>':'');
     window.show(b.title,details);
   }
+  function closeHoldings(keepButton) {
+    if (!root) return;
+    root.querySelectorAll('.live-holding-anchor [data-live-hold]').forEach(function(btn) {
+      if (btn === keepButton) return;
+      var id = btn.getAttribute('aria-controls');
+      var popup = document.getElementById(id);
+      if (popup) popup.classList.add('hidden');
+      btn.setAttribute('aria-expanded','false');
+    });
+  }
+  function outsideHoldings(event) {
+    if (!root || !root.contains(event.target)) closeHoldings();
+  }
+  function escapeHoldings(event) {
+    if (event.key === 'Escape' && root) closeHoldings();
+  }
+  var holdingGlobalEventsBound = false;
   function onClick(event) {
     if (!root || !state) return;
+    var holdingButton=event.target.closest('button[data-live-hold]');
+    if (!holdingButton) closeHoldings();
     var button=event.target.closest('button');
     if (!button || !root.contains(button)) return;
     if (button.hasAttribute('data-live-switch')) {
@@ -331,8 +401,10 @@
       var p=button.getAttribute('data-live-hold').split(':');
       var box=root.querySelector('#live-holding-'+p[0]+'-'+p[1]);
       if (!box) return;
-      box.classList.toggle('hidden');
-      button.setAttribute('aria-expanded',String(!box.classList.contains('hidden')));
+      var willOpen=box.classList.contains('hidden');
+      closeHoldings(button);
+      box.classList.toggle('hidden',!willOpen);
+      button.setAttribute('aria-expanded',String(willOpen));
     } else if (button.hasAttribute('data-live-detail')) {
       var parts=button.getAttribute('data-live-detail').split(':');
       openDetail(parts[0],Number(parts[1]));
@@ -374,6 +446,11 @@
       root.addEventListener('keydown',onKeydown);
       listenerRoot=root;
     }
+    if (!holdingGlobalEventsBound) {
+      document.addEventListener('click',outsideHoldings);
+      document.addEventListener('keydown',escapeHoldings);
+      holdingGlobalEventsBound=true;
+    }
     root.innerHTML=shell(state.query,state.view);
     var focused=state.view.indexOf('section-')===0 ? sectionByKey(state.view.slice(8)) : null;
     var selected=focused?[focused]:state.view==='catalog'?
@@ -392,6 +469,7 @@
     cancel:cancel,
     parseBookResponse:function(response){return parseResponse(response,'book');},
     parseSectionResponse:parseResponse,
+    primoDetailUrl:primoDetailUrl,
     categories:SECTIONS.map(function(s){return s.key;})
   };
 }());
