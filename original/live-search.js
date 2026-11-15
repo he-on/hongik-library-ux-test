@@ -177,13 +177,16 @@
       '<div class="live-results">' +
       (single ? sectionShell(single) : isCatalog ? sectionShell(sectionByKey('book')) : SECTIONS.map(sectionShell).join('')) +
       '</div>' +
-      '<div class="find"><h2>찾는 자료가 없으신가요?</h2><h3>더 찾아보기</h3>' +
+      '<section class="live-help"><h2>찾는 자료가 없으신가요?</h2><div class="live-help-grid">' +
+      '<div class="live-help-card"><h3>더 찾아보기</h3><div class="live-help-search">' +
+      '<span class="live-google-label" aria-hidden="true">Google</span>' +
       '<input aria-label="추가 검색어" id="liveSecondQuery" placeholder="검색어를 입력하세요.">' +
-      '<button type="button" data-live-search-again="1">검색</button>' +
-      '<h3>자료 신청하기</h3>' +
-      ['자료구입신청','타도서관 자료대출 신청','타도서관 자료복사 신청'].map(function(n) {
-        return '<button type="button" data-info="' + esc(n) + '">' + esc(n) + '</button>';
-      }).join('') + '</div></div>';
+      '<button type="button" data-live-search-again="1" aria-label="추가 검색">⌕</button></div></div>' +
+      '<div class="live-help-card"><h3>자료 신청하기</h3><div class="live-request-options">' +
+      ['자료구입신청','타도서관 자료대출 신청','타도서관 자료복사 신청'].map(function(n,i) {
+        return '<button type="button" data-info="' + esc(n) + '"><span aria-hidden="true">' +
+          ['▤','▧','▣'][i] + '</span>' + esc(n) + '</button>';
+      }).join('') + '</div></div></div></section></div>';
   }
 
   function sectionNode(key) {
@@ -193,9 +196,11 @@
     return section && section.querySelector('[data-part="' + partName + '"]');
   }
   function renderItem(book,key,index) {
+    var hasCover = (key === 'book' || key === 'ebook');
     var image = book.cover ?
       '<img loading="lazy" src="' + esc(book.cover) + '" alt="" onerror="this.hidden=true">' :
-      '<span>HONGIK<br>LIBRARY</span>';
+      '<span class="live-cover-emblem">HONGIK<br>UNIVERSITY<br>LIBRARY</span>';
+    var coverHtml = hasCover ? '<div class="cover live-cover" aria-hidden="true">' + image + '</div>' : '';
     var type = book.type || sectionByKey(key).type;
     var avail=book.availability||'상태 미확인';
     var hasHoldings = Array.isArray(book.holdings) && book.holdings.length > 0;
@@ -203,9 +208,8 @@
       ':' + index + '" aria-expanded="false" aria-controls="live-holding-' + key + '-' + index +
       '">소장정보 ⌄</button><div class="holding hidden" id="live-holding-' + key + '-' + index + '">' +
       book.holdings.map(function(h) { return '<p>' + esc(h) + '</p>'; }).join('') + '</div>' : '';
-    return '<article class="book live-book">' +
-      '<div class="cover live-cover" aria-hidden="true">' + image + '</div>' +
-      '<div class="live-book-body"><span class="tag">' + esc(type) + '</span> ' +
+    return '<article class="book live-book' + (hasCover ? ' has-cover' : ' no-cover') + '">' +
+      coverHtml + '<div class="live-book-body"><span class="tag">' + esc(type) + '</span> ' +
       '<span class="tag ' + (avail==='이용가능'?'available':'unavailable') + '">' + esc(avail) + '</span>' +
       '<h3><button type="button" data-live-detail="' + key + ':' + index + '">' + esc(book.title) + '</button></h3>' +
       (book.author || book.publication ? '<p>' + (book.author?esc(book.author):'') +
@@ -242,12 +246,13 @@
       rows.map(function(book,i){return renderItem(book,key,i);}).join('') :
       '<div class="empty">' + (data.hitcount ? '현재 조건에 맞는 결과가 없습니다.' : '결과가 없습니다.') + '</div>';
     // A captured first-page snapshot does not justify synthesizing further pages.
-    part(section,'pager').innerHTML = data.fallback ? '' :
+    // A snapshot includes only its captured rows; further pages are requested live, never fabricated.
+    var lastPage = data.fallback ? Math.max(1, Math.ceil(data.hitcount / 5)) : data.totalPages;
+    part(section,'pager').innerHTML =
       '<button type="button" data-live-page="' + key + ':' + (data.page-1) +
-      '" ' + (data.page<=1?'disabled':'') + '>‹ 이전 페이지</button>' +
-      '<span>' + data.page + ' / ' + data.totalPages + '</span>' +
+      '" ' + (data.page<=1?'disabled':'') + '>← 이전 페이지</button>' +
       '<button type="button" data-live-page="' + key + ':' + (data.page+1) +
-      '" ' + (data.page>=data.totalPages?'disabled':'') + '>다음 페이지 ›</button>';
+      '" ' + (data.page>=lastPage?'disabled':'') + '>다음 페이지 →</button>';
   }
 
   function failSection(key,error) {
@@ -317,7 +322,8 @@
     } else if (button.hasAttribute('data-live-page')) {
       var value=button.getAttribute('data-live-page').split(':');
       var key=value[0], next=Number(value[1]), entry=state.sections[key];
-      if (entry && entry.data && next>=1 && next<=entry.data.totalPages && !entry.data.fallback) {
+      var finalPage=entry && entry.data ? (entry.data.fallback ? Math.max(1,Math.ceil(entry.data.hitcount/5)) : entry.data.totalPages) : 0;
+      if (entry && entry.data && next>=1 && next<=finalPage) {
         loadSection(key,next);
         sectionNode(key).scrollIntoView({block:'start',behavior:'smooth'});
       }
@@ -332,6 +338,13 @@
       openDetail(parts[0],Number(parts[1]));
     } else if (button.hasAttribute('data-live-search-again')) {
       var newQuery=root.querySelector('#liveSecondQuery').value.trim();
+      if (newQuery) window.search(newQuery,'results');
+    }
+  }
+  function onKeydown(e) {
+    if (e.target && e.target.id === 'liveSecondQuery' && e.key === 'Enter') {
+      e.preventDefault();
+      var newQuery = e.target.value.trim();
       if (newQuery) window.search(newQuery,'results');
     }
   }
@@ -358,6 +371,7 @@
     if (listenerRoot!==root) {
       root.addEventListener('click',onClick);
       root.addEventListener('change',onChange);
+      root.addEventListener('keydown',onKeydown);
       listenerRoot=root;
     }
     root.innerHTML=shell(state.query,state.view);
