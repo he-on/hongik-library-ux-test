@@ -98,6 +98,11 @@ ol.steps li::before{content:counter(s);flex:none;width:24px;height:24px;border-r
 .page-nav .links{display:flex;gap:10px;flex-wrap:wrap}
 .page-nav a{border:1px solid var(--ln);background:var(--sf);color:var(--br);border-radius:8px;padding:8px 13px;text-decoration:none;font-size:13px;font-weight:700}
 .page-nav a.active{border-color:var(--br);background:var(--bs)}
+/* Prevent the 6-floor navigation from imposing a wider min-content grid track. */
+.grid{grid-template-columns:minmax(0,1fr) 340px}
+.grid>*,.card,.floors,.map{min-width:0}
+@media(max-width:760px){.grid{grid-template-columns:minmax(0,1fr)}.grid>*,.card,.floors,.map{min-width:0;max-width:100%}}
+
 .selected-source{max-width:1180px;margin:12px auto 0;padding:10px 24px;color:var(--mu);font-size:12px}
 .selected-source strong{color:var(--br)}
 .selected-source[hidden]{display:none}
