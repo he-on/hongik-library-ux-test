@@ -1,8 +1,8 @@
-// Firebase Console > Project settings > Your apps > Web app > SDK setup and configuration
-// Paste the Firebase *web* config values here. This is not a service-account key.
+// Firebase Web app configuration (public client settings, not admin credentials).
+// This repository is served as static HTML from GitHub Pages.
 export const firebaseConfig = {
-  apiKey: "",
-  authDomain: "",
-  projectId: "",
-  appId: ""
+  apiKey: "AIzaSyD1kVr94SvbqAYQt46kkS465Lz1NQSTiUQ",
+  authDomain: "hongik-library-ux-test.firebaseapp.com",
+  projectId: "hongik-library-ux-test",
+  appId: "1:251178948022:web:a3fca1bd1ac90ff45edd17"
 };
