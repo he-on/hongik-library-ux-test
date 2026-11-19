@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>My Library · 홍익대학교 중앙도서관 UX 시연</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f6fb;color:#202636;font-family:Arial,"Malgun Gothic",sans-serif;font-size:15px;line-height:1.6}
+a{color:#173d9b}button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.55;cursor:default}
+header{background:#fff;border-bottom:1px solid #dce3f2;padding:18px max(18px,calc((100vw - 930px)/2))}
+header a{text-decoration:none;font-weight:800;color:#102db2;font-size:18px}
+main{max-width:930px;margin:30px auto;padding:0 18px 50px}
+h1{margin:0 0 8px;font-size:30px}h2{margin-top:0;font-size:21px}
+.muted{color:#617087;font-size:13px}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.tabs a{padding:9px 15px;border-radius:5px;background:#e8edfa;text-decoration:none;font-weight:600}
+.tabs a[aria-current=page]{background:#193cb7;color:white}
+.panel{background:white;padding:26px;border-radius:12px;margin-top:20px;border:1px solid #dbe2ef}
+label{display:block;font-weight:bold;margin:13px 0 5px}input{width:100%;padding:11px;border:1px solid #bac5d8;border-radius:6px}
+.btn{border-radius:6px;border:1px solid #2748aa;padding:10px 15px;background:#fff;color:#183da8;font-weight:700}
+.btn.primary{background:#193cb7;color:white}
+#message{min-height:1.6em;margin:12px 0;color:#254894}
+#message.error{color:#af2b37}
+#bookmarks{list-style:none;padding:0}
+#bookmarks li{padding:15px 0;border-bottom:1px solid #e1e6f0;display:flex;align-items:center;justify-content:space-between;gap:15px}
+.book-title{font-weight:bold}.book-by{color:#67748a;font-size:13px}
+[hidden]{display:none!important}
+@media(max-width:520px){h1{font-size:25px}.panel{padding:18px}#bookmarks li{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header><a href="../original/">홍익대학교 중앙도서관 · UX 테스트</a></header>
+<main>
+<h1>My Library</h1>
+<p class="muted">UX 시연용 계정입니다. 실제 도서관 계정과 연동되지 않습니다.</p>
+<div class="row tabs" aria-label="프로토타입 선택">
+<a id="original-tab" href="?ui=original">기존 UI 찜 목록</a>
+<a id="improved-tab" href="?ui=improved">개선 UI 찜 목록</a>
+</div>
+<section class="panel">
+<h2 id="session-heading">회원가입 / 로그인</h2>
+<p id="setup-message" class="muted" hidden>Firebase 설정이 필요합니다. 프로젝트 관리자에게 문의해 주세요.</p>
+<div id="auth-forms">
+  <form id="account-form">
+    <label for="email">이메일</label><input id="email" type="email" autocomplete="username" required>
+    <label for="password">비밀번호 (6자 이상)</label><input id="password" type="password" autocomplete="current-password" minlength="6" required>
+    <div class="row" style="margin-top:18px">
+      <button id="signin" class="btn primary" type="submit">로그인</button>
+      <button id="signup" class="btn" type="button">회원가입</button>
+    </div>
+  </form>
+</div>
+<div id="signed-in" class="row" hidden><span id="user-email"></span><button id="signout" class="btn" type="button">로그아웃</button></div>
+<p id="message" role="status" aria-live="polite"></p>
+</section>
+<section class="panel" id="library-section">
+<h2>찜해 둔 도서</h2>
+<p class="muted" id="list-description">동일한 계정으로 노트북과 휴대폰에서 이 목록을 볼 수 있습니다.</p>
+<ul id="bookmarks"></ul>
+<p id="list-empty">로그인하면 찜한 도서가 표시됩니다.</p>
+</section>
+<div class="row" style="margin-top:20px"><a id="return-link" href="../original/">← 도서 검색으로 돌아가기</a></div>
+</main>
+<script type="module" src="../shared/account-page.js"></script>
+</body>
+</html>
