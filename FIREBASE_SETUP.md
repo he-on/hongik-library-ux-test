@@ -10,7 +10,7 @@
 
 ## Firebase Console 관리자 설정 (1회)
 1. https://console.firebase.google.com/ 에서 새 프로젝트 생성 (예: `hongik-library-ux-test`). Google Analytics 연동은 이미 GTM/GA4를 쓰므로 이 Firebase 프로젝트에서는 필수가 아님.
-2. 프로젝트 개요 > 앱 추가 > 웹(</>) > 앱 등록. **Firebase Hosting은 설정하지 않음** (기존 GitHub Pages 사용).
+2. 프로젝트 개요 > 앱 추가 > 웹(</>) > 앱 등록. **웹 배포는 GitHub Pages를 그대로 사용**. 2026년 10월 이후 새 Firebase 프로젝트는 웹 앱 등록 과정에서 기본 Firebase Hosting 사이트 생성을 별도로 요청할 수 있음. 이 경우 Firebase 안내에 따라 기본 사이트만 준비할 수 있지만, 사이트 파일을 Firebase Hosting에 배포할 필요는 없음. SDK 설정의 authDomain 값이 제공되는지 확인.
 3. 웹 앱 설정 `firebaseConfig`에서 `apiKey`, `authDomain`, `projectId`, `appId` 확인.
 4. 이 저장소의 `shared/firebase-config.js`에 네 값을 입력. 해당 파일에는 서비스 계정 비공개 키/관리자 인증서/비밀번호 등을 넣지 말 것. Firebase **웹 앱 설정값**은 브라우저 측 공개 정보이며 실제 데이터 접근은 보안 규칙으로 제한함.
 5. Build > Authentication > Sign-in method > Email/Password 활성화.
