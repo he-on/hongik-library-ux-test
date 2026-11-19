@@ -1,4 +1,4 @@
-import { configured, watchUser, register, login, logout, listenBookmarks, removeBookmark, friendlyError } from "./firebase-service.js";
+import { configured, watchUser, suggestId, enterWithId, leaveId, listenBookmarks, removeBookmark, friendlyError } from "./firebase-service.js";
 const params = new URLSearchParams(location.search);
 const variant = params.get("ui") === "improved" ? "improved" : "original";
 const $ = id => document.getElementById(id);
@@ -10,36 +10,47 @@ const searchUrl = "../" + variant + "/";
 $("return-link").href = searchUrl;
 $("original-tab").setAttribute("aria-current", variant === "original" ? "page" : "false");
 $("improved-tab").setAttribute("aria-current", variant === "improved" ? "page" : "false");
-let currentUser = null;
+let currentUser = "";
 let unsubscribeBooks = () => {};
+$("id-input").value = suggestId();
 if (!configured) {
   $("setup-message").hidden = false;
   $("auth-forms").hidden = true;
-  msg("Firebase 연결 정보가 없어 회원가입을 사용할 수 없습니다.", true);
+  msg("Firebase 연결 정보가 없어 아이디 등록 및 찜 목록을 사용할 수 없습니다.", true);
 }
-async function submitAuth(mode) {
-  const form = $("account-form");
-  if (!form.reportValidity()) return;
-  const email = $("email").value.trim();
-  const password = $("password").value;
-  $("signin").disabled = $("signup").disabled = true;
-  msg(mode === "register" ? "계정을 생성하는 중..." : "로그인 중...");
+$("suggest").addEventListener("click", () => {
+  $("id-input").value = suggestId();
+  $("id-input").focus();
+  msg("");
+});
+$("account-form").addEventListener("submit", async event => {
+  event.preventDefault();
+  if (!configured || !$("account-form").reportValidity()) return;
+  $("start").disabled = $("suggest").disabled = true;
+  msg("아이디를 확인하는 중...");
   try {
-    if (mode === "register") await register(email, password);
-    else await login(email, password);
-    $("password").value = "";
-    msg(mode === "register" ? "회원가입 및 로그인이 완료되었습니다." : "로그인되었습니다.");
-  } catch (e) {
-    msg(friendlyError(e), true);
+    const { id, existed } = await enterWithId($("id-input").value);
+    msg(existed ? "기존 아이디로 찜 목록을 불러왔습니다." : "새 아이디를 등록했습니다. 다른 기기에서도 이 아이디를 사용하세요.");
+    $("id-input").value = id;
+  } catch (error) {
+    msg(friendlyError(error), true);
   } finally {
-    $("signin").disabled = $("signup").disabled = false;
+    $("start").disabled = $("suggest").disabled = false;
   }
-}
-$("account-form").addEventListener("submit", e => { e.preventDefault(); submitAuth("login"); });
-$("signup").addEventListener("click", () => submitAuth("register"));
-$("signout").addEventListener("click", async () => {
-  try { await logout(); msg("로그아웃되었습니다."); }
-  catch (e) { msg(friendlyError(e), true); }
+});
+$("switch-id").addEventListener("click", () => {
+  leaveId();
+  $("id-input").value = suggestId();
+  msg("이전 아이디를 다시 입력하면 기존 찜 목록에 접근할 수 있습니다.");
+});
+$("copy-id").addEventListener("click", async () => {
+  if (!currentUser) return;
+  try {
+    await navigator.clipboard.writeText(currentUser);
+    msg("아이디를 복사했습니다. 휴대폰에서도 동일하게 입력하세요.");
+  } catch {
+    msg("현재 아이디: " + currentUser + " — 선택해서 복사해 주세요.");
+  }
 });
 function safeSource(url) {
   try {
@@ -75,22 +86,22 @@ function paintBooks(books) {
       if (!currentUser) return;
       del.disabled = true;
       try { await removeBookmark(currentUser, book.id); }
-      catch (e) { msg(friendlyError(e), true); del.disabled = false; }
+      catch (error) { msg(friendlyError(error), true); del.disabled = false; }
     });
     li.append(info, del);
     list.append(li);
   });
 }
 watchUser(user => {
-  currentUser = user;
-  $("auth-forms").hidden = Boolean(user) || !configured;
+  currentUser = user || "";
+  $("auth-forms").hidden = !!user || !configured;
   $("signed-in").hidden = !user;
-  $("user-email").textContent = user?.email || "";
-  $("session-heading").textContent = user ? "내 계정" : "회원가입 / 로그인";
+  $("account-id").textContent = user || "";
+  $("session-heading").textContent = user ? "내 아이디" : "아이디로 시작하기";
   unsubscribeBooks();
   paintBooks([]);
   if (!user) {
-    $("list-empty").textContent = "로그인하면 찜한 도서가 표시됩니다.";
+    $("list-empty").textContent = "아이디를 입력하면 찜한 도서가 표시됩니다.";
     return;
   }
   $("list-empty").textContent = "찜 목록을 불러오는 중...";
@@ -98,4 +109,4 @@ watchUser(user => {
     msg(friendlyError(error), true);
     $("list-empty").textContent = "목록을 불러오지 못했습니다.";
   });
-}, e => msg(friendlyError(e), true));
+});
