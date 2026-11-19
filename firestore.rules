@@ -1,31 +1,47 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Only the signed-in owner can read and change their bookmarks.
-    match /users/{userId}/bookmarks/{bookmarkId} {
-      function isOwner() {
-        return request.auth != null && request.auth.uid == userId;
+    // UX test only: a shared ID is public to anyone who knows it.
+    // Anonymous Firebase Auth is merely an anti-accidental-public-read gate,
+    // NOT proof that the visitor owns this ID.
+    match /profiles/{alias} {
+      function allowed() {
+        return request.auth != null
+          && alias.matches('^[a-z0-9][a-z0-9-]{4,29}$');
       }
-      function validBookmark() {
-        return request.resource.data.keys().hasOnly([
-          'title', 'author', 'sourceUrl', 'variant', 'savedAt'
-        ]) && request.resource.data.keys().hasAll([
-          'title', 'author', 'sourceUrl', 'variant', 'savedAt'
-        ])
-        && request.resource.data.title is string
-        && request.resource.data.title.size() > 0
-        && request.resource.data.title.size() <= 250
-        && request.resource.data.author is string
-        && request.resource.data.author.size() <= 250
-        && request.resource.data.sourceUrl is string
-        && request.resource.data.sourceUrl.size() <= 500
-        && request.resource.data.variant in ['original', 'improved']
-        && request.resource.data.savedAt is timestamp;
+      allow get: if allowed();
+      allow list: if false;
+      allow create: if allowed()
+        && request.resource.data.keys().hasOnly(['createdAt'])
+        && request.resource.data.createdAt is timestamp;
+      allow update, delete: if false;
+
+      match /bookmarks/{bookmarkId} {
+        function allowedBook() {
+          return request.auth != null
+            && alias.matches('^[a-z0-9][a-z0-9-]{4,29}$');
+        }
+        function validBook() {
+          return request.resource.data.keys().hasOnly([
+            'title', 'author', 'sourceUrl', 'variant', 'savedAt'
+          ]) && request.resource.data.keys().hasAll([
+            'title', 'author', 'sourceUrl', 'variant', 'savedAt'
+          ])
+          && request.resource.data.title is string
+          && request.resource.data.title.size() > 0
+          && request.resource.data.title.size() <= 250
+          && request.resource.data.author is string
+          && request.resource.data.author.size() <= 250
+          && request.resource.data.sourceUrl is string
+          && request.resource.data.sourceUrl.size() <= 500
+          && request.resource.data.variant in ['original', 'improved']
+          && request.resource.data.savedAt is timestamp;
+        }
+        allow get, list, delete: if allowedBook();
+        allow create: if allowedBook() && validBook();
+        allow update: if allowedBook() && validBook()
+          && request.resource.data.variant == resource.data.variant;
       }
-      allow read, delete: if isOwner();
-      allow create: if isOwner() && validBookmark();
-      allow update: if isOwner() && validBookmark()
-        && request.resource.data.variant == resource.data.variant;
     }
   }
 }
