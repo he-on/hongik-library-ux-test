@@ -111,7 +111,7 @@ mark{background:var(--hl);color:inherit;border-radius:3px;padding:0 1px}
 .card>div:nth-child(2){min-width:0}
 .card h3,.card dd,.card .by{overflow-wrap:anywhere}
 .card .actions button{line-height:1.5}
-.ux-bookmark-btn{background:var(--surface);color:var(--brand);border:1px solid var(--brand);border-radius:8px;padding:9px 12px;font-size:14px;font-weight:700;cursor:pointer}
+.ux-bookmark-btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;background:var(--brand-soft);color:var(--brand);border:1px solid var(--brand);border-radius:8px;padding:8px 14px;margin:0 0 12px;font-size:14px;font-weight:700;cursor:pointer}
 .ux-bookmark-btn[aria-pressed="true"]{background:var(--brand-soft)}
 .ux-bookmark-btn:disabled{opacity:.55;cursor:wait}
 .mobile-filter-toggle{display:none}
@@ -147,7 +147,7 @@ dialog#book-detail::backdrop{background:#141a2e99}
  .bar select{font-size:12px;padding:6px}
  #book-detail .book-info{grid-template-columns:90px 1fr}
 }
-</style><meta name="ux-build" content="2026-11-15-improved-w02-w04-v3"></head>
+</style><meta name="ux-build" content="2026-11-20-improved-bookmark-visibility-v2"></head>
 <body>
 <header><div class="wrap">
   <div class="brand">홍익대학교 중앙도서관<small>소장자료 검색</small></div>
@@ -228,7 +228,7 @@ function card(d){
   return `<article class="card" data-ux-row="${d.rowId}">
    <div class="cover${bk?"":" alt"}" aria-hidden="true">${cov}</div>
    <div>
-    <h3>${hl(d.t)}</h3><p class="by">${hl(d.by)}${q?`<span class="tag${d.s===100?" top":""}">${TAG[d.s]}</span>`:""}</p>
+    <h3>${hl(d.t)}</h3><p class="by">${hl(d.by)}${q?`<span class="tag${d.s===100?" top":""}">${TAG[d.s]}</span>`:""}</p><button type="button" class="ux-bookmark-btn" aria-pressed="false" aria-label="${safeHtml(d.t)} 찜하기">♡ 찜하기</button>
     <div class="cols">
      <div class="col"><h4>${d.L}</h4><dl>${rows(d.l)}</dl></div>
      <div class="col"><h4>${d.R}</h4>
@@ -236,7 +236,7 @@ function card(d){
       <dl>${rows(d.r)}</dl></div>
     </div>
    </div>
-   <div class="actions"><button class="btn btn-primary" data-action="detail" data-row="${d.rowId}">상세정보</button><button class="btn btn-line" data-action="map" data-row="${d.rowId}">${sub}</button>${bk?`<button type="button" class="ux-bookmark-btn" aria-pressed="false" aria-label="${safeHtml(d.t)} 찜하기">♡ 찜하기</button>`:""}</div>
+   <div class="actions"><button class="btn btn-primary" data-action="detail" data-row="${d.rowId}">상세정보</button><button class="btn btn-line" data-action="map" data-row="${d.rowId}">${sub}</button></div>
   </article>`}
 function render(){
   renderFilters();
@@ -255,6 +255,6 @@ render();
 </script>
 <script src="../original/catalog-fallback.js?v=20261115"></script>
 <script src="./search-live.js?v=20261120-bookdetails-fix"></script>
-<script type="module" src="../shared/bookmarks-ui.js?v=20261120-improved-only-v1"></script>
+<script type="module" src="../shared/bookmarks-ui.js?v=20261120-improved-visible-v2"></script>
 </body>
 </html>
