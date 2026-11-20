@@ -256,7 +256,7 @@
     var avail=book.availability||'상태 미확인';
     var holdings = Array.isArray(book.holdings) && book.holdings.length ?
       holdingsPopup(book,key,index) : '';
-    return '<article class="book live-book' + (hasCover ? ' has-cover' : ' no-cover') + '">' +
+    return '<article data-ux-section="' + esc(key) + '" data-ux-index="' + index + '" class="book live-book' + (hasCover ? ' has-cover' : ' no-cover') + '">' +
       coverHtml + '<div class="live-book-body"><span class="tag">' + esc(type) + '</span> ' +
       '<span class="tag ' + (avail==='이용가능'?'available':'unavailable') + '">' + esc(avail) + '</span>' +
       '<h3>' + (primoDetailUrl(book) ?
@@ -471,6 +471,23 @@
     parseBookResponse:function(response){return parseResponse(response,'book');},
     parseSectionResponse:parseResponse,
     primoDetailUrl:primoDetailUrl,
+    // The bookmark UI uses the exact parsed catalog row displayed in the card.
+    bookmarkRecord:function(key,index) {
+      var entry=state && state.sections[key];
+      var b=entry && entry.visible[Number(index)];
+      if (!b) return null;
+      var holdings=Array.isArray(b.holdings) ? b.holdings : [];
+      var mainHolding=holdings[0] || '';
+      var library=(mainHolding.match(/중앙도서관|문정도서관|법학도서관|대학로도서관/) || [])[0] || '';
+      return {
+        title:b.title||'', author:b.author||'',
+        materialType:b.type||sectionByKey(key).type||'',
+        publication:b.publication||'', availability:b.availability||'',
+        library:library, location:'', callNumber:'',
+        holdingsText:holdings.join('\n'),
+        detailUrl:primoDetailUrl(b)
+      };
+    },
     categories:SECTIONS.map(function(s){return s.key;})
   };
 }());
