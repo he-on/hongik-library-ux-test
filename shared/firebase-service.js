@@ -101,6 +101,18 @@ export async function toggleBookmark(id, variant, book) {
     title: String(book.title).slice(0, 250),
     author: String(book.author || "").slice(0, 250),
     sourceUrl: String(book.sourceUrl || "").slice(0, 500),
+    // Catalog metadata is a snapshot at the time the user bookmarked the item.
+    // Missing fields remain empty instead of being filled with invented values.
+    details: {
+      materialType:String(book.details?.materialType || "").slice(0,80),
+      publication:String(book.details?.publication || "").slice(0,300),
+      availability:String(book.details?.availability || "").slice(0,80),
+      library:String(book.details?.library || "").slice(0,120),
+      location:String(book.details?.location || "").slice(0,250),
+      callNumber:String(book.details?.callNumber || "").slice(0,140),
+      holdingsText:String(book.details?.holdingsText || "").slice(0,1500),
+      detailUrl:String(book.details?.detailUrl || "").slice(0,500)
+    },
     variant, savedAt: serverTimestamp()
   });
   return true;
