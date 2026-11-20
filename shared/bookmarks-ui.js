@@ -107,8 +107,8 @@ function extractBook(card) {
   const author = authorNode?.firstChild?.textContent?.trim() || "";
   if (!title) return null;
   const record = isImproved ?
-    window.HongikImprovedCatalog?.bookmarkRecord(card.dataset.uxRow) :
-    window.HongikLiveSearch?.bookmarkRecord(card.dataset.uxSection,card.dataset.uxIndex);
+    window.HongikImprovedCatalog?.bookmarkRecord?.(card.dataset.uxRow) :
+    window.HongikLiveSearch?.bookmarkRecord?.(card.dataset.uxSection,card.dataset.uxIndex);
   const visible = detailsFromCard(card,isImproved);
   const clean = (value,max) => String(value ?? "").replace(/\r/g,"").trim().slice(0,max);
   const placeholders = new Set(["미제공","정보 없음","위치 정보 없음","원문 상세정보 참고"]);
@@ -139,8 +139,13 @@ function upgradeLegacyBookmarks() {
     if (!book || !hasMeaningfulDetails(book.details)) return;
     const old = legacyBookmarks.get(bookKey(book.title,book.author));
     if (!old || upgrading.has(old.id)) return;
+    // Only update when a real new catalog value exists; preserve any older fields.
+    const fields = ["materialType","publication","availability","library","location","callNumber","holdingsText","detailUrl"];
+    const merged = Object.fromEntries(fields.map(key =>
+      [key,String(book.details?.[key] || old.details?.[key] || "")]));
+    if (!fields.some(key => merged[key] && !old.details?.[key])) return;
     upgrading.add(old.id);
-    updateBookmarkDetails(currentUser,old.id,book.details)
+    updateBookmarkDetails(currentUser,old.id,merged)
       .catch(e => console.warn("기존 찜 상세정보 보완 실패:",friendlyError(e)))
       .finally(() => upgrading.delete(old.id));
   });
@@ -221,8 +226,8 @@ watchUser(user => {
   if (!user) return;
   unsubscribeBooks = listenBookmarks(user, variant, books => {
     saved = new Set(books.map(book => bookKey(book.title, book.author)));
-    legacyBookmarks = new Map(books.filter(book => !hasMeaningfulDetails(book.details))
-      .map(book => [bookKey(book.title,book.author),book]));
+    // Including partial details allows upgrading records created with older scripts.
+    legacyBookmarks = new Map(books.map(book => [bookKey(book.title,book.author),book]));
     paintButtons();
     upgradeLegacyBookmarks();
   }, error => console.error("Bookmark sync failed:", friendlyError(error)));
