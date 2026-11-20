@@ -60,9 +60,27 @@ function extractBook(card) {
     card.querySelector(".by") : card.querySelector(".live-book-body > p, .book > div > p");
   const author = authorNode?.firstChild?.textContent?.trim() || "";
   if (!title) return null;
+  // Reuse the same parsed records that populate the search result and its detail view.
+  // No invented call number, location, or availability when the catalog lacks it.
+  const record = isImproved
+    ? window.HongikImprovedCatalog?.bookmarkRecord(card.dataset.uxRow)
+    : window.HongikLiveSearch?.bookmarkRecord(card.dataset.uxSection,card.dataset.uxIndex);
+  const clean = (value,max) => String(value ?? "").replace(/\r/g,"").trim().slice(0,max);
+  const details = {
+    materialType:clean(record?.materialType || "",80),
+    publication:clean(record?.publication || "",300),
+    availability:clean(record?.availability || "",80),
+    library:clean(record?.library || "",120),
+    location:clean(record?.location || "",250),
+    callNumber:clean(record?.callNumber || "",140),
+    holdingsText:clean(record?.holdingsText || "",1500),
+    detailUrl:clean(record?.detailUrl || "",500)
+  };
   return {
-    title, author,
-    sourceUrl: location.origin + location.pathname + location.search
+    title:record?.title || title,
+    author:record?.author || author,
+    sourceUrl:location.origin + location.pathname + location.search,
+    details
   };
 }
 function paintButtons() {
