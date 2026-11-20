@@ -70,7 +70,7 @@ function detailsFromCard(card, isImproved) {
     const location = values.get("위치") || "";
     const callNumber = values.get("청구기호") || "";
     return {
-      materialType:card.querySelector(".cover.alt") ? "전자자료" : "단행본",
+      materialType:card.querySelector(".cover.alt")?.textContent?.includes("학술논문") ? "학술논문" : card.querySelector(".cover.alt") ? "전자자료" : "단행본",
       publication:["출판사","출판연도","발행정보","발행연도"].filter(k=>values.get(k))
         .map(k=>k+": "+values.get(k)).join(" · "),
       availability,library,location,callNumber,holdingsText:"",detailUrl:""
@@ -100,7 +100,6 @@ function detailsFromCard(card, isImproved) {
 }
 function extractBook(card) {
   const isImproved = variant === "improved";
-  if (isImproved && card.querySelector(".cover.alt")) return null;
   const title = card.querySelector("h3")?.textContent?.trim() || "";
   const authorNode = isImproved ?
     card.querySelector(".by") : card.querySelector(".live-book-body > p, .book > div > p");
