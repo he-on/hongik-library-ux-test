@@ -23,11 +23,20 @@ input{width:100%;padding:11px;border:1px solid #bac5d8;border-radius:6px}
 #message{min-height:1.6em;margin:12px 0;color:#254894}
 #message.error{color:#af2b37}
 #bookmarks{list-style:none;padding:0}
-#bookmarks li{padding:15px 0;border-bottom:1px solid #e1e6f0;display:flex;align-items:center;justify-content:space-between;gap:15px}
+#bookmarks li{padding:20px 0;border-bottom:1px solid #e1e6f0}
+.book-entry{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.book-entry .btn{flex-shrink:0}
+.book-meta{display:grid;grid-template-columns:120px minmax(0,1fr);gap:6px 15px;margin:14px 0 10px;font-size:14px}
+.book-meta dt{color:#59677e;font-weight:600}
+.book-meta dd{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.book-holdings{padding:12px 14px;border-radius:8px;background:#f0f4fc;border:1px solid #dce4f5;font-size:13px;line-height:1.75}
+.book-holdings strong{display:block;margin-bottom:5px}
+.book-holdings>div{white-space:pre-line;overflow-wrap:anywhere}
+.book-links{display:flex;flex-wrap:wrap;gap:18px;margin-top:12px;font-size:13px}
 .book-title{font-weight:bold}.book-by{color:#67748a;font-size:13px}
 .account-code{font-size:20px;font-weight:800;letter-spacing:.04em;color:#193cb7;overflow-wrap:anywhere}
 [hidden]{display:none!important}
-@media(max-width:520px){h1{font-size:25px}.panel{padding:18px}#bookmarks li{align-items:flex-start;flex-direction:column}}
+@media(max-width:520px){h1{font-size:25px}.panel{padding:18px}.book-entry{flex-direction:column;align-items:flex-start}.book-meta{grid-template-columns:100px minmax(0,1fr)}}
 </style>
 </head>
 <body>
@@ -66,7 +75,7 @@ input{width:100%;padding:11px;border:1px solid #bac5d8;border-radius:6px}
 </section>
 <section class="panel" id="library-section">
 <h2>찜해 둔 도서</h2>
-<p class="muted" id="list-description">노트북과 휴대폰에서 같은 아이디로 조회할 수 있습니다.</p>
+<p class="muted" id="list-description">노트북과 휴대폰에서 같은 아이디로 조회할 수 있습니다. 소장정보와 대출 상태는 찜한 시점의 정보이며, 현재 상태와 다를 수 있습니다.</p>
 <ul id="bookmarks"></ul>
 <p id="list-empty">아이디를 입력하면 찜한 도서가 표시됩니다.</p>
 </section>
