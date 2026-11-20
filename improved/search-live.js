@@ -45,7 +45,7 @@
     const common={
       t:String(record.title||''),by:String(record.author||'저자 정보 없음'),type:kind,
       lib:key==='book'?branch:'전자도서관',st:available===null?'확인 필요':available?'이용 가능':'대출 중',
-      sourceUrl:trustedUrl(record.originalLink),holdings:holdings,
+      sourceUrl:trustedUrl(record.originalLink),holdings:holdings,availabilityRaw:statusText,
       originalType:record.type||'',fromSection:key
     };
     if(kind==='단행본'){
@@ -249,7 +249,7 @@
       return {
         title:d.t || "", author:d.by || "",
         materialType:d.type || "", publication,
-        availability:d.st === "확인 필요" ? "" : d.st,
+        availability:d.availabilityRaw && d.availabilityRaw !== "상태 미확인" ? d.availabilityRaw : (d.st === "확인 필요" ? "" : d.st),
         library:d.lib === "전자도서관" && d.type === "단행본" ? "" : d.lib,
         location:location === "위치 정보 없음" ? "" : location,
         callNumber:callNumber === "미제공" ? "" : callNumber,
