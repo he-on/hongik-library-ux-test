@@ -1,4 +1,4 @@
-import { configured, watchUser, suggestId, enterWithId, leaveId, listenBookmarks, removeBookmark, friendlyError } from "./firebase-service.js";
+import { configured, watchUser, suggestId, enterWithId, leaveId, listenBookmarks, removeBookmark, friendlyError } from "./firebase-service.js?v=20261120-details-fix";
 const params = new URLSearchParams(location.search);
 const variant = params.get("ui") === "improved" ? "improved" : "original";
 const $ = id => document.getElementById(id);
