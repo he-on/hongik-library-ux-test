@@ -222,7 +222,7 @@ function card(d){
   const sub=unknown?"상세정보":ok?(on?"바로 열람":"서가 위치 보기"):(bk?"예약 안내":"이용 대기 안내");
   const rows=a=>a.map(([k,v])=>`<dt>${safeHtml(k)}</dt><dd>${safeHtml(v)}</dd>`).join("");
   const cov=bk?safeHtml(d.t.split(" (")[0])+"<br>"+safeHtml(d.by):safeHtml(d.type)+"<br>"+safeHtml(d.l[0][1]);
-  return `<article class="card">
+  return `<article class="card" data-ux-row="${d.rowId}">
    <div class="cover${bk?"":" alt"}" aria-hidden="true">${cov}</div>
    <div>
     <h3>${hl(d.t)}</h3><p class="by">${hl(d.by)}${q?`<span class="tag${d.s===100?" top":""}">${TAG[d.s]}</span>`:""}</p>
