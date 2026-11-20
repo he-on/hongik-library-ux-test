@@ -21,9 +21,33 @@ service cloud.firestore {
           return request.auth != null
             && alias.matches('^[a-z0-9][a-z0-9-]{4,29}$');
         }
+        function validDetails() {
+          let d = request.resource.data.details;
+          return d is map
+            && d.keys().hasOnly([
+              'materialType', 'publication', 'availability', 'library',
+              'location', 'callNumber', 'holdingsText', 'detailUrl'
+            ])
+            && d.get('materialType', '') is string
+            && d.get('materialType', '').size() <= 80
+            && d.get('publication', '') is string
+            && d.get('publication', '').size() <= 300
+            && d.get('availability', '') is string
+            && d.get('availability', '').size() <= 80
+            && d.get('library', '') is string
+            && d.get('library', '').size() <= 120
+            && d.get('location', '') is string
+            && d.get('location', '').size() <= 250
+            && d.get('callNumber', '') is string
+            && d.get('callNumber', '').size() <= 140
+            && d.get('holdingsText', '') is string
+            && d.get('holdingsText', '').size() <= 1500
+            && d.get('detailUrl', '') is string
+            && d.get('detailUrl', '').size() <= 500;
+        }
         function validBook() {
           return request.resource.data.keys().hasOnly([
-            'title', 'author', 'sourceUrl', 'variant', 'savedAt'
+            'title', 'author', 'sourceUrl', 'variant', 'savedAt', 'details'
           ]) && request.resource.data.keys().hasAll([
             'title', 'author', 'sourceUrl', 'variant', 'savedAt'
           ])
@@ -35,7 +59,9 @@ service cloud.firestore {
           && request.resource.data.sourceUrl is string
           && request.resource.data.sourceUrl.size() <= 500
           && request.resource.data.variant in ['original', 'improved']
-          && request.resource.data.savedAt is timestamp;
+          && request.resource.data.savedAt is timestamp
+          // Existing bookmarks (without details) remain readable and valid.
+          && (!request.resource.data.keys().hasAny(['details']) || validDetails());
         }
         allow get, list, delete: if allowedBook();
         allow create: if allowedBook() && validBook();

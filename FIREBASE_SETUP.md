@@ -55,3 +55,21 @@ Firestore 규칙은 다른 컬렉션을 차단하고 위 경로만 익명 Fireba
 - Firebase Anonymous Auth: https://firebase.google.com/docs/auth/web/anonymous-auth
 - Firestore Security Rules: https://firebase.google.com/docs/firestore/security/get-started
 - Firebase Web SDK CDN: https://firebase.google.com/docs/web/alt-setup
+
+## 찜한 도서 상세정보 추가 (후속 변경)
+
+- 마이페이지에서 자료유형, 소장 도서관, 자료 위치, 청구기호, 이용/대출 상태, 발행사항, 소장정보 원문을 **있는 값만** 표시
+- 검색 API 결과에서 받은 정보를 찜한 시점의 스냅샷으로 저장하므로 실제 실시간 대출 상태와 다를 수 있음
+- 도서관 서지 상세페이지 링크가 확인된 자료에는 바로가기 제공
+- **기존에 찜한 자료에는 상세정보가 저장되지 않았음**. 검색 화면에서 해당 도서를 찜 해제한 뒤 다시 찜해야 상세정보가 저장됨
+- 기존 계정·기존 찜 데이터는 유지됨
+
+### 배포 전 필수: Firestore 규칙 다시 게시
+
+1. Firebase Console → Firestore Database → Rules
+2. 이 PR의 `firestore.rules` 전체로 교체 → **게시(Publish)**
+3. 규칙을 게시한 다음 PR을 `main`에 병합
+4. 기존 UI와 개선 UI 모두 새로 찜한 도서의 소장정보가 마이페이지에 나타나는지 확인
+
+이전 규칙은 `details` 필드를 차단하므로, **규칙 갱신 전에 배포하면 새 찜하기가 권한 오류로 실패**함.
+새 규칙은 `details` 없는 기존 찜 레코드도 그대로 허용하며, 기존 로그인/검색 흐름에 영향을 주지 않도록 설계됨.
