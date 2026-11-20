@@ -163,23 +163,28 @@ function paintButtons() {
   });
 }
 function injectButtons() {
-  const selector = variant === "original" ? "#main article.book" : "#list article.card";
-  document.querySelectorAll(selector).forEach(card => {
-    if (card.querySelector(".ux-bookmark-btn")) return;
+  if (variant !== "improved") return;
+  document.querySelectorAll("#list article.card").forEach(card => {
     const book = extractBook(card);
     if (!book) return;
-    const target = variant === "original" ?
-      (card.querySelector(".live-book-body") || card.querySelector(".book > div:last-child")) :
-      card.querySelector(".actions");
+    const target = card.querySelector(".actions");
     if (!target) return;
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "ux-bookmark-btn";
-    button.dataset.uxKey = bookKey(book.title, book.author);
+    // Improved UI renders the button as part of the result card, so it stays visible
+    // even before the Firebase module initializes. Attach behavior only once.
+    let button = card.querySelector(".ux-bookmark-btn");
+    if (!button) {
+      button = document.createElement("button");
+      button.type = "button";
+      button.className = "ux-bookmark-btn";
+      target.appendChild(button);
+    }
+    if (button.dataset.uxBound === "1") return;
+    button.dataset.uxBound = "1";
+    button.dataset.uxKey = bookKey(book.title,book.author);
     button.dataset.uxTitle = book.title;
-    button.setAttribute("aria-pressed", "false");
+    button.setAttribute("aria-pressed","false");
     button.textContent = "♡ 찜하기";
-    button.addEventListener("click", async () => {
+    button.addEventListener("click",async () => {
       if (!configured || !currentUser) {
         location.assign(accountUrl);
         return;
@@ -191,14 +196,13 @@ function injectButtons() {
           alert("검색 결과에서 도서 정보를 읽지 못했습니다. 페이지를 새로고침한 후 다시 시도해 주세요.");
           return;
         }
-        await toggleBookmark(currentUser, variant, latest);
-      } catch (error) {
+        await toggleBookmark(currentUser,variant,latest);
+      } catch(error) {
         alert(friendlyError(error));
       } finally {
         button.disabled = false;
       }
     });
-    target.appendChild(button);
   });
   paintButtons();
   upgradeLegacyBookmarks();
