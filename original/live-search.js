@@ -479,11 +479,16 @@
       var holdings=Array.isArray(b.holdings) ? b.holdings : [];
       var mainHolding=holdings[0] || '';
       var library=(mainHolding.match(/중앙도서관|문정도서관|법학도서관|대학로도서관/) || [])[0] || '';
+      // Example from actual catalog: "중앙도서관 > 4층 대출자료실 (123.45 저1도) (이용가능)"
+      var withoutStatus=mainHolding.replace(/\s*\((이용가능|이용불가|대출중)\)\s*$/, '').trim();
+      var callMatch=withoutStatus.match(/\(([^()]+)\)\s*$/);
+      var callNumber=callMatch ? callMatch[1].trim() : '';
+      var location=callMatch ? withoutStatus.slice(0,callMatch.index).trim() : withoutStatus;
       return {
         title:b.title||'', author:b.author||'',
         materialType:b.type||sectionByKey(key).type||'',
         publication:b.publication||'', availability:b.availability||'',
-        library:library, location:'', callNumber:'',
+        library:library, location:location, callNumber:callNumber,
         holdingsText:holdings.join('\n'),
         detailUrl:primoDetailUrl(b)
       };
