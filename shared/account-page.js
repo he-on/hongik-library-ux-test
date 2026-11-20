@@ -1,6 +1,6 @@
 import { configured, watchUser, suggestId, enterWithId, leaveId, listenBookmarks, removeBookmark, friendlyError } from "./firebase-service.js?v=20261120-details-fix";
 const params = new URLSearchParams(location.search);
-const variant = params.get("ui") === "improved" ? "improved" : "original";
+const variant = params.get("ui") === "original" ? "original" : "improved";
 const $ = id => document.getElementById(id);
 const msg = (text, error = false) => {
   $("message").textContent = text;
@@ -8,8 +8,6 @@ const msg = (text, error = false) => {
 };
 const searchUrl = "../" + variant + "/";
 $("return-link").href = searchUrl;
-$("original-tab").setAttribute("aria-current", variant === "original" ? "page" : "false");
-$("improved-tab").setAttribute("aria-current", variant === "improved" ? "page" : "false");
 let currentUser = "";
 let unsubscribeBooks = () => {};
 $("id-input").value = suggestId();
