@@ -234,5 +234,29 @@
   if(queryFromUrl.get('view')==='electronic')activeTab='전자자료';
   tabButtons.forEach(b=>b.setAttribute('aria-selected',String(b.textContent.trim()===activeTab)));
   currentPage=Math.max(1,Number(queryFromUrl.get('pg'))||1);
+  // Provide the bookmark UI with the same source-backed fields as the detail modal.
+  window.HongikImprovedCatalog = {
+    bookmarkRecord(index) {
+      const d = DATA[Number(index)];
+      if (!d) return null;
+      const field = (entries,label) => (entries || []).find(row => row[0] === label)?.[1] || "";
+      const publication = (d.l || [])
+        .filter(row => ["출판사","출판연도","발행정보","발행연도"].includes(row[0]))
+        .filter(row => !["정보 없음","원문 상세정보 참고"].includes(String(row[1])))
+        .map(row => row[0] + ": " + row[1]).join(" · ");
+      const location = field(d.r, "위치");
+      const callNumber = field(d.r, "청구기호");
+      return {
+        title:d.t || "", author:d.by || "",
+        materialType:d.type || "", publication,
+        availability:d.st === "확인 필요" ? "" : d.st,
+        library:d.lib === "전자도서관" && d.type === "단행본" ? "" : d.lib,
+        location:location === "위치 정보 없음" ? "" : location,
+        callNumber:callNumber === "미제공" ? "" : callNumber,
+        holdingsText:Array.isArray(d.holdings) ? d.holdings.join("\n") : "",
+        detailUrl:d.sourceUrl || ""
+      };
+    }
+  };
   loadSearch();
 })();
