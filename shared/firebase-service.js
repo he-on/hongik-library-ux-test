@@ -1,7 +1,7 @@
 // UX prototype: ID-only shared bookmarks. The ID IS NOT a secure identity.
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, setDoc, deleteDoc, onSnapshot, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 import { firebaseConfig } from "./firebase-config.js";
 
 export const configured = ["apiKey", "authDomain", "projectId", "appId"]
@@ -116,6 +116,20 @@ export async function toggleBookmark(id, variant, book) {
     variant, savedAt: serverTimestamp()
   });
   return true;
+}
+// Fill in metadata for older saved books without deleting or re-adding the bookmark.
+export async function updateBookmarkDetails(id, savedDocId, details) {
+  if (!id || !/^[0-9a-f]{64}$/.test(String(savedDocId))) {
+    throw new Error("찜한 도서의 저장 정보를 확인할 수 없습니다.");
+  }
+  await ensureAnonymous();
+  const limits = {
+    materialType:80, publication:300, availability:80, library:120,
+    location:250, callNumber:140, holdingsText:1500, detailUrl:500
+  };
+  const safe = Object.fromEntries(Object.entries(limits).map(([key,length]) =>
+    [key, String(details?.[key] || "").slice(0,length)]));
+  await updateDoc(doc(db, "profiles", validId(id), "bookmarks", savedDocId), { details:safe });
 }
 export async function removeBookmark(id, bookmarkId) {
   if (!id) throw new Error("아이디를 먼저 선택해 주세요.");

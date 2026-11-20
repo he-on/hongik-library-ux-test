@@ -1,4 +1,4 @@
-import { configured, watchUser, suggestId, enterWithId, leaveId, listenBookmarks, removeBookmark, friendlyError } from "./firebase-service.js";
+import { configured, watchUser, suggestId, enterWithId, leaveId, listenBookmarks, removeBookmark, friendlyError } from "./firebase-service.js?v=20261120-details-fix";
 const params = new URLSearchParams(location.search);
 const variant = params.get("ui") === "improved" ? "improved" : "original";
 const $ = id => document.getElementById(id);
@@ -138,7 +138,7 @@ function paintBooks(books) {
     if (!details || (!grid.childElementCount && !details.holdingsText?.trim())) {
       const hint = document.createElement("p");
       hint.className = "muted";
-      hint.textContent = "이 항목에는 저장된 상세정보가 없습니다. 검색 결과에서 찜 해제 후 다시 찜하면 제공되는 소장정보가 함께 저장됩니다.";
+      hint.textContent = "이전에 저장된 상세정보가 없습니다. 도서 검색 결과에서 같은 도서를 다시 열면 확인 가능한 소장정보가 자동으로 보완됩니다.";
       li.append(hint);
     }
     const actions = document.createElement("div");
