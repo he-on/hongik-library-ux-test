@@ -60,14 +60,26 @@ function safeSource(url) {
   } catch {}
   return searchUrl;
 }
+function safeDetailUrl(raw) {
+  try {
+    const url = new URL(raw);
+    return url.protocol === "https:" &&
+      url.hostname === "hongik.primo.exlibrisgroup.com" &&
+      url.pathname === "/discovery/fulldisplay" &&
+      url.searchParams.has("docid") ? url.href : "";
+  } catch { return ""; }
+}
 function paintBooks(books) {
   const list = $("bookmarks");
   list.replaceChildren();
   $("list-empty").hidden = books.length > 0;
   $("list-empty").textContent = books.length ? "" : "아직 찜한 도서가 없습니다.";
-  books.sort((a, b) => a.title.localeCompare(b.title, "ko"));
+  books.sort((a,b) => a.title.localeCompare(b.title, "ko"));
   books.forEach(book => {
     const li = document.createElement("li");
+    li.className = "saved-book";
+    const heading = document.createElement("div");
+    heading.className = "book-entry";
     const info = document.createElement("div");
     const title = document.createElement("a");
     title.className = "book-title";
@@ -76,19 +88,75 @@ function paintBooks(books) {
     const author = document.createElement("div");
     author.className = "book-by";
     author.textContent = book.author || "저자 정보 없음";
-    info.append(title, author);
+    info.append(title,author);
+
     const del = document.createElement("button");
     del.className = "btn";
     del.type = "button";
     del.textContent = "찜 해제";
-    del.setAttribute("aria-label", book.title + " 찜 해제");
-    del.addEventListener("click", async () => {
+    del.setAttribute("aria-label",book.title + " 찜 해제");
+    del.addEventListener("click",async () => {
       if (!currentUser) return;
       del.disabled = true;
-      try { await removeBookmark(currentUser, book.id); }
-      catch (error) { msg(friendlyError(error), true); del.disabled = false; }
+      try { await removeBookmark(currentUser,book.id); }
+      catch(error) { msg(friendlyError(error),true); del.disabled = false; }
     });
-    li.append(info, del);
+    heading.append(info,del);
+    li.append(heading);
+
+    const details = book.details && typeof book.details === "object" ? book.details : null;
+    const grid = document.createElement("dl");
+    grid.className = "book-meta";
+    const attributes = details ? [
+      ["자료유형",details.materialType],
+      ["소장 도서관",details.library],
+      ["자료 위치",details.location],
+      ["청구기호",details.callNumber],
+      ["대출 상태",details.availability],
+      ["발행사항",details.publication]
+    ] : [];
+    attributes.forEach(([label,value]) => {
+      if (!value || !String(value).trim()) return;
+      const dt = document.createElement("dt");
+      const dd = document.createElement("dd");
+      dt.textContent = label;
+      dd.textContent = String(value);
+      grid.append(dt,dd);
+    });
+    if (grid.childElementCount) li.append(grid);
+
+    if (details?.holdingsText?.trim()) {
+      const holdings = document.createElement("div");
+      holdings.className = "book-holdings";
+      const label = document.createElement("strong");
+      label.textContent = "소장정보";
+      const rows = document.createElement("div");
+      rows.textContent = details.holdingsText;
+      holdings.append(label,rows);
+      li.append(holdings);
+    }
+    if (!details || (!grid.childElementCount && !details.holdingsText?.trim())) {
+      const hint = document.createElement("p");
+      hint.className = "muted";
+      hint.textContent = "이 항목에는 저장된 상세정보가 없습니다. 검색 결과에서 찜 해제 후 다시 찜하면 제공되는 소장정보가 함께 저장됩니다.";
+      li.append(hint);
+    }
+    const actions = document.createElement("div");
+    actions.className = "book-links";
+    const source = document.createElement("a");
+    source.href = safeSource(book.sourceUrl);
+    source.textContent = "검색 결과로 이동";
+    actions.append(source);
+    const detailUrl = safeDetailUrl(details?.detailUrl);
+    if (detailUrl) {
+      const detail = document.createElement("a");
+      detail.href = detailUrl;
+      detail.target = "_blank";
+      detail.rel = "noopener noreferrer";
+      detail.textContent = "도서관 상세정보";
+      actions.append(detail);
+    }
+    li.append(actions);
     list.append(li);
   });
 }
