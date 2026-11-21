@@ -134,7 +134,7 @@
   }
   async function loadSearch(){
     const query=$id('q').value.trim();
-    if(!query){note('검색어를 입력해 주세요.',true);return}
+    if(!query){note('검색어를 입력해 주세요.');return}
     currentPage=Math.max(1,currentPage);
     requestVersion++;
     const version=requestVersion,keys=sectionKeys();
@@ -270,5 +270,6 @@
       };
     }
   };
-  loadSearch();
+  if(initial?.trim())loadSearch();
+  else note('검색어를 입력해 주세요.');
 })();
