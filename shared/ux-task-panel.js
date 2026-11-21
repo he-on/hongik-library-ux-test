@@ -247,6 +247,10 @@
     }
   });
   document.body.appendChild(host);
+  if (state.stage === "task") {
+    collapsed = true;
+    host.setAttribute("data-collapsed", "");
+  }
   render();
   if (state.stage === "done" && state.sendState === "sending") {
     upload(activeResult());
