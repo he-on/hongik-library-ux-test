@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F3F5FB">
 <title>홍익대학교 중앙도서관 검색 결과 개선안</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,14 +18,8 @@
   box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
   color-scheme:light;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0D1222;--surface:#151C30;--ink:#E8EBF6;--muted:#9AA4BF;--line:#29324F;
-  --brand:#8EA2FF;--brand-soft:#1D2750;--on-brand:#0D1222;
-  --ok:#6FD9A3;--ok-bg:#14301F;--warn:#F2B766;--warn-bg:#3A2A12;--cover:#202B52;--cover-ink:#9FB0FF;--hl:#4B3F14;color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#0D1222;--surface:#151C30;--ink:#E8EBF6;--muted:#9AA4BF;--line:#29324F;
-  --brand:#8EA2FF;--brand-soft:#1D2750;--on-brand:#0D1222;
-  --ok:#6FD9A3;--ok-bg:#14301F;--warn:#F2B766;--warn-bg:#3A2A12;--cover:#202B52;--cover-ink:#9FB0FF;--hl:#4B3F14;color-scheme:dark}
+
+
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:15px;line-height:1.6;letter-spacing:-.01em}
