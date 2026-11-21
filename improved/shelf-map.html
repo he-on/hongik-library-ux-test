@@ -105,6 +105,10 @@ ol.steps li::before{content:counter(s);flex:none;width:24px;height:24px;border-r
 
 .selected-source{max-width:1180px;margin:12px auto 0;padding:10px 24px;color:var(--mu);font-size:12px}
 .selected-source strong{color:var(--br)}
+.selected-holdings{margin-top:10px;padding:12px 14px;background:var(--sf);border:1px solid var(--ln);border-radius:10px}
+.selected-holdings dl{display:grid;grid-template-columns:100px minmax(0,1fr);gap:6px 12px;margin:8px 0 0}
+.selected-holdings dt{font-weight:700;color:var(--mu)}
+.selected-holdings dd{margin:0;color:var(--ink);overflow-wrap:anywhere}
 .selected-source[hidden]{display:none}
 #svgbox svg{touch-action:manipulation}
 @media(max-width:760px){.page-nav,.selected-source{padding-left:12px;padding-right:12px}.page-nav a{padding:7px 9px;font-size:12px}}
@@ -236,11 +240,42 @@ matchMedia("(max-width:760px)").addEventListener("change",render);
 render();
 const qs=new URLSearchParams(location.search);
 const previous=qs.get("q")||"아몬드", chosen=qs.get("title");
-document.querySelector("#search-back").href="./index.html?q="+encodeURIComponent(previous);
+const fromLibrary=qs.get("from")==="library";
+const back=document.querySelector("#search-back");
+if(fromLibrary) {
+ back.href="../account/?ui=improved";
+ back.textContent="← My Library";
+} else {
+ back.href="./index.html?q="+encodeURIComponent(previous);
+}
 if(chosen){
  const strip=document.querySelector("#selected-source");
  strip.hidden=false;
  document.querySelector("#selected-book").textContent="선택 자료: "+chosen;
+ if(fromLibrary) {
+  const holdingRows=[
+   ["소장 도서관",qs.get("holdingLibrary")],
+   ["저장된 자료 위치",qs.get("holdingLocation")],
+   ["청구기호",qs.get("holdingCallNumber")],
+   ["찜 당시 대출 상태",qs.get("holdingAvailability")]
+  ].filter(([,value])=>Boolean(value));
+  if(holdingRows.length) {
+   const box=document.createElement("div");
+   box.className="selected-holdings";
+   const label=document.createElement("strong");
+   label.textContent="찜할 때 저장한 소장정보 (실제 지도 위치와 연동되지 않음)";
+   const dl=document.createElement("dl");
+   holdingRows.forEach(([key,value])=>{
+    const dt=document.createElement("dt");
+    const dd=document.createElement("dd");
+    dt.textContent=key;
+    dd.textContent=value;
+    dl.append(dt,dd);
+   });
+   box.append(label,dl);
+   strip.append(box);
+  }
+ }
 }
 </script>
 </body>
