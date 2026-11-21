@@ -259,6 +259,17 @@ $("#q").addEventListener("keydown",e=>{if(e.key==="Enter")render()});
 document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t))});
 render();
 </script>
+<script>
+/* Carry the user's chosen search field from the improved home. */
+(function(){
+ const chosen=new URLSearchParams(location.search).get("field");
+ if(chosen==="제목"||chosen==="저자"){
+   const field=document.getElementById("field");
+   field.value=chosen;
+   field.dispatchEvent(new Event("change",{bubbles:true}));
+ }
+})();
+</script>
 <script src="../original/catalog-fallback.js?v=20261115"></script>
 <script src="./search-live.js?v=20261120-bookdetails-fix"></script>
 <script type="module" src="../shared/bookmarks-ui.js?v=20261120-improved-visible-v2"></script>
