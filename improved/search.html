@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>홍익대학교 중앙도서관 검색 결과 개선안</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F3F5FB;--surface:#FFFFFF;--ink:#141A2E;--muted:#586178;--line:#DCE1EE;
+  --brand:#1F3FD1;--brand-soft:#E7ECFF;--on-brand:#FFFFFF;
+  --ok:#1B7448;--ok-bg:#E3F4EA;--warn:#9A5400;--warn-bg:#FFEFD6;--cover:#DCE4F7;--cover-ink:#3A4E9A;--hl:#FFF0B3;
+  --r-lg:14px;--r-md:10px;--r-sm:6px;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D1222;--surface:#151C30;--ink:#E8EBF6;--muted:#9AA4BF;--line:#29324F;
+  --brand:#8EA2FF;--brand-soft:#1D2750;--on-brand:#0D1222;
+  --ok:#6FD9A3;--ok-bg:#14301F;--warn:#F2B766;--warn-bg:#3A2A12;--cover:#202B52;--cover-ink:#9FB0FF;--hl:#4B3F14;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1222;--surface:#151C30;--ink:#E8EBF6;--muted:#9AA4BF;--line:#29324F;
+  --brand:#8EA2FF;--brand-soft:#1D2750;--on-brand:#0D1222;
+  --ok:#6FD9A3;--ok-bg:#14301F;--warn:#F2B766;--warn-bg:#3A2A12;--cover:#202B52;--cover-ink:#9FB0FF;--hl:#4B3F14;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:15px;line-height:1.6;letter-spacing:-.01em}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+header{background:var(--surface);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{font-weight:700;font-size:18px}
+.brand small{display:block;font-weight:400;font-size:12px;color:var(--muted);line-height:1.2}
+header nav{display:flex;gap:24px;font-size:14px;color:var(--muted)}
+.search{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);margin:24px 0;padding:20px 24px 16px}
+.tabs{display:flex;gap:4px;margin-bottom:14px;border-bottom:1px solid var(--line)}
+.tab{background:none;border:0;padding:8px 16px 10px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tab[aria-selected="true"]{color:var(--brand);border-color:var(--brand);font-weight:700}
+.field{display:flex;border:2px solid var(--brand);border-radius:var(--r-md);overflow:hidden;background:var(--bg)}
+.field select{border:0;background:var(--brand-soft);padding:0 14px;font-weight:500;color:var(--brand)}
+.field input{flex:1;border:0;background:transparent;padding:14px 16px;font-size:17px;min-width:0}
+.field input:focus-visible{outline:none}
+.field:focus-within{box-shadow:0 0 0 3px var(--brand-soft)}
+.btn{border:1px solid transparent;border-radius:var(--r-sm);padding:9px 14px;font-weight:700;font-size:14px;cursor:pointer;text-align:center;display:block;width:100%}
+.btn-primary{background:var(--brand);color:var(--on-brand)}
+.btn-line{background:var(--surface);color:var(--brand);border-color:var(--line)}
+.btn-line:hover{border-color:var(--brand)}
+.field .btn{width:auto;border-radius:0;padding:0 28px;font-size:15px}
+.hint{margin:10px 0 0;font-size:13px;color:var(--muted)}
+.layout{display:grid;grid-template-columns:240px 1fr;gap:24px;align-items:start;padding-bottom:48px}
+aside{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;position:sticky;top:16px}
+aside h2{font-size:16px;margin:0 0 4px}
+fieldset{border:0;border-top:1px solid var(--line);margin:16px 0 0;padding:14px 0 0}
+fieldset:first-of-type{border-top:0;margin-top:8px}
+legend{font-size:13px;font-weight:700;padding:0;color:var(--muted)}
+.opt{display:flex;align-items:center;gap:10px;padding:5px 0;cursor:pointer}
+.opt input{width:18px;height:18px;accent-color:var(--brand);margin:0}
+.opt span:last-child{margin-left:auto;font-size:12px;color:var(--muted)}
+.opt.off{opacity:.45;cursor:default}
+.reset{margin-top:18px}
+.bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.bar h2{margin:0;font-size:17px}
+.bar h2 span{font-weight:400;font-size:13px;color:var(--muted);margin-left:8px}
+.bar select{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:7px 12px;font-size:14px}
+.card{display:grid;grid-template-columns:96px 1fr 148px;gap:22px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;margin-bottom:14px}
+.cover{height:134px;border-radius:4px 8px 8px 4px;background:var(--cover);color:var(--cover-ink);display:flex;align-items:flex-end;padding:10px 8px;font-size:11px;font-weight:500;line-height:1.3;box-shadow:inset 6px 0 0 rgba(0,0,0,.08)}
+.card h3{margin:0;font-size:19px;line-height:1.35;color:var(--brand)}
+.by{margin:2px 0 12px;font-size:14px;color:var(--muted)}
+.cols{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden}
+.col{padding:12px 14px}
+.col+.col{border-left:1px solid var(--line);background:var(--bg)}
+.col h4{margin:0 0 6px;font-size:12px;font-weight:700;color:var(--muted)}
+dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:14px}
+dt{color:var(--muted)}dd{margin:0}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--brand-soft);color:var(--brand)}
+.badge.ok{background:var(--ok-bg);color:var(--ok)}
+.badge.warn{background:var(--warn-bg);color:var(--warn)}
+.badge.ok::before,.badge.warn::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.badge.warn::before{border-radius:1px}
+.actions{display:flex;flex-direction:column;gap:8px;justify-content:center}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:var(--r-lg);padding:40px 24px;text-align:center}
+.empty p{margin:0 0 14px;color:var(--muted)}
+.empty .btn{display:inline-block;width:auto}
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr}aside{position:static}
+  .card{grid-template-columns:80px 1fr}.card .actions{grid-column:1/-1;flex-direction:row}
+  .cols{grid-template-columns:1fr}.col+.col{border-left:0;border-top:1px solid var(--line)}
+  header nav{display:none}.wrap{padding:0 16px}
+}
+.cover.alt{background:var(--brand-soft);color:var(--brand)}
+mark{background:var(--hl);color:inherit;border-radius:3px;padding:0 1px}
+.tag{display:inline-block;margin-left:10px;font-size:12px;font-weight:500;padding:0 9px;border:1px solid var(--line);border-radius:999px;color:var(--muted)}
+.tag.top{background:var(--brand-soft);border-color:transparent;color:var(--brand);font-weight:700}
+</style>
+<!-- Beusable Journey Map: same project used by the original UI. -->
+<script type="text/javascript">(function(w,d,a){w.__beusablerumclient__={load:function(src){var b=d.createElement("script");b.src=src;b.async=true;b.type="text/javascript";d.getElementsByTagName("head")[0].appendChild(b)}};w.__beusablerumclient__.load(a+"?url="+encodeURIComponent(d.URL));})(window,document,"//rum.beusable.net/load/b261115e130800u338");</script>
+<style>
+/* Improved UX W02: navigation and tighter small-screen fit. */
+.prototype-nav{max-width:1180px;margin:14px auto 0;padding:0 24px;display:flex;gap:10px;flex-wrap:wrap}
+.prototype-nav a{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 13px;color:var(--brand);text-decoration:none;font-size:13px;font-weight:700}
+.prototype-nav a.active{background:var(--brand-soft);border-color:var(--brand)}
+.prototype-note{max-width:1180px;margin:0 auto 24px;padding:0 24px;font-size:12px;color:var(--muted)}
+.prototype-note strong{color:var(--brand)}
+.status-line{font-size:12px;min-height:21px;margin:7px 0;color:var(--muted)}
+.status-line.error{color:#a94442}
+.card{min-width:0}
+.card>div:nth-child(2){min-width:0}
+.card h3,.card dd,.card .by{overflow-wrap:anywhere}
+.card .actions button{line-height:1.5}
+.ux-bookmark-btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;background:var(--brand-soft);color:var(--brand);border:1px solid var(--brand);border-radius:8px;padding:8px 14px;margin:0 0 12px;font-size:14px;font-weight:700;cursor:pointer}
+.ux-bookmark-btn[aria-pressed="true"]{background:var(--brand-soft)}
+.ux-bookmark-btn:disabled{opacity:.55;cursor:wait}
+.mobile-filter-toggle{display:none}
+#pager{display:flex;justify-content:center;gap:14px;margin:18px 0 25px}
+#pager button{width:auto;min-width:100px}
+dialog#book-detail{width:min(550px,calc(100vw - 30px));max-height:85vh;overflow:auto;border:1px solid var(--line);border-radius:14px;padding:24px;background:var(--surface);color:var(--ink);box-shadow:0 15px 80px #0004}
+dialog#book-detail::backdrop{background:#141a2e99}
+#book-detail .dialog-close{float:right;background:none;border:0;color:var(--muted);font-size:25px;cursor:pointer}
+#book-detail h2{font-size:19px;line-height:1.45;margin:4px 30px 14px 0}
+#book-detail .book-info{display:grid;grid-template-columns:115px 1fr;gap:10px;font-size:13px;margin:12px 0 18px}
+#book-detail .book-info dt{color:var(--muted)}
+#book-detail .book-info dd{margin:0;overflow-wrap:anywhere}
+#book-detail .modal-actions{display:flex;gap:9px}
+#book-detail .modal-actions .btn{flex:1}
+@media(max-width:860px){.mobile-filter-toggle{display:block;width:100%;margin-bottom:10px} .layout aside{display:none} .layout aside.expanded{display:block} }
+@media(max-width:560px){
+ .prototype-nav,.prototype-note{padding:0 12px}
+ .wrap{padding:0 12px}
+ header .wrap{height:60px}.brand{font-size:16px}
+ .search{margin:12px 0 16px;padding:12px}
+ .tabs{overflow-x:auto;white-space:nowrap}.tab{font-size:12px;padding:8px 12px}
+ .field select{width:78px;padding:0 3px;font-size:12px}
+ .field input{font-size:14px;padding:12px 8px}
+ .field .btn{padding:0 11px;font-size:12px}
+ .layout{gap:10px}
+ .card{grid-template-columns:66px minmax(0,1fr);gap:11px;padding:13px}
+ .cover{width:66px;height:96px;font-size:10px}
+ .card h3{font-size:15px}.by{font-size:12px}
+ .col{padding:10px}.cols dl{font-size:12px;gap:2px 6px}.col h4{font-size:11px}
+ .card .actions{grid-column:1/-1;flex-direction:row}
+ .card .actions .btn{font-size:12px;padding:9px 5px}
+ .bar{align-items:flex-start;gap:6px}.bar h2{font-size:15px}
+ .bar select{font-size:12px;padding:6px}
+ #book-detail .book-info{grid-template-columns:90px 1fr}
+}
+</style><meta name="ux-build" content="2026-11-20-improved-bookmark-visibility-v2"></head>
+<body>
+<header><div class="wrap">
+  <a class="brand" href="./" style="color:inherit;text-decoration:none" aria-label="개선 UI 홈으로 이동">홍익대학교 중앙도서관<small>소장자료 검색</small></a>
+  <nav><a href="./shelf-map.html" style="color:inherit;text-decoration:none">서가 위치 안내</a><a href="../account/?ui=improved" class="ux-account-link">내 서재</a><a href="../account/?ui=improved" data-ux-auth-link="1" class="ux-account-link">로그인</a></nav>
+</div></header>
+
+<nav class="prototype-nav" aria-label="개선 UI 화면 이동"><a href="./">W01 · 홈</a><a href="./search.html" class="active" aria-current="page">W02 · 검색 결과</a><a href="./shelf-map.html">W04 · 서가 위치 안내</a><a href="../original/" title="기존 UI와 비교">기존 UI 보기</a><a href="../account/?ui=improved" aria-label="찜한 도서 목록 보기">♡ 내 서재</a></nav>
+<main class="wrap">
+  <section class="search" aria-label="검색">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true">통합검색</button>
+      <button class="tab" role="tab" aria-selected="false">소장자료</button>
+      <button class="tab" role="tab" aria-selected="false">전자자료</button>
+    </div>
+    <div class="field">
+      <select id="field" aria-label="검색 항목"><option>제목</option><option>저자</option><option>출판사</option><option>청구기호</option></select>
+      <input id="q" type="search" value="" placeholder="도서명, 저자 등 검색어를 입력하세요" aria-label="검색어" autocomplete="off">
+      <button class="btn btn-primary" id="go">다시 검색</button>
+    </div>
+    <p class="hint">검색어와 일치하는 항목을 먼저 보여 드려요. 소장 도서관과 자료 유형도 함께 확인할 수 있어요.</p><p id="api-status" class="status-line" role="status" aria-live="polite">검색어를 입력해 주세요.</p>
+  </section>
+
+  <button type="button" class="btn btn-line mobile-filter-toggle" id="toggle-filters" aria-expanded="false" aria-controls="search-filters">검색 결과 필터 열기 ▾</button>
+<div class="layout">
+    <aside id="search-filters" aria-label="검색 결과 필터">
+      <h2>검색 결과 필터</h2>
+      <div id="filters"></div>
+      <button class="btn btn-line reset" id="reset">필터 초기화</button>
+    </aside>
+    <section aria-live="polite">
+      <div class="bar">
+        <h2 id="count"></h2>
+        <select id="sort" aria-label="정렬"><option value="match">제목 일치 우선</option><option value="avail">대출 가능 우선</option></select>
+      </div>
+      <div id="list"></div><nav id="pager" aria-label="검색 페이지"></nav>
+    </section>
+  </div>
+</main>
+<p class="prototype-note"><strong>UX 디자인 8조 · 개선 UI 시연</strong> — 도서 검색은 공개 API를 사용하며, 연결 실패 시 제공된 ‘아몬드’ 저장 결과로 테스트합니다. 서가 지도와 상세 단계는 실제 소장·평면 정보와 일치하지 않을 수 있습니다.</p>
+<dialog id="book-detail" aria-labelledby="book-detail-title"><button type="button" class="dialog-close" aria-label="창 닫기">×</button><h2 id="book-detail-title"></h2><dl id="book-detail-info" class="book-info"></dl><div class="modal-actions"><a id="primo-link" class="btn btn-line" target="_blank" rel="noopener noreferrer" style="display:none;text-decoration:none">원본 상세정보</a><button type="button" class="btn btn-primary" id="detail-map">서가 위치 안내 (시연)</button></div></dialog>
+<script src="../shared/ux-feedback.js?v=20261121-v1"></script>
+
+<script>
+const A="이용 가능",B="대출 중",CEN="중앙도서관",MJ="문정도서관",EL="전자도서관";
+const book=(t,by,pub,yr,ed,tr,lib,st,loc,call)=>({t,by,type:"단행본",lib,st,L:"판본 정보",l:[["출판사",pub],["출판연도",yr],["판차",ed],["번역",tr]],R:"소장 정보",r:[["위치",loc],["청구기호",call]]});
+const art=(t,by,jr,vol,pg,lib,st,how,kw)=>({t,by,type:"학술논문",lib,st,kw,L:"논문 정보",l:[["수록지",jr],["권호",vol],["쪽수",pg]],R:"이용 정보",r:[["이용 방법",how]]});
+const eres=(t,by,kind,pub,yr,lib,st,how,kw)=>({t,by,type:"전자자료",lib,st,kw,L:"자료 정보",l:[["자료 형태",kind],["제공처",pub],["발행연도",yr]],R:"이용 정보",r:[["이용 방법",how]]});
+/* Live API data only. The original designer's synthetic records are intentionally
+   excluded so that experiments never show invented catalog holdings. */
+const DATA=[];
+const GROUPS=[["lib","소장 도서관",[CEN,MJ,EL]],["st","대출 상태",[A,B]],["type","자료 유형",["단행본","학술논문","전자자료"]]];
+const LABEL={[A]:"대출 가능",[EL]:"전자도서관 (온라인)"};
+const safeHtml=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const TAG={100:"제목 일치",80:"제목이 검색어로 시작",60:"제목에 포함",40:"제목 일부 포함",30:"저자명 일부 포함",20:"본문에서 언급"};
+const sel={lib:new Set(),st:new Set(),type:new Set(["단행본"])};
+const $=s=>document.querySelector(s);
+const Q=()=>$("#q").value.trim();
+const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+const cell=(d,k)=>(d.l.concat(d.r).find(x=>x[0]===k)||[0,""])[1];
+const norm=t=>t.replace(/[『』「」()\[\]:,]/g," ").replace(/\s+/g," ").trim();
+function score(d,q){if(!q)return 0;const t=norm(d.t);if(d.t===q)return 100;if(t.startsWith(q))return 80;if(t.split(" ").some(w=>w.startsWith(q)))return 60;if(t.includes(q))return 40;if(d.by.includes(q))return 30;return 20}
+let fieldTouched=false;
+function found(d,q){if(!q||!fieldTouched)return true;const f=$("#field").value;const h={제목:d.t,저자:d.by,출판사:cell(d,"출판사"),청구기호:cell(d,"청구기호")}[f]||"";return String(h).toLowerCase().includes(q.toLowerCase())}
+const base=()=>{const q=Q();return DATA.map((d,i)=>({...d,rowId:i,s:score(d,q)})).filter(d=>found(d,q))};
+function filtered(skip){return base().filter(d=>GROUPS.every(([k])=>k===skip||!sel[k].size||sel[k].has(d[k])))}
+function renderFilters(){
+  $("#filters").innerHTML=GROUPS.map(([k,name,opts])=>`<fieldset><legend>${name}</legend>`+opts.map(o=>{
+    const n=filtered(k).filter(d=>d[k]===o).length;
+    return `<label class="opt${n||sel[k].has(o)?"":" off"}"><input type="checkbox" data-k="${k}" value="${o}" ${sel[k].has(o)?"checked":""}><span>${LABEL[o]||o}</span><span>${n}</span></label>`}).join("")+`</fieldset>`).join("");
+}
+function card(d){
+  const q=Q(),hl=s=>q?safeHtml(s).replace(new RegExp(esc(safeHtml(q)),"gi"),m=>`<mark>${m}</mark>`):safeHtml(s);
+  const bk=d.type==="단행본",ok=d.st===A;
+  const unknown=d.st==="확인 필요";
+  const badge=unknown?"상태 확인 필요":ok?(bk?"대출 가능":"열람 가능"):(bk?"대출 중":"이용 중");
+  const sub=unknown?"상세정보":bk?(ok?"서가 위치 보기":"예약 안내 (준비 중)"):(ok&&d.sourceUrl?"원본 상세정보 열기":"원문 이용 (준비 중)");
+  const rows=a=>a.map(([k,v])=>`<dt>${safeHtml(k)}</dt><dd>${safeHtml(v)}</dd>`).join("");
+  const cov=bk?safeHtml(d.t.split(" (")[0])+"<br>"+safeHtml(d.by):safeHtml(d.type)+"<br>"+safeHtml(d.l[0][1]);
+  return `<article class="card" data-ux-row="${d.rowId}">
+   <div class="cover${bk?"":" alt"}" aria-hidden="true">${cov}</div>
+   <div>
+    <h3>${hl(d.t)}</h3><p class="by">${hl(d.by)}${q?`<span class="tag${d.s===100?" top":""}">${TAG[d.s]}</span>`:""}</p><button type="button" class="ux-bookmark-btn" aria-pressed="false" aria-label="${safeHtml(d.t)} 찜하기">♡ 찜하기</button>
+    <div class="cols">
+     <div class="col"><h4>${d.L}</h4><dl>${rows(d.l)}</dl></div>
+     <div class="col"><h4>${d.R}</h4>
+      <div class="badges"><span class="badge">${d.lib}</span><span class="badge ${unknown?"":ok?"ok":"warn"}">${badge}</span></div>
+      <dl>${rows(d.r)}</dl></div>
+    </div>
+   </div>
+   <div class="actions"><button class="btn btn-primary" data-action="detail" data-row="${d.rowId}">상세정보</button><button class="btn btn-line" data-action="map" data-row="${d.rowId}" ${sub.includes("준비 중")?'aria-label="'+sub+' · 시연 미지원"':""}>${sub}</button></div>
+  </article>`}
+function render(){
+  renderFilters();
+  if (!Q()) {
+    $("#count").textContent = "검색어를 입력해 주세요";
+    $("#list").innerHTML = '<div class="empty"><p>위 검색창에 도서명이나 저자명을 입력하면 검색 결과가 나타납니다.</p></div>';
+    return;
+  }
+  const rank=d=>d.s+(d.st===A?5:0)+(d.lib===CEN?1:0);
+  const r=filtered().sort($("#sort").value==="avail"?(a,b)=>(b.st===A)-(a.st===A)||b.s-a.s:(a,b)=>rank(b)-rank(a));
+  $("#count").innerHTML=`검색 결과 ${r.length}건<span>시연용 도서 정보</span>`;
+  $("#list").innerHTML=r.length?r.map(card).join(""):`<div class="empty"><p>선택한 조건에 맞는 자료가 없어요. 필터를 줄이면 더 많은 결과를 볼 수 있어요.</p><button class="btn btn-primary" id="reset2">필터 초기화</button></div>`;
+  const r2=$("#reset2");if(r2)r2.onclick=reset;
+}
+function reset(){Object.values(sel).forEach(s=>s.clear());render()}
+$("#filters").addEventListener("change",e=>{const i=e.target;if(!i.dataset.k)return;i.checked?sel[i.dataset.k].add(i.value):sel[i.dataset.k].delete(i.value);render()});
+$("#reset").onclick=reset;$("#sort").onchange=render;$("#go").onclick=render;$("#field").onchange=()=>{fieldTouched=true;render()};
+$("#q").addEventListener("keydown",e=>{if(e.key==="Enter")render()});
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t))});
+render();
+</script>
+<script>
+/* Carry the user's chosen search field from the improved home. */
+(function(){
+ const chosen=new URLSearchParams(location.search).get("field");
+ if(chosen==="제목"||chosen==="저자"){
+   const field=document.getElementById("field");
+   field.value=chosen;
+   field.dispatchEvent(new Event("change",{bubbles:true}));
+ }
+})();
+</script>
+<script src="../original/catalog-fallback.js?v=20261115"></script>
+<script src="./search-live.js?v=20261120-bookdetails-fix"></script>
+<script type="module" src="../shared/bookmarks-ui.js?v=20261120-improved-visible-v2"></script>
+</body>
+</html>

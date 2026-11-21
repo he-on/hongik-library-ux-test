@@ -116,7 +116,7 @@ ol.steps li::before{content:counter(s);flex:none;width:24px;height:24px;border-r
 @media(max-width:390px){.page-nav{gap:6px}.page-nav a{font-size:11px}.floors button{padding:7px 12px}.sum{gap:10px;padding:9px 10px}}
 </style><meta name="ux-build" content="2026-11-15-improved-w02-w04-v3"></head>
 <body>
-<nav class="page-nav" aria-label="개선 UI 화면 이동"><div class="links"><a id="search-back" href="./index.html">← 검색 결과</a><a href="./shelf-map.html" class="active" aria-current="page">W04 · 서가 위치 안내</a></div><a href="../original/">기존 UI 보기</a></nav>
+<nav class="page-nav" aria-label="개선 UI 화면 이동"><div class="links"><a href="./" aria-label="개선 UI 홈으로 이동">홈</a><a id="search-back" href="./search.html">← 검색 결과</a><a href="./shelf-map.html" class="active" aria-current="page">W04 · 서가 위치 안내</a></div><a href="../original/">기존 UI 보기</a></nav>
 <div class="selected-source" id="selected-source" hidden><strong id="selected-book"></strong> · 이 지도는 실제 도서의 소장 위치가 아닌 UX 평가용 4층 개념도입니다.</div>
 <div class="page"><div class="grid">
  <section class="card" aria-label="서가 지도">
@@ -240,14 +240,14 @@ $("#svgbox").addEventListener("click",pick);$("#svgbox").addEventListener("keydo
 matchMedia("(max-width:760px)").addEventListener("change",render);
 render();
 const qs=new URLSearchParams(location.search);
-const previous=qs.get("q")||"아몬드", chosen=qs.get("title");
+const previous=qs.get("q")||"", chosen=qs.get("title");
 const fromLibrary=qs.get("from")==="library";
 const back=document.querySelector("#search-back");
 if(fromLibrary) {
  back.href="../account/?ui=improved";
  back.textContent="← My Library";
 } else {
- back.href="./index.html?q="+encodeURIComponent(previous);
+ back.href="./search.html"+(previous?"?q="+encodeURIComponent(previous):"");
 }
 if(chosen){
  const strip=document.querySelector("#selected-source");

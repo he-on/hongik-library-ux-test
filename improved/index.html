@@ -3,259 +3,298 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>홍익대학교 중앙도서관 검색 결과 개선안</title>
+<title>홍익대학교 중앙도서관 메인 개선안</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#F3F5FB;--surface:#FFFFFF;--ink:#141A2E;--muted:#586178;--line:#DCE1EE;
-  --brand:#1F3FD1;--brand-soft:#E7ECFF;--on-brand:#FFFFFF;
-  --ok:#1B7448;--ok-bg:#E3F4EA;--warn:#9A5400;--warn-bg:#FFEFD6;--cover:#DCE4F7;--cover-ink:#3A4E9A;--hl:#FFF0B3;
-  --r-lg:14px;--r-md:10px;--r-sm:6px;
-  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
-  color-scheme:light;
-}
+ --bg:#F3F5FB;--sf:#FFFFFF;--ink:#141A2E;--mu:#586178;--ln:#DCE1EE;--br:#1F3FD1;--bs:#E7ECFF;--on:#FFFFFF;
+ --hero1:#1226D0;--hero2:#0B1A9E;--ok:#1B7448;--okb:#E3F4EA;--wn:#9A5400;--wnb:#FFEFD6;--cl:#586178;--clb:#ECEFF6;--cov:#DCE4F7;
+ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0D1222;--surface:#151C30;--ink:#E8EBF6;--muted:#9AA4BF;--line:#29324F;
-  --brand:#8EA2FF;--brand-soft:#1D2750;--on-brand:#0D1222;
-  --ok:#6FD9A3;--ok-bg:#14301F;--warn:#F2B766;--warn-bg:#3A2A12;--cover:#202B52;--cover-ink:#9FB0FF;--hl:#4B3F14;color-scheme:dark}}
+ --bg:#0D1222;--sf:#151C30;--ink:#E8EBF6;--mu:#9AA4BF;--ln:#29324F;--br:#8EA2FF;--bs:#1D2750;--on:#0D1222;
+ --hero1:#16217E;--hero2:#0B1250;--ok:#6FD9A3;--okb:#14301F;--wn:#F2B766;--wnb:#3A2A12;--cl:#9AA4BF;--clb:#1F2742;--cov:#202B52;color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0D1222;--surface:#151C30;--ink:#E8EBF6;--muted:#9AA4BF;--line:#29324F;
-  --brand:#8EA2FF;--brand-soft:#1D2750;--on-brand:#0D1222;
-  --ok:#6FD9A3;--ok-bg:#14301F;--warn:#F2B766;--warn-bg:#3A2A12;--cover:#202B52;--cover-ink:#9FB0FF;--hl:#4B3F14;color-scheme:dark}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
+ --bg:#0D1222;--sf:#151C30;--ink:#E8EBF6;--mu:#9AA4BF;--ln:#29324F;--br:#8EA2FF;--bs:#1D2750;--on:#0D1222;
+ --hero1:#16217E;--hero2:#0B1250;--ok:#6FD9A3;--okb:#14301F;--wn:#F2B766;--wnb:#3A2A12;--cl:#9AA4BF;--clb:#1F2742;--cov:#202B52;color-scheme:dark}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:15px;line-height:1.6;letter-spacing:-.01em}
-button,select,input{font:inherit;color:inherit}
-:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
-.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
-header{background:var(--surface);border-bottom:1px solid var(--line)}
-header .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
-.brand{font-weight:700;font-size:18px}
-.brand small{display:block;font-weight:400;font-size:12px;color:var(--muted);line-height:1.2}
-header nav{display:flex;gap:24px;font-size:14px;color:var(--muted)}
-.search{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);margin:24px 0;padding:20px 24px 16px}
-.tabs{display:flex;gap:4px;margin-bottom:14px;border-bottom:1px solid var(--line)}
-.tab{background:none;border:0;padding:8px 16px 10px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
-.tab[aria-selected="true"]{color:var(--brand);border-color:var(--brand);font-weight:700}
-.field{display:flex;border:2px solid var(--brand);border-radius:var(--r-md);overflow:hidden;background:var(--bg)}
-.field select{border:0;background:var(--brand-soft);padding:0 14px;font-weight:500;color:var(--brand)}
-.field input{flex:1;border:0;background:transparent;padding:14px 16px;font-size:17px;min-width:0}
-.field input:focus-visible{outline:none}
-.field:focus-within{box-shadow:0 0 0 3px var(--brand-soft)}
-.btn{border:1px solid transparent;border-radius:var(--r-sm);padding:9px 14px;font-weight:700;font-size:14px;cursor:pointer;text-align:center;display:block;width:100%}
-.btn-primary{background:var(--brand);color:var(--on-brand)}
-.btn-line{background:var(--surface);color:var(--brand);border-color:var(--line)}
-.btn-line:hover{border-color:var(--brand)}
-.field .btn{width:auto;border-radius:0;padding:0 28px;font-size:15px}
-.hint{margin:10px 0 0;font-size:13px;color:var(--muted)}
-.layout{display:grid;grid-template-columns:240px 1fr;gap:24px;align-items:start;padding-bottom:48px}
-aside{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;position:sticky;top:16px}
-aside h2{font-size:16px;margin:0 0 4px}
-fieldset{border:0;border-top:1px solid var(--line);margin:16px 0 0;padding:14px 0 0}
-fieldset:first-of-type{border-top:0;margin-top:8px}
-legend{font-size:13px;font-weight:700;padding:0;color:var(--muted)}
-.opt{display:flex;align-items:center;gap:10px;padding:5px 0;cursor:pointer}
-.opt input{width:18px;height:18px;accent-color:var(--brand);margin:0}
-.opt span:last-child{margin-left:auto;font-size:12px;color:var(--muted)}
-.opt.off{opacity:.45;cursor:default}
-.reset{margin-top:18px}
-.bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.bar h2{margin:0;font-size:17px}
-.bar h2 span{font-weight:400;font-size:13px;color:var(--muted);margin-left:8px}
-.bar select{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:7px 12px;font-size:14px}
-.card{display:grid;grid-template-columns:96px 1fr 148px;gap:22px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;margin-bottom:14px}
-.cover{height:134px;border-radius:4px 8px 8px 4px;background:var(--cover);color:var(--cover-ink);display:flex;align-items:flex-end;padding:10px 8px;font-size:11px;font-weight:500;line-height:1.3;box-shadow:inset 6px 0 0 rgba(0,0,0,.08)}
-.card h3{margin:0;font-size:19px;line-height:1.35;color:var(--brand)}
-.by{margin:2px 0 12px;font-size:14px;color:var(--muted)}
-.cols{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden}
-.col{padding:12px 14px}
-.col+.col{border-left:1px solid var(--line);background:var(--bg)}
-.col h4{margin:0 0 6px;font-size:12px;font-weight:700;color:var(--muted)}
-dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:14px}
-dt{color:var(--muted)}dd{margin:0}
-.badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
-.badge{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--brand-soft);color:var(--brand)}
-.badge.ok{background:var(--ok-bg);color:var(--ok)}
-.badge.warn{background:var(--warn-bg);color:var(--warn)}
-.badge.ok::before,.badge.warn::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
-.badge.warn::before{border-radius:1px}
-.actions{display:flex;flex-direction:column;gap:8px;justify-content:center}
-.empty{background:var(--surface);border:1px dashed var(--line);border-radius:var(--r-lg);padding:40px 24px;text-align:center}
-.empty p{margin:0 0 14px;color:var(--muted)}
-.empty .btn{display:inline-block;width:auto}
-@media (max-width:860px){
-  .layout{grid-template-columns:1fr}aside{position:static}
-  .card{grid-template-columns:80px 1fr}.card .actions{grid-column:1/-1;flex-direction:row}
-  .cols{grid-template-columns:1fr}.col+.col{border-left:0;border-top:1px solid var(--line)}
-  header nav{display:none}.wrap{padding:0 16px}
-}
-.cover.alt{background:var(--brand-soft);color:var(--brand)}
-mark{background:var(--hl);color:inherit;border-radius:3px;padding:0 1px}
-.tag{display:inline-block;margin-left:10px;font-size:12px;font-weight:500;padding:0 9px;border:1px solid var(--line);border-radius:999px;color:var(--muted)}
-.tag.top{background:var(--brand-soft);border-color:transparent;color:var(--brand);font-weight:700}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em}
+a{color:inherit;text-decoration:none}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--br);outline-offset:2px}
+.w{max-width:1180px;margin:0 auto;padding:0 24px}
+h1,h2,h3{margin:0;line-height:1.3}
+/* header */
+.top{position:sticky;top:0;z-index:50;background:var(--sf);border-bottom:1px solid var(--ln)}
+.nav{display:flex;align-items:center;gap:28px;height:64px}
+.logo{font-weight:900;font-size:18px;color:var(--br);white-space:nowrap}.logo span{color:var(--ink);font-weight:500}
+.nav nav{display:flex;gap:26px;margin:0 auto;font-weight:500;font-size:15px}
+.nav nav a:hover{color:var(--br)}
+.nb{border:1px solid var(--ln);background:var(--sf);border-radius:8px;padding:7px 14px;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap}
+.nb.p{background:var(--br);border-color:var(--br);color:var(--on)}
+/* hero */
+.hero{background:linear-gradient(135deg,var(--hero1),var(--hero2));color:#fff;position:relative;overflow:hidden}
+.hero::after{content:"LIBRARY";position:absolute;right:-10px;bottom:-26px;font-size:120px;font-weight:900;letter-spacing:.12em;color:rgba(255,255,255,.07);pointer-events:none}
+.hin{display:grid;grid-template-columns:1.15fr .85fr;gap:32px;padding:44px 24px 40px;align-items:start;position:relative;z-index:1}
+.eyebrow{font-size:12px;letter-spacing:.14em;font-weight:700;opacity:.8}
+.hero h1{font-size:34px;font-weight:900;margin:8px 0 6px}
+.hero p{margin:0;opacity:.85}
+.stabs{display:flex;gap:2px;margin-top:22px}
+.stabs button{border:0;background:rgba(255,255,255,.16);color:#fff;padding:9px 18px;font-weight:700;cursor:pointer;border-radius:8px 8px 0 0}
+.stabs button[aria-selected="true"]{background:#fff;color:#1226D0}
+.sf{display:flex;background:#fff;border-radius:0 10px 10px 10px;overflow:hidden;color:#141A2E}
+.sf select{border:0;background:#EEF1FB;padding:0 12px;font-weight:700;color:#1226D0}
+.sf input{flex:1;min-width:0;border:0;padding:15px 16px;font-size:17px;background:transparent;color:#141A2E}
+.sf input:focus-visible{outline:none}
+.sf button{border:0;background:#0B1A9E;color:#fff;font-weight:700;padding:0 26px;cursor:pointer}
+.ql{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;font-size:13.5px}
+.ql a{opacity:.9;text-decoration:underline;text-underline-offset:3px}
+.ql b{font-weight:700;opacity:1}
+/* hours */
+.card{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:20px}
+.hours{color:var(--ink)}
+.hh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:4px}
+.hh h2{font-size:18px}
+.hh span{font-size:13px;color:var(--mu)}
+.hsub{font-size:12.5px;color:var(--mu);margin:0 0 8px}
+.hr{display:grid;grid-template-columns:1fr auto;gap:2px 10px;align-items:center;padding:12px 0;border-top:1px solid var(--ln)}
+.hr:first-of-type{border-top:0}
+.hn{font-weight:700;font-size:14.5px}.hn.big{color:var(--br)}
+.ht{font-size:17px;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}.ht.off{color:var(--mu);font-weight:500;font-size:15px}
+#more[hidden]{display:none}#more .hr:first-of-type{border-top:1px solid var(--ln)}
+.tg{display:flex;justify-content:space-between;align-items:center;width:100%;margin-top:4px;border:1px solid var(--ln);background:var(--bg);border-radius:10px;padding:10px 14px;font-weight:700;font-size:14px;cursor:pointer;color:var(--br)}
+.tg::after{content:"";width:8px;height:8px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg);margin-top:-3px;transition:transform .2s}
+.tg[aria-expanded="true"]::after{transform:rotate(-135deg);margin-top:3px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:0 9px;border-radius:999px;margin-left:8px;vertical-align:1px}
+.chip::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.chip.o{background:var(--okb);color:var(--ok)}.chip.s{background:var(--wnb);color:var(--wn)}.chip.c{background:var(--clb);color:var(--cl)}.chip.c::before{border-radius:1px}
+.track{grid-column:1/-1;position:relative;height:6px;border-radius:3px;background:var(--ln);margin-top:3px}
+.seg{position:absolute;top:0;bottom:0;border-radius:3px;background:var(--br);opacity:.85}
+.now{position:absolute;top:-4px;bottom:-4px;width:2px;background:#E0245E}
+.hfoot{display:flex;justify-content:space-between;gap:10px;margin-top:10px;font-size:12.5px;color:var(--mu)}
+.hfoot a{color:var(--br);font-weight:700}
+/* guide */
+.guide{background:var(--sf);border-bottom:1px solid var(--ln)}
+.gin{display:grid;grid-template-columns:220px 1fr;gap:24px;padding:18px 24px;align-items:center}
+.gin small{font-size:11px;font-weight:700;color:var(--br);letter-spacing:.08em}
+.gin strong{display:block;font-size:17px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0;padding:0;list-style:none}
+.steps a{display:flex;gap:10px;align-items:center;border:1px solid var(--ln);border-radius:10px;padding:10px 14px;background:var(--bg)}
+.steps a:hover,.steps a.cur{border-color:var(--br);background:var(--bs)}
+.steps i{flex:none;width:24px;height:24px;border-radius:50%;background:var(--br);color:var(--on);font:700 12px/24px "Noto Sans KR",sans-serif;text-align:center}
+.steps b{display:block;font-size:14px;line-height:1.3}.steps span{font-size:12px;color:var(--mu)}
+/* sections */
+section.sec{padding:44px 0 8px}
+.sh{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:16px}
+.sh small{font-size:12px;font-weight:700;color:var(--br);letter-spacing:.08em}
+.sh h2{font-size:24px}.sh p{margin:2px 0 0;color:var(--mu);font-size:14px}
+.gr{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.gc{display:flex;flex-direction:column;padding:0;overflow:hidden}
+.gt{padding:18px 18px 12px}
+.gt i{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--br);color:var(--on);font:700 14px "Noto Sans KR",sans-serif;margin-bottom:8px}
+.gt h3{font-size:18px}.gt p{margin:2px 0 0;font-size:13px;color:var(--mu)}
+.gc ul{list-style:none;margin:0;padding:0 8px;flex:1}
+.gc li a{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;font-weight:500;font-size:14.5px}
+.gc li a:hover{background:var(--bs);color:var(--br)}
+.gc li a small{display:block;color:var(--mu);font-size:12px;font-weight:400}
+.gc li a::after{content:"";flex:none;width:7px;height:7px;border:solid var(--mu);border-width:2px 2px 0 0;transform:rotate(45deg)}
+.gm{margin:8px 18px 16px;border:1px solid var(--ln);background:var(--sf);border-radius:8px;padding:8px;font-weight:700;color:var(--br);cursor:pointer;font-size:13.5px}
+.gm:hover{background:var(--bs)}
+.who{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:16px;font-size:14px}
+.who b{margin-right:4px}.who a{border:1px solid var(--ln);background:var(--sf);border-radius:999px;padding:4px 14px;font-weight:500}.who a:hover{border-color:var(--br);color:var(--br)}
+.two{display:grid;grid-template-columns:1.2fr 1fr;gap:16px}
+.tabs{display:flex;gap:6px;margin-bottom:8px}
+.tabs button{border:1px solid var(--ln);background:var(--sf);border-radius:999px;padding:3px 14px;font-size:13px;font-weight:700;color:var(--mu);cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--br);border-color:var(--br);color:var(--on)}
+.nl{list-style:none;margin:0;padding:0}
+.nl li{display:flex;gap:12px;align-items:center;padding:11px 0;border-top:1px solid var(--ln)}
+.nl li:first-child{border-top:0}
+.nl em{font-style:normal;font-size:12px;font-weight:700;color:var(--br);background:var(--bs);border-radius:4px;padding:0 8px}
+.nl span.d{margin-left:auto;font-size:12.5px;color:var(--mu);white-space:nowrap}
+.ev{display:flex;gap:14px;align-items:center;padding:11px 0;border-top:1px solid var(--ln)}
+.ev:first-of-type{border-top:0}
+.ev time{flex:none;width:52px;text-align:center;border:1px solid var(--ln);border-radius:8px;line-height:1.2;padding:4px 0}
+.ev time b{display:block;font-size:20px}.ev time small{font-size:10px;color:var(--mu);letter-spacing:.08em}
+.ev span{display:block;font-size:12.5px;color:var(--mu)}
+.bk{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.bk div{font-size:13.5px;font-weight:500}.bk small{display:block;color:var(--mu);font-size:12px;font-weight:400}
+.cv{aspect-ratio:3/4;border-radius:3px 8px 8px 3px;background:var(--cov);box-shadow:inset 7px 0 0 rgba(0,0,0,.08);display:flex;align-items:flex-end;padding:10px;font-size:11px;color:var(--br);font-weight:700;margin-bottom:8px}
+.dp{margin:40px 0 24px;border:1px dashed var(--ln);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--mu);background:var(--sf)}
+footer{border-top:1px solid var(--ln);padding:20px 0 40px;font-size:12.5px;color:var(--mu);background:var(--sf)}
+/* rail, drawer, toast */
+.rail{position:fixed;right:14px;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:2px;background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:8px;font-size:12.5px;box-shadow:0 4px 18px rgba(0,0,0,.08)}
+.rail b{font-size:11px;color:var(--mu);padding:2px 8px}
+.rail a{padding:5px 10px;border-radius:6px;font-weight:500;color:var(--mu)}
+.rail a.on{background:var(--bs);color:var(--br);font-weight:700}
+.fab{display:none;position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:45;border:0;background:var(--br);color:var(--on);border-radius:999px;padding:12px 20px;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,.25);cursor:pointer}
+.ov{position:fixed;inset:0;background:rgba(10,15,40,.5);z-index:60;opacity:0;pointer-events:none;transition:opacity .2s}
+.ov.on{opacity:1;pointer-events:auto}
+.dr{position:fixed;top:0;right:0;bottom:0;width:min(400px,92vw);background:var(--sf);z-index:61;transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+.dr.on{transform:none}
+.dh{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--ln)}
+.dh h2{font-size:18px}
+.dq{margin:12px 20px 4px;border:1px solid var(--ln);border-radius:10px;padding:10px 14px;background:var(--bg)}
+.db{overflow:auto;padding:4px 20px 24px;flex:1}
+.db details{border-bottom:1px solid var(--ln)}
+.db summary{cursor:pointer;padding:14px 0;font-weight:700;list-style:none;display:flex;justify-content:space-between}
+.db summary::after{content:"+";color:var(--mu)}.db details[open] summary::after{content:"\2212"}
+.db summary small{font-weight:400;color:var(--mu);margin-left:8px;font-size:12.5px}
+.db ul{list-style:none;margin:0 0 12px;padding:0}
+.db li a{display:block;padding:7px 10px;border-radius:8px;font-size:14.5px}.db li a:hover{background:var(--bs);color:var(--br)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:#141A2E;color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;z-index:80;opacity:0;pointer-events:none;transition:.2s}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (max-width:1100px){.rail{display:none}.fab{display:block}}
+@media (max-width:900px){.nav nav{display:none}.nav{justify-content:space-between}.hin{grid-template-columns:1fr;padding:28px 16px}.gin{grid-template-columns:1fr}.gr{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}.bk{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:600px){.w{padding:0 16px}.hero h1{font-size:26px}.gin{padding:14px 16px}.steps{grid-template-columns:1fr}.gr{grid-template-columns:1fr}.bk{grid-template-columns:repeat(2,1fr)}.sf button{padding:0 16px}.sf select{display:none}.nb.hide{display:none}.sh h2{font-size:21px}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.dr,.ov,.toast{transition:none}}
 </style>
 <!-- Beusable Journey Map: same project used by the original UI. -->
 <script type="text/javascript">(function(w,d,a){w.__beusablerumclient__={load:function(src){var b=d.createElement("script");b.src=src;b.async=true;b.type="text/javascript";d.getElementsByTagName("head")[0].appendChild(b)}};w.__beusablerumclient__.load(a+"?url="+encodeURIComponent(d.URL));})(window,document,"//rum.beusable.net/load/b261115e130800u338");</script>
-<style>
-/* Improved UX W02: navigation and tighter small-screen fit. */
-.prototype-nav{max-width:1180px;margin:14px auto 0;padding:0 24px;display:flex;gap:10px;flex-wrap:wrap}
-.prototype-nav a{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 13px;color:var(--brand);text-decoration:none;font-size:13px;font-weight:700}
-.prototype-nav a.active{background:var(--brand-soft);border-color:var(--brand)}
-.prototype-note{max-width:1180px;margin:0 auto 24px;padding:0 24px;font-size:12px;color:var(--muted)}
-.prototype-note strong{color:var(--brand)}
-.status-line{font-size:12px;min-height:21px;margin:7px 0;color:var(--muted)}
-.status-line.error{color:#a94442}
-.card{min-width:0}
-.card>div:nth-child(2){min-width:0}
-.card h3,.card dd,.card .by{overflow-wrap:anywhere}
-.card .actions button{line-height:1.5}
-.ux-bookmark-btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;background:var(--brand-soft);color:var(--brand);border:1px solid var(--brand);border-radius:8px;padding:8px 14px;margin:0 0 12px;font-size:14px;font-weight:700;cursor:pointer}
-.ux-bookmark-btn[aria-pressed="true"]{background:var(--brand-soft)}
-.ux-bookmark-btn:disabled{opacity:.55;cursor:wait}
-.mobile-filter-toggle{display:none}
-#pager{display:flex;justify-content:center;gap:14px;margin:18px 0 25px}
-#pager button{width:auto;min-width:100px}
-dialog#book-detail{width:min(550px,calc(100vw - 30px));max-height:85vh;overflow:auto;border:1px solid var(--line);border-radius:14px;padding:24px;background:var(--surface);color:var(--ink);box-shadow:0 15px 80px #0004}
-dialog#book-detail::backdrop{background:#141a2e99}
-#book-detail .dialog-close{float:right;background:none;border:0;color:var(--muted);font-size:25px;cursor:pointer}
-#book-detail h2{font-size:19px;line-height:1.45;margin:4px 30px 14px 0}
-#book-detail .book-info{display:grid;grid-template-columns:115px 1fr;gap:10px;font-size:13px;margin:12px 0 18px}
-#book-detail .book-info dt{color:var(--muted)}
-#book-detail .book-info dd{margin:0;overflow-wrap:anywhere}
-#book-detail .modal-actions{display:flex;gap:9px}
-#book-detail .modal-actions .btn{flex:1}
-@media(max-width:860px){.mobile-filter-toggle{display:block;width:100%;margin-bottom:10px} .layout aside{display:none} .layout aside.expanded{display:block} }
-@media(max-width:560px){
- .prototype-nav,.prototype-note{padding:0 12px}
- .wrap{padding:0 12px}
- header .wrap{height:60px}.brand{font-size:16px}
- .search{margin:12px 0 16px;padding:12px}
- .tabs{overflow-x:auto;white-space:nowrap}.tab{font-size:12px;padding:8px 12px}
- .field select{width:78px;padding:0 3px;font-size:12px}
- .field input{font-size:14px;padding:12px 8px}
- .field .btn{padding:0 11px;font-size:12px}
- .layout{gap:10px}
- .card{grid-template-columns:66px minmax(0,1fr);gap:11px;padding:13px}
- .cover{width:66px;height:96px;font-size:10px}
- .card h3{font-size:15px}.by{font-size:12px}
- .col{padding:10px}.cols dl{font-size:12px;gap:2px 6px}.col h4{font-size:11px}
- .card .actions{grid-column:1/-1;flex-direction:row}
- .card .actions .btn{font-size:12px;padding:9px 5px}
- .bar{align-items:flex-start;gap:6px}.bar h2{font-size:15px}
- .bar select{font-size:12px;padding:6px}
- #book-detail .book-info{grid-template-columns:90px 1fr}
-}
-</style><meta name="ux-build" content="2026-11-20-improved-bookmark-visibility-v2"></head>
+<script>
+/* Preserve previously shared /improved/?q=... links without forcing a default query. */
+(function(){
+ const p=new URLSearchParams(location.search);
+ if(p.get("q")?.trim()) location.replace("./search.html"+location.search+location.hash);
+})();
+</script>
+</head>
 <body>
-<header><div class="wrap">
-  <div class="brand">홍익대학교 중앙도서관<small>소장자료 검색</small></div>
-  <nav><a href="./shelf-map.html" style="color:inherit;text-decoration:none">서가 위치 안내</a><a href="../account/?ui=improved" class="ux-account-link">내 서재</a><a href="../account/?ui=improved" data-ux-auth-link="1" class="ux-account-link">로그인</a></nav>
+<header class="top"><div class="w nav">
+ <a class="logo" href="#top">홍익대학교 <span>| 중앙도서관</span></a>
+ <nav aria-label="주 메뉴"><a href="./search.html">자료이용</a><a href="#browse">연구학습지원</a><a href="#browse">컬렉션</a><a href="#browse">시설·기기 이용</a><a href="#news">커뮤니티</a></nav>
+ <a class="nb hide" href="../account/?ui=improved">My Library</a><button class="nb p" id="open">전체메뉴</button>
 </div></header>
 
-<nav class="prototype-nav" aria-label="개선 UI 화면 이동"><a href="./index.html" class="active" aria-current="page">W02 · 검색 결과</a><a href="./shelf-map.html">W04 · 서가 위치 안내</a><a href="../original/" title="기존 UI와 비교">기존 UI 보기</a><a href="../account/?ui=improved" aria-label="찜한 도서 목록 보기">♡ 내 서재</a></nav>
-<main class="wrap">
-  <section class="search" aria-label="검색">
-    <div class="tabs" role="tablist">
-      <button class="tab" role="tab" aria-selected="true">통합검색</button>
-      <button class="tab" role="tab" aria-selected="false">소장자료</button>
-      <button class="tab" role="tab" aria-selected="false">전자자료</button>
-    </div>
-    <div class="field">
-      <select id="field" aria-label="검색 항목"><option>제목</option><option>저자</option><option>출판사</option><option>청구기호</option></select>
-      <input id="q" type="search" value="아몬드" aria-label="검색어">
-      <button class="btn btn-primary" id="go">다시 검색</button>
-    </div>
-    <p class="hint">검색어와 일치하는 항목을 먼저 보여 드려요. 소장 도서관과 자료 유형도 함께 확인할 수 있어요.</p><p id="api-status" class="status-line" role="status" aria-live="polite">공개 검색 API 연결 준비 중…</p>
-  </section>
+<section class="hero" id="top"><div class="w hin">
+ <div>
+  <div class="eyebrow">HONGIK UNIVERSITY LIBRARY</div>
+  <h1>도서관과 함께 세상을 이룰게!</h1>
+  <p>도서, 학술논문, 저널 등 다양한 자료를 찾아보세요.</p>
+  <div class="stabs" role="tablist"><button role="tab" aria-selected="true">통합검색</button><button role="tab" aria-selected="false">소장자료</button><button role="tab" aria-selected="false">전자자료</button></div>
+  <form class="sf" id="sf"><select aria-label="검색 범위"><option>전체</option><option>제목</option><option>저자</option><option>주제어</option></select><input aria-label="검색어" value="" placeholder="도서명, 저자, 주제어 등을 검색하세요" autocomplete="off"><button>검색</button></form>
+  <div class="ql"><b>PRIMO RA</b><a href="#" data-na>홍익대 자료 통합검색</a><a href="#" data-na>고급검색</a><a href="#" data-na>검색 도움말</a></div>
+ </div>
+ <aside class="card hours" id="hours" aria-label="오늘 이용 시간">
+  <div class="hh"><h2>오늘 이용 시간</h2><span id="today"></span></div>
+  <p class="hsub">학기 중 기준이에요. 시험기간, 방학, 공휴일에는 달라질 수 있어요.</p>
+  <div id="hl"></div>
+  <button class="tg" id="tg" aria-expanded="false" aria-controls="more">다른 열람실·시설 이용 시간</button>
+  <div class="hfoot"><span>시연용 데이터</span><a href="#" data-na>전체 이용시간 보기</a></div>
+ </aside>
+</div></section>
 
-  <button type="button" class="btn btn-line mobile-filter-toggle" id="toggle-filters" aria-expanded="false" aria-controls="search-filters">검색 결과 필터 열기 ▾</button>
-<div class="layout">
-    <aside id="search-filters" aria-label="검색 결과 필터">
-      <h2>검색 결과 필터</h2>
-      <div id="filters"></div>
-      <button class="btn btn-line reset" id="reset">필터 초기화</button>
-    </aside>
-    <section aria-live="polite">
-      <div class="bar">
-        <h2 id="count"></h2>
-        <select id="sort" aria-label="정렬"><option value="match">제목 일치 우선</option><option value="avail">대출 가능 우선</option></select>
-      </div>
-      <div id="list"></div><nav id="pager" aria-label="검색 페이지"></nav>
-    </section>
+<div class="guide"><div class="w gin">
+ <div><small>LIBRARY GUIDE</small><strong>도서관 길잡이</strong><span style="font-size:12.5px;color:var(--mu)">원하는 자료를 찾고, 서가까지 가는 3단계</span></div>
+ <ol class="steps" style="list-style:none">
+  <li><a href="./search.html"><i>1</i><div><b>자료 검색</b><span>도서관, 자료 유형</span></div></a></li>
+  <li><a href="./search.html"><i>2</i><div><b>소장정보 확인</b><span>대출 상태, 청구기호</span></div></a></li>
+  <li><a class="cur" href="./shelf-map.html"><i>3</i><div><b>서가 위치 확인</b><span>층, 구역, 이동 경로</span></div></a></li>
+ </ol>
+</div></div>
+
+<main class="w">
+ <section class="sec" id="browse">
+  <div class="sh"><div><small>BROWSE</small><h2>무엇을 찾으세요?</h2><p>하고 싶은 일에 맞춰 4개 분류로 모았어요. 더 많은 메뉴는 전체메뉴에서 볼 수 있어요.</p></div><button class="nb" data-g="">전체 메뉴 열기</button></div>
+  <div class="gr" id="gr"></div>
+  <div class="who"><b>이용자별 안내</b><a href="#" data-na>학부생</a><a href="#" data-na>대학원생·연구자</a><a href="#" data-na>교직원</a><a href="#" data-na>외부 이용자</a></div>
+ </section>
+
+ <section class="sec" id="news">
+  <div class="sh"><div><small>NEWS</small><h2>소식과 일정</h2></div></div>
+  <div class="two">
+   <div class="card"><div class="sh" style="margin-bottom:6px"><h3>공지사항</h3><div class="tabs" id="nt"><button aria-pressed="true" data-k="전체">전체</button><button aria-pressed="false" data-k="일반">일반공지</button><button aria-pressed="false" data-k="학술">학술공지</button></div></div><ul class="nl" id="nl"></ul></div>
+   <div class="card"><div class="sh" style="margin-bottom:6px"><h3>도서관 일정</h3></div><div id="ev"></div></div>
   </div>
+ </section>
+
+ <section class="sec" id="new">
+  <div class="sh"><div><small>NEW</small><h2>신착 자료</h2><p>이번 달 새로 들어온 책이에요.</p></div></div>
+  <div class="bk" id="bk"></div>
+ </section>
+
+ <div class="dp"><b>W01 수정 포인트</b> 오늘 이용 시간을 첫 화면에 바로 노출하고, 정보를 4개 대분류(자료 찾기, 이용하기, 연구·학습 지원, 안내·소식)로 위계화했습니다. 세부 메뉴는 전체메뉴와 목차 바로가기로 접근합니다. 모든 이용시간, 공지, 도서 정보는 시연용 예시입니다.</div>
 </main>
-<p class="prototype-note"><strong>UX 디자인 8조 · 개선 UI 시연</strong> — 도서 검색은 공개 API를 사용하며, 연결 실패 시 제공된 ‘아몬드’ 저장 결과로 테스트합니다. 서가 지도와 상세 단계는 실제 소장·평면 정보와 일치하지 않을 수 있습니다.</p>
-<dialog id="book-detail" aria-labelledby="book-detail-title"><button type="button" class="dialog-close" aria-label="창 닫기">×</button><h2 id="book-detail-title"></h2><dl id="book-detail-info" class="book-info"></dl><div class="modal-actions"><a id="primo-link" class="btn btn-line" target="_blank" rel="noopener noreferrer" style="display:none;text-decoration:none">원본 상세정보</a><button type="button" class="btn btn-primary" id="detail-map">서가 위치 안내 (시연)</button></div></dialog>
-<script src="../shared/ux-feedback.js?v=20261121-v1"></script>
+<footer><div class="w">홍익대학교 중앙도서관 · UX 개선 와이어프레임<br>실제 서비스와 무관한 학생 프로젝트 시연 화면입니다. 결제와 개인정보 입력은 하지 않아요.</div></footer>
+
+<nav class="rail" id="rail" aria-label="목차 바로가기"><b>목차</b><a href="#hours" data-id="hours">오늘 이용 시간</a><a href="#browse" data-id="browse">분류별 찾기</a><a href="#news" data-id="news">소식과 일정</a><a href="#new" data-id="new">신착 자료</a></nav>
+<button class="fab" id="fab">목차</button>
+<div class="ov" id="ov"></div>
+<aside class="dr" id="dr" role="dialog" aria-modal="true" aria-label="전체 메뉴" aria-hidden="true">
+ <div class="dh"><h2>전체 메뉴</h2><button class="nb" id="close">닫기</button></div>
+ <input class="dq" id="dq" type="search" placeholder="메뉴 검색 (예: 대출, 열람실)" aria-label="메뉴 검색">
+ <div class="db" id="db"></div>
+</aside>
+<div class="toast" id="toast" role="status">시연용 화면이라 아직 연결되지 않은 메뉴예요.</div>
 
 <script>
-const A="이용 가능",B="대출 중",CEN="중앙도서관",MJ="문정도서관",EL="전자도서관";
-const book=(t,by,pub,yr,ed,tr,lib,st,loc,call)=>({t,by,type:"단행본",lib,st,L:"판본 정보",l:[["출판사",pub],["출판연도",yr],["판차",ed],["번역",tr]],R:"소장 정보",r:[["위치",loc],["청구기호",call]]});
-const art=(t,by,jr,vol,pg,lib,st,how,kw)=>({t,by,type:"학술논문",lib,st,kw,L:"논문 정보",l:[["수록지",jr],["권호",vol],["쪽수",pg]],R:"이용 정보",r:[["이용 방법",how]]});
-const eres=(t,by,kind,pub,yr,lib,st,how,kw)=>({t,by,type:"전자자료",lib,st,kw,L:"자료 정보",l:[["자료 형태",kind],["제공처",pub],["발행연도",yr]],R:"이용 정보",r:[["이용 방법",how]]});
-/* Live API data only. The original designer's synthetic records are intentionally
-   excluded so that experiments never show invented catalog holdings. */
-const DATA=[];
-const GROUPS=[["lib","소장 도서관",[CEN,MJ,EL]],["st","대출 상태",[A,B]],["type","자료 유형",["단행본","학술논문","전자자료"]]];
-const LABEL={[A]:"대출 가능",[EL]:"전자도서관 (온라인)"};
-const safeHtml=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const TAG={100:"제목 일치",80:"제목이 검색어로 시작",60:"제목에 포함",40:"제목 일부 포함",30:"저자명 일부 포함",20:"본문에서 언급"};
-const sel={lib:new Set(),st:new Set(),type:new Set(["단행본"])};
-const $=s=>document.querySelector(s);
-const Q=()=>$("#q").value.trim();
-const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
-const cell=(d,k)=>(d.l.concat(d.r).find(x=>x[0]===k)||[0,""])[1];
-const norm=t=>t.replace(/[『』「」()\[\]:,]/g," ").replace(/\s+/g," ").trim();
-function score(d,q){if(!q)return 0;const t=norm(d.t);if(d.t===q)return 100;if(t.startsWith(q))return 80;if(t.split(" ").some(w=>w.startsWith(q)))return 60;if(t.includes(q))return 40;if(d.by.includes(q))return 30;return 20}
-let fieldTouched=false;
-function found(d,q){if(!q||!fieldTouched)return true;const f=$("#field").value;const h={제목:d.t,저자:d.by,출판사:cell(d,"출판사"),청구기호:cell(d,"청구기호")}[f]||"";return String(h).toLowerCase().includes(q.toLowerCase())}
-const base=()=>{const q=Q();return DATA.map((d,i)=>({...d,rowId:i,s:score(d,q)})).filter(d=>found(d,q))};
-function filtered(skip){return base().filter(d=>GROUPS.every(([k])=>k===skip||!sel[k].size||sel[k].has(d[k])))}
-function renderFilters(){
-  $("#filters").innerHTML=GROUPS.map(([k,name,opts])=>`<fieldset><legend>${name}</legend>`+opts.map(o=>{
-    const n=filtered(k).filter(d=>d[k]===o).length;
-    return `<label class="opt${n||sel[k].has(o)?"":" off"}"><input type="checkbox" data-k="${k}" value="${o}" ${sel[k].has(o)?"checked":""}><span>${LABEL[o]||o}</span><span>${n}</span></label>`}).join("")+`</fieldset>`).join("");
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const SR="./search.html",WY="./shelf-map.html";
+const G=[
+ {id:"find",n:1,t:"자료 찾기",d:"책, 논문, 전자자료와 서가 위치",
+  m:[["소장자료 검색","도서, 학위논문, 잡지",SR],["전자자료","e-Book, 학술DB, 전자저널","./search.html?view=electronic"],["서가 위치 확인","층, 구역, 이동 경로",WY],["신착·추천 도서","이달의 새 책","#new"]],
+  x:["단행본 찾기","학술논문 찾기","학위논문","연속간행물","멀티미디어 자료"]},
+ {id:"use",n:2,t:"이용하기",d:"대출, 좌석, 시설",
+  m:[["대출·반납·연장","내 대출 현황"],["열람실·좌석 예약","실시간 좌석"],["스터디룸·시설 예약","그룹 학습 공간"],["복사·스캔·장비","PC, 노트북, 프린터"]],
+  x:["이용자 등록","연체·반납 안내","The H Reading Lounge","사물함"]},
+ {id:"res",n:3,t:"연구·학습 지원",d:"논문 작성과 자료 신청",
+  m:[["상호대차·원문복사","타 도서관 자료"],["논문 작성·인용 도구","참고문헌 관리"],["이용자 교육·특강","정보활용교육"],["희망도서·자료 신청","구입 요청"]],
+  x:["학술DB 이용 안내","학위논문 제출","오픈액세스"]},
+ {id:"info",n:4,t:"안내·소식",d:"이용시간, 공지, 위치",
+  m:[["이용시간 전체 보기","열람실별 시간","#hours"],["공지사항","일반, 학술","#news"],["도서관 일정","행사, 교육","#news"],["오시는 길·연락처","층별 안내"]],
+  x:["층별 시설 안내","자주 묻는 질문","건의함"]}
+];
+const link=(i)=>i[2]?`<a href="${i[2]}"${i[2].startsWith("http")?' target="_blank" rel="noopener"':""}>`:`<a href="#" data-na>`;
+$("#gr").innerHTML=G.map(g=>`<article class="card gc" id="g-${g.id}"><div class="gt"><i>${g.n}</i><h3>${g.t}</h3><p>${g.d}</p></div><ul>${g.m.map(i=>`<li>${link(i)}<span>${i[0]}<small>${i[1]}</small></span></a></li>`).join("")}</ul><button class="gm" data-g="${g.id}">${g.t} 전체 보기</button></article>`).join("");
+$("#db").innerHTML=G.map(g=>`<details data-g="${g.id}"><summary><span>${g.t}<small>${g.d}</small></span></summary><ul>${g.m.map(i=>`<li>${link(i)}${i[0]}</a></li>`).join("")+g.x.map(x=>`<li><a href="#" data-na>${x}</a></li>`).join("")}</ul></details>`).join("");
+/* hours */
+const pad=n=>String(n).padStart(2,"0");
+const HR=[["중앙도서관 (전체)",[8,22],[9,18],[9,18],1],["자료열람실",[9,20],[9,13],null],["일반열람실",[6,23],[6,23],[6,23]],["법학도서관",[9,17],null,null],["The H Reading Lounge",[9,22],[10,18],[10,18]],["대출·반납 데스크",[9,18],[9,13],null]];
+function hours(){
+ const now=new Date(),dow=now.getDay(),k=dow===0?3:dow===6?2:1;
+ $("#today").textContent=`${now.getMonth()+1}월 ${now.getDate()}일 (${"일월화수목금토"[dow]})`;
+ const row=r=>{const h=r[k];return `<div class="hr"><div class="hn${r[4]?" big":""}">${r[0]}</div><div class="ht${h?"":" off"}">${h?`${pad(h[0])}:00 – ${pad(h[1])}:00`:"오늘 휴실"}</div></div>`};
+ $("#hl").innerHTML=row(HR[0])+`<div id="more" hidden>${HR.slice(1).map(row).join("")}</div>`;
 }
-function card(d){
-  const q=Q(),hl=s=>q?safeHtml(s).replace(new RegExp(esc(safeHtml(q)),"gi"),m=>`<mark>${m}</mark>`):safeHtml(s);
-  const bk=d.type==="단행본",ok=d.st===A;
-  const unknown=d.st==="확인 필요";
-  const badge=unknown?"상태 확인 필요":ok?(bk?"대출 가능":"열람 가능"):(bk?"대출 중":"이용 중");
-  const sub=unknown?"상세정보":bk?(ok?"서가 위치 보기":"예약 안내 (준비 중)"):(ok&&d.sourceUrl?"원본 상세정보 열기":"원문 이용 (준비 중)");
-  const rows=a=>a.map(([k,v])=>`<dt>${safeHtml(k)}</dt><dd>${safeHtml(v)}</dd>`).join("");
-  const cov=bk?safeHtml(d.t.split(" (")[0])+"<br>"+safeHtml(d.by):safeHtml(d.type)+"<br>"+safeHtml(d.l[0][1]);
-  return `<article class="card" data-ux-row="${d.rowId}">
-   <div class="cover${bk?"":" alt"}" aria-hidden="true">${cov}</div>
-   <div>
-    <h3>${hl(d.t)}</h3><p class="by">${hl(d.by)}${q?`<span class="tag${d.s===100?" top":""}">${TAG[d.s]}</span>`:""}</p><button type="button" class="ux-bookmark-btn" aria-pressed="false" aria-label="${safeHtml(d.t)} 찜하기">♡ 찜하기</button>
-    <div class="cols">
-     <div class="col"><h4>${d.L}</h4><dl>${rows(d.l)}</dl></div>
-     <div class="col"><h4>${d.R}</h4>
-      <div class="badges"><span class="badge">${d.lib}</span><span class="badge ${unknown?"":ok?"ok":"warn"}">${badge}</span></div>
-      <dl>${rows(d.r)}</dl></div>
-    </div>
-   </div>
-   <div class="actions"><button class="btn btn-primary" data-action="detail" data-row="${d.rowId}">상세정보</button><button class="btn btn-line" data-action="map" data-row="${d.rowId}" ${sub.includes("준비 중")?'aria-label="'+sub+' · 시연 미지원"':""}>${sub}</button></div>
-  </article>`}
-function render(){
-  renderFilters();
-  const rank=d=>d.s+(d.st===A?5:0)+(d.lib===CEN?1:0);
-  const r=filtered().sort($("#sort").value==="avail"?(a,b)=>(b.st===A)-(a.st===A)||b.s-a.s:(a,b)=>rank(b)-rank(a));
-  $("#count").innerHTML=`검색 결과 ${r.length}건<span>시연용 도서 정보</span>`;
-  $("#list").innerHTML=r.length?r.map(card).join(""):`<div class="empty"><p>선택한 조건에 맞는 자료가 없어요. 필터를 줄이면 더 많은 결과를 볼 수 있어요.</p><button class="btn btn-primary" id="reset2">필터 초기화</button></div>`;
-  const r2=$("#reset2");if(r2)r2.onclick=reset;
-}
-function reset(){Object.values(sel).forEach(s=>s.clear());render()}
-$("#filters").addEventListener("change",e=>{const i=e.target;if(!i.dataset.k)return;i.checked?sel[i.dataset.k].add(i.value):sel[i.dataset.k].delete(i.value);render()});
-$("#reset").onclick=reset;$("#sort").onchange=render;$("#go").onclick=render;$("#field").onchange=()=>{fieldTouched=true;render()};
-$("#q").addEventListener("keydown",e=>{if(e.key==="Enter")render()});
-document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t))});
-render();
+hours();
+$("#tg").onclick=e=>{const b=e.currentTarget,o=b.getAttribute("aria-expanded")!=="true";b.setAttribute("aria-expanded",o);$("#more").hidden=!o;b.textContent=o?"접기":"다른 열람실·시설 이용 시간"};
+/* news */
+const N=[["일반","11월 정기교육 안내"],["학술","학술DB 이용교육 및 전자정보 안내"],["일반","중앙도서관 자료열람실 이용 변경"],["학술","정보활용교육 일정 안내"],["일반","시험기간 열람실 연장 운영 안내"]];
+function news(k){$("#nl").innerHTML=N.filter(n=>k==="전체"||n[0]===k).map(n=>`<li><em>${n[0]}</em><a href="#" data-na>${n[1]}</a><span class="d">공지 예시</span></li>`).join("");$$("#nt button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.k===k))}
+news("전체");$("#nt").onclick=e=>{if(e.target.dataset.k)news(e.target.dataset.k)};
+$("#ev").innerHTML=[["18","저자 초청 강연·북토크","문화 프로그램 (예시)"],["20","학술정보 이용교육","이용자 교육 (예시)"],["24","자료검색 활용 안내","도서관 안내 (예시)"]].map(e=>`<div class="ev"><time><b>${e[0]}</b><small>NOV</small></time><div><a href="#" data-na>${e[1]}</a><span>${e[2]}</span></div></div>`).join("");
+$("#bk").innerHTML=[["학생 작품 전시 수상작","NEW 01"],["홍익대 전자책 이용가이드","NEW 02"],["이러닝 활용 안내","NEW 03"],["표준계량 솔루션 안내","NEW 04"],["인문학 신간 모음","NEW 05"]].map(b=>`<div><div class="cv">${b[1]}</div>${b[0]}<small>신착 자료 예시</small></div>`).join("");
+function toast(message){const t=$("#toast");t.textContent=message;t.classList.add("on");clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("on"),2600)}
+/* drawer */
+let last;
+function open(g){last=document.activeElement;$("#dr").classList.add("on");$("#ov").classList.add("on");$("#dr").setAttribute("aria-hidden","false");
+ $$("#db details").forEach(d=>d.open=g?d.dataset.g===g:d.dataset.g==="find");$("#close").focus()}
+function close(){$("#dr").classList.remove("on");$("#ov").classList.remove("on");$("#dr").setAttribute("aria-hidden","true");if(last)last.focus()}
+$("#open").onclick=()=>open("");$("#fab").onclick=()=>open("");$("#close").onclick=close;$("#ov").onclick=close;
+document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
+document.addEventListener("click",e=>{const g=e.target.closest("[data-g]");if(g&&g.tagName==="BUTTON")open(g.dataset.g);
+ const a=e.target.closest("[data-na]");if(a){e.preventDefault();toast("시연용 화면이라 아직 연결되지 않은 메뉴예요.")}
+ if(e.target.closest(".db a[href^='#']:not([data-na])"))close()});
+$("#dq").oninput=e=>{const q=e.target.value.trim();$$("#db details").forEach(d=>{let hit=0;d.querySelectorAll("li").forEach(li=>{const m=!q||li.textContent.includes(q);li.hidden=!m;hit+=m});d.hidden=!hit;if(q)d.open=true})};
+/* search */
+$("#sf").onsubmit=e=>{
+ e.preventDefault();
+ const input=$("#sf input");
+ const query=input.value.trim();
+ if(!query){input.focus();toast("검색어를 입력해 주세요.");return}
+ const field=$("#sf select").value;
+ if(field==="주제어"){toast("주제어별 검색은 이번 시연에서 제공되지 않습니다. 제목 또는 저자로 검색해 주세요.");return}
+ const selected=$$(".stabs button").find(b=>b.getAttribute("aria-selected")==="true")?.textContent.trim();
+ const view=selected==="소장자료"?"book":selected==="전자자료"?"electronic":"all";
+ const params=new URLSearchParams({q:query,view,pg:"1"});
+ if(field==="제목"||field==="저자")params.set("field",field);
+ location.assign("./search.html?"+params.toString());
+};
+$$(".stabs button").forEach(b=>b.onclick=()=>$$(".stabs button").forEach(x=>x.setAttribute("aria-selected",x===b)));
+/* scrollspy */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)$$("#rail a").forEach(a=>a.classList.toggle("on",a.dataset.id===e.target.id))}),{rootMargin:"-30% 0px -60% 0px"});
+["hours","browse","news","new"].forEach(i=>io.observe($("#"+i)));
 </script>
-<script src="../original/catalog-fallback.js?v=20261115"></script>
-<script src="./search-live.js?v=20261120-bookdetails-fix"></script>
-<script type="module" src="../shared/bookmarks-ui.js?v=20261120-improved-visible-v2"></script>
 </body>
 </html>
