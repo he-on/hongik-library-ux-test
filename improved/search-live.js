@@ -220,10 +220,22 @@
     if(!button)return;
     const index=Number(button.dataset.row),d=DATA[index];
     if(!d)return;
-    if(button.dataset.action==='detail')modalFor(d);
-    else if(d.type==='단행본'&&d.st==='이용 가능')openMap(d);
-    else if(d.type!=='단행본'&&d.sourceUrl)window.open(d.sourceUrl,'_blank','noopener,noreferrer');
-    else modalFor(d);
+    if(button.dataset.action==='detail') {
+      modalFor(d);
+    } else if(d.st==='확인 필요') {
+      // Viewing actual parsed bibliographic information is supported.
+      modalFor(d);
+    } else if(d.type==='단행본'&&d.st==='이용 가능') {
+      openMap(d);
+    } else if(d.type!=='단행본'&&d.st==='이용 가능'&&d.sourceUrl) {
+      // Only open a verified original bibliographic detail URL.
+      window.open(d.sourceUrl,'_blank','noopener,noreferrer');
+    } else {
+      // Reservation / full-text access are not implemented in this prototype.
+      window.uxNotice?.(d.type==='단행본'
+        ? '도서 예약 기능은 현재 시연에서 제공되지 않습니다.'
+        : '원문 이용 및 대기 신청은 현재 시연에서 제공되지 않습니다.');
+    }
   });
   dialog.querySelector('.dialog-close').onclick=()=>dialog.close();
   dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()});
