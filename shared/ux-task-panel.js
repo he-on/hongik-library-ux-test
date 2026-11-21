@@ -107,7 +107,7 @@
       html += '<p class="step">과업 안내</p><h2>오늘 중앙도서관 이용 시간 찾기</h2>' +
         '<p class="instruction"><b>' + escape(dateLabel) + '</b> 기준, 중앙도서관을 방문할 수 있는 시간대를 홈페이지에서 찾아 주세요.</p>' +
         '<p>찾은 이용 가능 시간대를 직접 입력한 다음, 정보를 찾는 과정의 난이도를 평가해 주세요.</p>' +
-        '<p class="sub">웹사이트를 자유롭게 탐색하세요. 정답은 이 패널에 미리 표시되지 않습니다.</p>' +
+        '<p class="sub">웹사이트를 자유롭게 탐색하세요. 정답은 이 패널에 미리 표시되지 않습니다. 과업 시작 후 패널이 자동으로 접히며, 답을 찾으면 오른쪽의 답변 입력 버튼을 눌러 주세요.</p>' +
         '<div class="actions"><button class="primary" type="button" data-action="start">과업 시작</button></div>';
     } else if (state.stage === "task") {
       html += '<p class="step">1 / 2 · 과업 수행 및 답변</p><h2>오늘 중앙도서관에 방문 가능한 시간대는?</h2>' +
@@ -145,6 +145,11 @@
       html += '<div class="actions"><button class="secondary" type="button" data-action="restart">같은 화면 다시 평가하기</button></div>';
     }
     body.innerHTML = html;
+    const reopen = shell.querySelector(".reopen");
+    if (reopen) {
+      reopen.textContent = state.stage === "task" ? "✎ 답변 입력하기" : "📝 테스트 안내 열기";
+      reopen.setAttribute("aria-label", reopen.textContent);
+    }
   }
   function updateState(changes) { Object.assign(state, changes); saveState(); render(); }
 
@@ -195,6 +200,9 @@
       collapsed = false; host.removeAttribute("data-collapsed");
     } else if (action === "start") {
       updateState({ stage: "task", startedAt: Date.now(), taskDate: dateKey, dateLabel, draft: "", answer: "", difficulty: null });
+      collapsed = true;
+      host.setAttribute("data-collapsed", "");
+      shell.querySelector(".reopen").focus();
     } else if (action === "answer" || action === "notfound") {
       const answer = action === "notfound" ? "정보를 찾지 못함" :
         String((body.querySelector("#taskAnswer") || {}).value || "").trim();
