@@ -38,6 +38,7 @@ h2{margin:0 0 10px;font-size:15px}
 .floors{display:flex;gap:8px;margin:16px 0 12px;overflow-x:auto}
 .floors button{border:1px solid var(--ln);background:var(--sf);border-radius:999px;padding:6px 18px;font-weight:700;cursor:pointer;color:var(--mu)}
 .floors button[aria-pressed="true"]{background:var(--br);border-color:var(--br);color:var(--sf)}
+.floors button:disabled{opacity:.45;cursor:not-allowed;border-style:dashed;background:var(--sf);color:var(--mu)}
 .sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap;background:var(--bs);border-radius:10px;padding:10px 16px;margin-bottom:12px}
 .sum b{font-size:20px;color:var(--br)}
 .sum span{color:var(--mu);font-size:13px}
@@ -226,8 +227,8 @@ function render(){
  $("#gmsg").textContent=`${st.floor}층은 시연용 지도가 준비되지 않았어요. 목표 서가는 4층에 있어요.`;
  document.querySelectorAll("#floors button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.f===st.floor));
 }
-$("#floors").innerHTML=[1,2,3,4,5,6].map(f=>`<button data-f="${f}" aria-pressed="${f===4}">${f}F</button>`).join("");
-$("#floors").onclick=e=>{const b=e.target.closest("button");if(b){st.floor=+b.dataset.f;render()}};
+$("#floors").innerHTML=[1,2,3,4,5,6].map(f=>`<button type="button" data-f="${f}" aria-pressed="${f===4}" ${f!==4?'disabled title="해당 층은 시연용 지도가 준비되지 않았습니다" aria-label="'+f+'층 지도 준비 중"':""}>${f}F</button>`).join("");
+$("#floors").onclick=e=>{const b=e.target.closest("button:not(:disabled)");if(b){st.floor=+b.dataset.f;render()}};
 $("#back").onclick=()=>{st.floor=4;render()};
 const chip=(n,v,html,ck)=>`<label class="chip"><input type="radio" name="${n}" value="${v}" ${ck?"checked":""}>${html}</label>`;
 $("#starts").innerHTML=STARTS.map(s=>chip("start",s.id,`<i style="background:var(--${s.c}-f);border-color:var(--${s.c}-s)"></i>${s.label}`,s.id===st.start)).join("");
