@@ -6,7 +6,7 @@ const msg = (text, error = false) => {
   $("message").textContent = text;
   $("message").classList.toggle("error", error);
 };
-const searchUrl = variant === "improved" ? "../improved/search.html" : "../original/";
+const searchUrl = "../" + variant + "/";
 $("return-link").href = searchUrl;
 let currentUser = "";
 let unsubscribeBooks = () => {};
