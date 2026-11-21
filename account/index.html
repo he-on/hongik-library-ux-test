@@ -32,7 +32,9 @@ input{width:100%;padding:11px;border:1px solid #bac5d8;border-radius:6px}
 .book-holdings{padding:12px 14px;border-radius:8px;background:#f0f4fc;border:1px solid #dce4f5;font-size:13px;line-height:1.75}
 .book-holdings strong{display:block;margin-bottom:5px}
 .book-holdings>div{white-space:pre-line;overflow-wrap:anywhere}
-.book-links{display:flex;flex-wrap:wrap;gap:18px;margin-top:12px;font-size:13px}
+.book-links{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;margin-top:12px;font-size:13px}
+.book-links .shelf-map-link{display:inline-flex;align-items:center;justify-content:center;min-height:40px;background:#193cb7;border-color:#193cb7;color:#fff;text-decoration:none;font-size:14px}
+.book-links .shelf-map-link:hover,.book-links .shelf-map-link:focus-visible{background:#102b91;border-color:#102b91}
 .book-title{font-weight:bold}.book-by{color:#67748a;font-size:13px}
 .account-code{font-size:20px;font-weight:800;letter-spacing:.04em;color:#193cb7;overflow-wrap:anywhere}
 [hidden]{display:none!important}
@@ -78,6 +80,6 @@ input{width:100%;padding:11px;border:1px solid #bac5d8;border-radius:6px}
 </section>
 <div class="row" style="margin-top:20px"><a id="return-link" href="../original/">← 도서 검색으로 돌아가기</a></div>
 </main>
-<script type="module" src="../shared/account-page.js?v=20261120-improved-only-v1"></script>
+<script type="module" src="../shared/account-page.js?v=20261121-shelf-map-v1"></script>
 </body>
 </html>
