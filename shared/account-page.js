@@ -67,6 +67,36 @@ function safeDetailUrl(raw) {
       url.searchParams.has("docid") ? url.href : "";
   } catch { return ""; }
 }
+// Shelf map is the improved UX prototype, not a verified book-specific floorplan.
+function shelfMapUrl(book) {
+  const url = new URL("../improved/shelf-map.html", location.href);
+  url.searchParams.set("title", String(book.title || "").slice(0,250));
+  url.searchParams.set("from", "library");
+  let query = String(book.title || "").slice(0,250);
+  try {
+    const source = new URL(book.sourceUrl);
+    if (source.origin === location.origin && source.pathname.includes("/improved/")) {
+      query = source.searchParams.get("q") || query;
+    }
+  } catch {}
+  url.searchParams.set("q", query.slice(0,250));
+  const details = book.details || {};
+  for (const [field,param,max] of [
+    ["library","holdingLibrary",120],
+    ["location","holdingLocation",250],
+    ["callNumber","holdingCallNumber",140],
+    ["availability","holdingAvailability",80]
+  ]) {
+    const value = String(details[field] || "").trim();
+    if (value) url.searchParams.set(param,value.slice(0,max));
+  }
+  return url.href;
+}
+function hasPhysicalShelf(book) {
+  const materialType = String(book.details?.materialType || "").trim();
+  // Unknown types remain eligible so older saved books still offer a map preview.
+  return !/(전자자료|전자책|학술논문|학술지|데이터베이스)/.test(materialType);
+}
 function paintBooks(books) {
   const list = $("bookmarks");
   list.replaceChildren();
@@ -141,6 +171,14 @@ function paintBooks(books) {
     }
     const actions = document.createElement("div");
     actions.className = "book-links";
+    if (hasPhysicalShelf(book)) {
+      const map = document.createElement("a");
+      map.className = "btn shelf-map-link";
+      map.href = shelfMapUrl(book);
+      map.textContent = "서가 위치 보기";
+      map.setAttribute("aria-label", book.title + " 서가 위치 보기 (시연용 지도)");
+      actions.append(map);
+    }
     const source = document.createElement("a");
     source.href = safeSource(book.sourceUrl);
     source.textContent = "검색 결과로 이동";
