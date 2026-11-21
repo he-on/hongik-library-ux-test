@@ -285,7 +285,7 @@ $("#sf").onsubmit=e=>{
  if(!query){input.focus();toast("검색어를 입력해 주세요.");return}
  const field=$("#sf select").value;
  if(field==="주제어"){toast("주제어별 검색은 이번 시연에서 제공되지 않습니다. 제목 또는 저자로 검색해 주세요.");return}
- const selected=$(".stabs button").find(b=>b.getAttribute("aria-selected")==="true")?.textContent.trim();
+ const selected=$$(".stabs button").find(b=>b.getAttribute("aria-selected")==="true")?.textContent.trim();
  const view=selected==="소장자료"?"book":selected==="전자자료"?"electronic":"all";
  const params=new URLSearchParams({q:query,view,pg:"1"});
  if(field==="제목"||field==="저자")params.set("field",field);
