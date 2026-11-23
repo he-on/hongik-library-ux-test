@@ -145,6 +145,7 @@ dialog#book-detail::backdrop{background:#141a2e99}
  .bar select{font-size:12px;padding:6px}
  #book-detail .book-info{grid-template-columns:90px 1fr}
 }
+.holding-select{display:grid;gap:6px;margin:0 0 16px}.holding-select label{font-size:13px;font-weight:700;color:var(--muted)}.holding-select select{width:100%;min-width:0;max-width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);font-size:13px}
 </style><meta name="ux-build" content="2026-11-20-improved-bookmark-visibility-v2"><!-- Shared UX task survey: original/improved comparison -->
 <script src="../shared/ux-task-panel.js?v=20261121-task-v3" defer></script>
 </head>
@@ -185,7 +186,7 @@ dialog#book-detail::backdrop{background:#141a2e99}
   </div>
 </main>
 <p class="prototype-note"><strong>UX 디자인 8조 · 개선 UI 시연</strong> — 도서 검색은 공개 API를 사용하며, 연결 실패 시 제공된 ‘아몬드’ 저장 결과로 테스트합니다. 서가 지도와 상세 단계는 실제 소장·평면 정보와 일치하지 않을 수 있습니다.</p>
-<dialog id="book-detail" aria-labelledby="book-detail-title"><button type="button" class="dialog-close" aria-label="창 닫기">×</button><h2 id="book-detail-title"></h2><dl id="book-detail-info" class="book-info"></dl><div class="modal-actions"><a id="primo-link" class="btn btn-line" target="_blank" rel="noopener noreferrer" style="display:none;text-decoration:none">원본 상세정보</a><button type="button" class="btn btn-primary" id="detail-map">서가 위치 안내 (시연)</button></div></dialog>
+<dialog id="book-detail" aria-labelledby="book-detail-title"><button type="button" class="dialog-close" aria-label="창 닫기">×</button><h2 id="book-detail-title"></h2><dl id="book-detail-info" class="book-info"></dl><div class="holding-select" id="holding-choice-container" hidden><label for="holding-choice">서가 위치를 확인할 소장처 선택</label><select id="holding-choice" aria-label="소장 위치 선택"></select></div><div class="modal-actions"><a id="primo-link" class="btn btn-line" target="_blank" rel="noopener noreferrer" style="display:none;text-decoration:none">원본 상세정보</a><button type="button" class="btn btn-primary" id="detail-map">서가 위치 안내 (시연)</button></div></dialog>
 <script src="../shared/ux-feedback.js?v=20261121-v1"></script>
 
 <script>
