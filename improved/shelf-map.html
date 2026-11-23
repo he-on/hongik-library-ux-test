@@ -199,9 +199,9 @@ function hMap(){
 }
 function qMap(){
  let o='';
- // Outline traced from Q동 7층 전체 도면 (752x533), preserving its step-shaped
- // connection between H5 reference wing and the Q7 periodicals wing.
- o+='<path class="outline" d="M707 5Q707 0 702 0H574Q569 0 569 5V43Q569 48 564 48H458Q453 48 453 53V137Q453 142 448 142H267Q262 142 262 147V273Q262 278 257 278H223Q218 278 218 273V264H234V39Q234 34 229 34H5Q0 34 0 39V260Q0 265 5 265H157V273Q157 278 152 278H107Q102 278 102 283V512Q102 517 107 517H382Q387 517 387 512V353Q387 348 392 348H540Q545 348 545 353V372Q545 377 550 377H731Q736 377 736 372V147Q736 142 731 142H712Q707 142 707 137Z"/>';
+ // Q7 outline retraced from the original 752x533 transparent drawing: the small
+ // H5-to-Q7 connection and the lower-right step are explicitly preserved.
+ o+='<path class="outline" d="M706 2L703 0H573L569 4V44L565 47H455L452 51V138L448 141H263L260 145V275L256 278H221L217 275V267L220 264H233L236 261V36L232 33H1L3 35L1 37V260L3 262L0 263V264H156L159 267V275L155 278H105L102 281V513L103 515L106 517H383L385 516L387 513V351L391 348H541L545 351V373L548 377H733L736 374V146L733 142H711L707 139V4Z"/>';
  // H동 5층 자료실 wing, staircase, and connecting corridor.
  o+=rect(1,42,157,215,"#d9d9d9","none",5);
  o+=txt(80,150,"H동 5층",11);o+=txt(80,166,"참고자료실",11);
@@ -229,7 +229,14 @@ function qMap(){
  return o;
 }
 function currentLandmark(){return landmarks[building]?.find(p=>p.id===state.start)||landmarks[building]?.[0]}
-function getDestination(){return selectedZone?[selectedZone.x,selectedZone.y]:null}
+function getDestination(){
+ if(!selectedZone)return null;
+ if(building==="Q"){
+  // Stop at the shelf entrance, not inside the shelving blocks.
+  return selectedZone.label==="000–399"?[209,341]:[625,235];
+ }
+ return [selectedZone.x,selectedZone.y];
+}
 function routePoints(){
  const start=currentLandmark(),dst=getDestination();
  if(!start||!dst)return [];
@@ -251,12 +258,25 @@ function routePoints(){
   if(y<=112)return [a,[start.x,176],[x,176],[x,y]];
   return [a,[start.x,173],[x,173],[x,y]];
  }
- // For Q, preserve the entry-to-lower-left zigzag shown in the provided map.
- const hub=[341,214];
- const prefix=state.start==="entry"?[a]:[a,[start.x,284],[341,284],hub];
- if(x<300)return [...prefix,[341,285],[230,285],[230,367],[x,367],[x,y]];
- if(x>560)return [...prefix,[452,214],[452,141],[x,141],[x,y]];
- return [...prefix,[x,285],[x,y]];
+ // Q7: use the accessible corridors around the periodicals and magazine areas.
+ // Earlier paths passed through the 000–399 / 700–999 shelf blocks.
+ const qAccess={
+  entry:[[341,214],[341,284]],
+  corridor:[[189,264],[189,284],[230,284],[341,284]],
+  desk:[[426,326],[468,341],[468,284],[341,284]],
+  paper:[[625,358],[550,341],[550,284],[341,284]],
+  pc:[[305,380],[322,340],[391,340],[391,284],[341,284]],
+  copy:[[256,381],[244,381],[244,284],[341,284]],
+  old:[[718,211],[695,240],[550,240],[550,284],[341,284]],
+  newspaper:[[312,312],[391,312],[391,284],[341,284]]
+ };
+ const prefix=qAccess[state.start]||qAccess.entry;
+ if(x<300){
+  const lane=state.mode==="wide"?287:state.mode==="quiet"?285:283;
+  return [...prefix,[341,lane],[230,lane],[230,341],[x,y]];
+ }
+ const lane=state.mode==="wide"?250:state.mode==="quiet"?245:239;
+ return [...prefix,[341,lane],[625,lane],[x,y]];
 }
 function pathSvg(points){
  if(points.length<2)return "";
