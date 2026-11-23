@@ -49,6 +49,13 @@ main{max-width:1330px;margin:auto;padding:28px 26px 55px}h1{font-size:23px;color
 .map-layer.q-reference-map .path-dash{stroke:#ff9283;stroke-width:6;stroke-dasharray:9 10}
 .map-layer.q-reference-map .pin{fill:#ff6550}
 .map-layer.q-reference-map .clickable:focus-visible{filter:none}
+.map-viewport.q-original{background:#fff}
+.map-layer.q-reference-map .q-source-image{pointer-events:none}
+.map-layer.q-reference-map .q-hitbox{cursor:pointer}
+.map-layer.q-reference-map .q-hitbox rect{pointer-events:all}
+.map-layer.q-reference-map .q-hitbox:focus-visible{outline:none}
+.map-layer.q-reference-map .q-hitbox:focus-visible rect{stroke:#2854e8;stroke-width:3}
+.map-layer .path-dash{pointer-events:none}
 @media(max-width:1000px){.layout{gap:14px;grid-template-columns:minmax(0,1fr) 292px}main{padding:20px 14px}.card{padding:15px}.brand{font-size:19px}}
 @media(max-width:780px){.layout{grid-template-columns:minmax(0,1fr)}.brand{font-size:16px}.brand svg{width:24px}.headbar{min-height:60px;padding:7px 12px}.top-actions{gap:6px}.top-actions a{font-size:11px}.top-actions .home-link{padding:6px}.left-card{padding:13px}.floor-row button{padding:7px 13px;min-width:50px}main{padding:18px 10px}.room-name{font-size:19px}.mobile-note{display:block;color:var(--muted);font-size:11px;margin:6px 0}.map-canvas svg{min-width:720px}.side-card{padding:16px}.target{font-size:20px}.sum strong{font-size:18px}h1{font-size:21px;margin-bottom:12px}}
 </style>
@@ -206,34 +213,23 @@ function hMap(){
  return o;
 }
 function qMap(){
- let o='';
- // Q7 outline retraced from the original 752x533 transparent drawing: the small
- // H5-to-Q7 connection and the lower-right step are explicitly preserved.
- o+='<path class="outline" d="M706 2L703 0H573L569 4V44L565 47H455L452 51V138L448 141H263L260 145V275L256 278H221L217 275V267L220 264H233L236 261V36L232 33H1L3 35L1 37V260L3 262L0 263V264H156L159 267V275L155 278H105L102 281V513L103 515L106 517H383L385 516L387 513V351L391 348H541L545 351V373L548 377H733L736 374V146L733 142H711L707 139V4Z"/>';
- // H동 5층 자료실 wing, staircase, and connecting corridor.
- o+=rect(1,42,157,215,"#d9d9d9","none",5);
- o+=txt(80,150,"H동 5층",11);o+=txt(80,166,"참고자료실",11);
- o+=rect(166,45,64,46,"#d4efd0","#299239",5)+txt(198,68,"복사기",11);
-  // The upper right 700–999 shelves consist of TWO separate adjacent blue shapes.
- const up=selectedZone?.label==="700–999";
- o+=rect(460,56,105,175,up?"#3456e4":"#e7ecff","none",5);
- o+=rect(575,9,125,222,up?"#3456e4":"#e7ecff","none",5);
- o+=txt(582,140,"700 ≫ 999",11,up?"#fff":"#595959");
- o+=label(115,347,127,124,"000 ≫ 399","","11","000–399");
- // Central periodicals, 안내, magazines, and stair block.
-  o+=rect(254,475,87,40,"#d9d9d9","none",4)+txt(298,496,"계단",11);
- o+=landmarkNode("entry","Q동 7층|출입구",303,159,76,53,"#00a79c","#cdefec",2);
- o+=landmarkNode("corridor","연결|통로",166,239,45,50,"#269d30","#d4efd0",2);
- o+=landmarkNode("desk","안내",391,316,71,20,"#d99916","#ffedb8");
- o+=landmarkNode("paper","신간잡지",567,348,116,20,"#ee7900","#ffdfc4");
- o+=landmarkNode("pc","검색|PC",293,347,24,67,"#b341b1","#f0d6ef",2);
- o+=landmarkNode("copy","복사기",245,347,24,67,"#269d30","#d4efd0");
- o+=landmarkNode("old","과월|신문",708,150,20,122,"#ff6550","#ffc4c4",2);
- o+=landmarkNode("newspaper","금일신문 / 이달의잡지",245,293,137,43,"#65749b","#e7ecff");
- o+=rect(265,218,25,60,"#ffedb8","#d99916",5)+txt(277,246,"안",11)+txt(277,260,"내",11);
- o+=rect(361,347,21,164,"#ffdfc4","#ee7900",4)+txt(372,402,"신",11)+txt(372,416,"간",11)+txt(372,430,"잡",11)+txt(372,444,"지",11);
-  o+=rect(472,317,70,19,"#ffdfc4","#ee7900",4)+txt(507,326,"신간잡지",10);
- o+=rect(253,446,88,20,"#ffedb8","#d99916",4)+txt(297,455,"안내",10);
+ /* Draw the supplied Q7 PNG as an image, not a redrawn SVG map. Keep interactive
+    hit targets invisible so original typography, colors and dimensions remain. */
+ const areas=[
+  ["entry","7층 출입구",303,159,76,53],
+  ["corridor","연결통로",166,239,45,50],
+  ["desk","안내데스크",391,316,71,20],
+  ["paper","신간잡지",567,348,116,20],
+  ["pc","검색 PC",293,347,24,67],
+  ["copy","복사기",245,347,24,67],
+  ["old","과월신문",708,150,20,122],
+  ["newspaper","금일신문·이달의잡지",245,293,137,43]
+ ];
+ let o='<image class="q-source-image" href="./assets/q7-reference.png" x="0" y="0" width="752" height="533" preserveAspectRatio="none" role="img" aria-label="Q동 7층 원본 서가 도면"/>';
+ o+=areas.map(([id,name,x,y,w,h])=>'<g class="q-hitbox" data-start="'+id+'" tabindex="0" role="button" aria-label="'+name+'에서 출발"><rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="3" fill="transparent" stroke="none"/></g>').join("");
+ if(selectedZone?.label==="700–999"){
+  o+='<rect class="q-selected-outline" x="573" y="7" width="130" height="225" rx="5" fill="none" stroke="#2553e8" stroke-width="3" stroke-dasharray="7 5" pointer-events="none"/>';
+ }
  return o;
 }
 function currentLandmark(){return landmarks[building]?.find(p=>p.id===state.start)||landmarks[building]?.[0]}
@@ -290,8 +286,12 @@ function pathSvg(points){
  if(points.length<2)return "";
  const coords=points.map(p=>p.join(",")).join(" ");
  const [sx,sy]=points[0],dst=points[points.length-1];
+ // The original Q7 PNG already contains the demo route and its red pins.
+ // Avoid drawing an identical second route or markers over the original image.
+ if(building==="Q"&&selectedZone?.label==="000–399"&&state.start==="entry"&&state.mode==="fast")return "";
  let o='<polyline class="path-dash" points="'+coords+'"/>';
- o+='<circle cx="'+sx+'" cy="'+sy+'" r="12" fill="'+(building==="Q"?"#ff6550":"#ff786c")+'" stroke="white" stroke-width="2"/>';
+ if(building==="Q")return o;
+ o+='<circle cx="'+sx+'" cy="'+sy+'" r="12" fill="#ff786c" stroke="white" stroke-width="2"/>';
  if(selectedZone)o+=marker(dst[0],dst[1]-4);
  return o;
 }
@@ -308,6 +308,7 @@ function renderMap(){
  }
  const w=building==="Q"?752:1173,h=building==="Q"?533:565;
  const points=routePoints();
+ $("#map-viewport").classList.toggle("q-original",building==="Q");
  const svg='<svg class="map-layer '+(building==="Q"?"q-reference-map":"")+'" viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" role="img" aria-label="'+roomName+' 지도, '+(selectedZone?selectedZone.label+" 구역":"서가 영역 확인 중")+'">' +
  '<defs><filter id="map-shadow" x="-10%" y="-10%" width="130%" height="140%"><feDropShadow dx="2" dy="5" stdDeviation="3" flood-opacity=".22"/></filter></defs>'+
  '<g>'+(building==="Q"?qMap():hMap())+'</g>'+pathSvg(points)+'</svg>';
