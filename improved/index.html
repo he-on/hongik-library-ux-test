@@ -149,6 +149,7 @@ footer{border-top:1px solid var(--ln);padding:20px 0 40px;font-size:12.5px;color
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.dr,.ov,.toast{transition:none}}
 
 /* Group 5 / Group 19 home redesign */
+.ov{z-index:200}.dr{z-index:201}.toast{z-index:250}
 :root{--bg:#fff;--ink:#121931;--br:#0034dc;--bs:#edf2ff;--ln:#dce3f2}body{background:white}.w{max-width:1604px;padding:0 32px}
 .top{z-index:100;border:0}.header-line{height:89px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;gap:14px}
 .logo{color:#0033d7;font-size:27px;font-weight:900;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;letter-spacing:-.05em}
@@ -231,7 +232,12 @@ footer{border-top:1px solid var(--ln);padding:20px 0 40px;font-size:12.5px;color
 <section class="sample-banner" aria-label="도서관 주요 알림"><div class="sample-banner-inner"><div class="banner-tag" id="banner-tag">[도서관 문화살롱 #3]</div><h1 id="banner-title">나만의 에세이 써보기</h1><p class="banner-description" id="banner-description">홍익대학교 도서관 관련 자유 주제 (도서관에서 있었던 일, 이용 경험, 추억 등)</p><div class="banner-info"><span>대상 &nbsp; 홍익대 전 구성원</span><span>접수방법 &nbsp; 도서관 홈페이지 온라인 접수</span><strong id="banner-date">2026. 11. 11.(수) – 11. 30.(월)</strong></div>
 <div class="banner-ctl"><button type="button" class="banner-circle" id="banner-prev" aria-label="이전 배너">‹</button><button type="button" class="banner-dot active" data-slide="0" aria-label="첫 번째 배너"></button><button type="button" class="banner-dot" data-slide="1" aria-label="두 번째 배너"></button><button type="button" class="banner-dot" data-slide="2" aria-label="세 번째 배너"></button><button type="button" class="banner-circle" id="banner-next" aria-label="다음 배너">›</button></div>
 </div></section>
-<div class="guide"><div class="w gin">
+<main class="w">
+<section class="home-feature" id="news">
+<div class="card notice"><h2>공지사항</h2><div class="tabs" id="nt"><button aria-pressed="true" data-k="전체">전체</button><button aria-pressed="false" data-k="일반">일반공지</button><button aria-pressed="false" data-k="학술">학술공지</button></div><ul class="nl" id="nl"></ul></div>
+<button type="button" class="promotion" data-na><strong>졸업생 및 수료생<br>도서관 이용 안내</strong><small>도서관 서비스 이용 정보 확인하기</small></button>
+<div class="card infographic"><h2>인포그래픽</h2><p>인기대출 도서 현황 (최근 1개월간)</p><div class="infograph-line"><span>데미안</span><i style="width:95%"></i><b>7</b></div><div class="infograph-line"><span>현대미술의 이해</span><i style="width:90%"></i><b>7</b></div><div class="infograph-line"><span>디자인의 디자인</span><i style="width:75%"></i><b>6</b></div></div></section>
+<div class="guide"><div class="gin">
  <div><small>LIBRARY GUIDE</small><strong>도서관 길잡이</strong><span style="font-size:12.5px;color:var(--mu)">원하는 자료를 찾고, 서가까지 가는 3단계</span></div>
  <ol class="steps" style="list-style:none">
   <li><a href="./search.html"><i>1</i><div><b>자료 검색</b><span>도서관, 자료 유형</span></div></a></li>
@@ -240,11 +246,8 @@ footer{border-top:1px solid var(--ln);padding:20px 0 40px;font-size:12.5px;color
  </ol>
 </div></div>
 
-<main class="w">
-<section class="home-feature" id="news">
-<div class="card notice"><h2>공지사항</h2><div class="tabs" id="nt"><button aria-pressed="true" data-k="전체">전체</button><button aria-pressed="false" data-k="일반">일반공지</button><button aria-pressed="false" data-k="학술">학술공지</button></div><ul class="nl" id="nl"></ul></div>
-<button type="button" class="promotion" data-na><strong>졸업생 및 수료생<br>도서관 이용 안내</strong><small>도서관 서비스 이용 정보 확인하기</small></button>
-<div class="card infographic"><h2>인포그래픽</h2><p>인기대출 도서 현황 (최근 1개월간)</p><div class="infograph-line"><span>데미안</span><i style="width:95%"></i><b>7</b></div><div class="infograph-line"><span>현대미술의 이해</span><i style="width:90%"></i><b>7</b></div><div class="infograph-line"><span>디자인의 디자인</span><i style="width:75%"></i><b>6</b></div></div></section>
+
+
 
  <section class="sec" id="browse">
   <div class="sh"><div><small>BROWSE</small><h2>무엇을 찾으세요?</h2><p>하고 싶은 일에 맞춰 4개 분류로 모았어요. 더 많은 메뉴는 전체메뉴에서 볼 수 있어요.</p></div><button class="nb" data-g="">전체 메뉴 열기</button></div>
