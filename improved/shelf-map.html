@@ -1,280 +1,316 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="light">
-<meta name="theme-color" content="#F3F5FB">
-<title>서가 위치 안내 · 중앙도서관 H동 4층</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light"><meta name="theme-color" content="#F4F6FC">
+<meta name="ux-build" content="2026-11-23-h4-q7-holding-mapped-v1">
+<title>서가 위치 찾기 | 홍익대학교 중앙도서관 UX</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root{
- --bg:#F3F5FB;--sf:#FFFFFF;--ink:#141A2E;--mu:#586178;--ln:#DCE1EE;--br:#1F3FD1;--bs:#E7ECFF;--rt:#E0245E;
- --st-f:#FFE0C7;--st-s:#E07A2D;--el-f:#CDEFEC;--el-s:#1E9F97;--dr-f:#D4EFD0;--dr-s:#45A044;--dk-f:#FFEDB8;--dk-s:#D39B12;--bn-f:#F0D6EF;--bn-s:#B35DAD;
- --rd-f:#E4EBF6;--rd-s:#8DA1C4;--sh:#CBD5E3;--sh-s:#9FB0C8;--tg:#2F4B8A;--room:#EAEFF6;--warn-bg:#FFF4DC;--warn:#8A5A00;
- box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
-
-
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em}
-button,input{font:inherit;color:inherit}
-:focus-visible{outline:3px solid var(--br);outline-offset:2px}
-.page{max-width:1180px;margin:0 auto;padding:20px 24px 40px}
-.grid{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
-.card{background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:20px}
-.card+.card{margin-top:16px}
-.head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-.head small{color:var(--mu);font-size:13px}
-h1{margin:0;font-size:21px;line-height:1.3}
-h2{margin:0 0 10px;font-size:15px}
-.pill{font-size:12px;font-weight:700;color:var(--br);background:var(--bs);border-radius:999px;padding:2px 10px;white-space:nowrap}
-.floors{display:flex;gap:8px;margin:16px 0 12px;overflow-x:auto}
-.floors button{border:1px solid var(--ln);background:var(--sf);border-radius:999px;padding:6px 18px;font-weight:700;cursor:pointer;color:var(--mu)}
-.floors button[aria-pressed="true"]{background:var(--br);border-color:var(--br);color:var(--sf)}
-.floors button:disabled{opacity:.45;cursor:not-allowed;border-style:dashed;background:var(--sf);color:var(--mu)}
-.sum{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap;background:var(--bs);border-radius:10px;padding:10px 16px;margin-bottom:12px}
-.sum b{font-size:20px;color:var(--br)}
-.sum span{color:var(--mu);font-size:13px}
-.map{position:relative;border:1px solid var(--ln);border-radius:12px;overflow:hidden;background-color:var(--bg);background-image:linear-gradient(var(--ln) 1px,transparent 1px),linear-gradient(90deg,var(--ln) 1px,transparent 1px);background-size:24px 24px}
-.map svg{display:block;width:100%;height:auto}
-.ghost{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:color-mix(in srgb,var(--sf) 88%,transparent);text-align:center;padding:24px}
-.map.off .ghost{display:flex}
-.t{fill:var(--ink);font-weight:500;pointer-events:none}.t.w{fill:#fff;font-weight:700}.t.b{font-weight:700}
-.bld{fill:var(--sf);stroke:var(--sh-s);stroke-width:6}
-.room{fill:var(--room);stroke:var(--ln);stroke-width:1.5}
-.rd{fill:var(--rd-f);stroke:var(--rd-s);stroke-width:2;stroke-dasharray:6 5}
-.shelf{fill:var(--sh);stroke:var(--sh-s);stroke-width:2}
-.tgt{fill:var(--tg);stroke:var(--tg);stroke-width:2}
-.lm{cursor:pointer}.lm rect,.lm circle{stroke-width:2.5}
-.lm.sel rect,.lm.sel circle{stroke-width:6}
-.lm:focus-visible{outline:none}.lm:focus-visible rect{stroke:var(--br);stroke-width:6}
-.st rect{fill:var(--st-f);stroke:var(--st-s)}.el rect{fill:var(--el-f);stroke:var(--el-s)}.dr rect{fill:var(--dr-f);stroke:var(--dr-s)}.dk rect{fill:var(--dk-f);stroke:var(--dk-s)}.bn rect,.bn circle{fill:var(--bn-f);stroke:var(--bn-s)}
-.bn rect{fill:transparent;stroke:none}
-.rline{fill:none;stroke-linecap:round;stroke-linejoin:round}
-.under{stroke:var(--sf);stroke-width:12}
-.dash{stroke:var(--rt);stroke-width:5;stroke-dasharray:11 9;animation:flow 1.1s linear infinite}
-@keyframes flow{to{stroke-dashoffset:-20}}
-@media (prefers-reduced-motion:reduce){.dash{animation:none}}
-.start{fill:var(--rt);stroke:var(--sf);stroke-width:4}
-.legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin:14px 0 0;padding:0;list-style:none;font-size:13px;color:var(--mu)}
-.legend i{display:inline-block;width:13px;height:13px;border-radius:3px;margin-right:6px;vertical-align:-2px;border:2px solid}
-.note{margin-top:14px;border:1px dashed var(--ln);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--mu)}
-.warn{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:10px 14px;font-size:13px;margin-top:16px}
-.tbadge{display:flex;gap:6px;margin:8px 0 6px}
-.tgt-title{font-size:19px;font-weight:700;margin:2px 0}
-.mu{color:var(--mu);font-size:13px}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{position:relative;display:flex;align-items:center;gap:8px;border:1px solid var(--ln);border-radius:10px;padding:8px 12px;cursor:pointer;font-size:14px;background:var(--sf)}
-.chip input{position:absolute;opacity:0;inset:0;cursor:pointer}
-.chip:has(input:checked){border-color:var(--br);background:var(--bs);font-weight:700;color:var(--br)}
-.chip:has(input:focus-visible){outline:3px solid var(--br);outline-offset:2px}
-.chip i{width:12px;height:12px;border-radius:3px;border:2.5px solid}
-.seg{display:grid;grid-template-columns:1fr;gap:8px}
-.seg .chip{flex-direction:column;align-items:flex-start;gap:0}
-.seg small{font-weight:400;color:var(--mu);font-size:12px}
-.seg .chip:has(input:checked) small{color:var(--br)}
-ol.steps{margin:0;padding:0;list-style:none;counter-reset:s}
-ol.steps li{counter-increment:s;display:flex;gap:12px;padding:8px 0;border-top:1px solid var(--ln);font-size:14px}
-ol.steps li:first-child{border-top:0}
-ol.steps li::before{content:counter(s);flex:none;width:24px;height:24px;border-radius:50%;background:var(--bs);color:var(--br);font-weight:700;font-size:13px;display:grid;place-items:center}
-.btn{border:1px solid var(--br);background:var(--br);color:var(--sf);border-radius:8px;padding:8px 16px;font-weight:700;cursor:pointer}
-@media (max-width:760px){
- .page{padding:12px 12px 32px}.grid{grid-template-columns:1fr}.card{padding:16px}h1{font-size:19px}
- .legend{font-size:12px;gap:6px 12px}.sum b{font-size:18px}.chip{padding:10px 12px}
- .note.desk{display:none}
-}
+:root{--blue:#0039db;--blue-soft:#e8edff;--ink:#121c32;--muted:#647086;--line:#d4dcef;--page:#f4f6fc;--red:#ff8378;--purple:#ab37b0;--orange:#ee8b18;--green:#218a29;--teal:#00a299;box-sizing:border-box}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:var(--page);font:15px/1.6 "Noto Sans KR",sans-serif}button,select{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}:focus-visible{outline:3px solid #2453fa;outline-offset:3px}
+header{background:#fff;border-bottom:1px solid var(--line)}.headbar{min-height:72px;padding:8px 26px;max-width:1560px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{color:#0034d8;font-size:23px;font-weight:900;letter-spacing:-.045em;white-space:nowrap;display:inline-flex;align-items:center;gap:7px}.brand svg{width:32px;height:20px;flex:none}.brand .light{font-weight:600}
+.top-actions{display:flex;gap:14px;align-items:center;color:#435674}.top-actions a{font-size:13px}.top-actions a:hover{color:var(--blue)}.top-actions .home-link{border:1px solid var(--line);padding:6px 12px;border-radius:99px}
+main{max-width:1330px;margin:auto;padding:28px 26px 55px}h1{font-size:23px;color:var(--blue);margin:0 0 20px;font-weight:900}h2{font-size:20px;margin:0;font-weight:800;line-height:1.35}.layout{display:grid;grid-template-columns:minmax(0,1fr) 333px;gap:35px;align-items:start}.card{border:1px solid var(--line);background:white;border-radius:16px;padding:20px;margin-bottom:16px;min-width:0}.left-card{border-color:#b3b3b3}.room{font-size:14px;color:#686868}.room-name{font-size:22px;font-weight:800;color:#606060;margin:1px 0 10px}.heading-row{display:flex;align-items:center;justify-content:space-between;gap:8px}.tiny{font-size:12px;color:var(--muted)}.pill{border:0;color:var(--blue);font-size:12px;background:var(--blue-soft);border-radius:20px;padding:5px 11px;font-weight:700}
+.floor-row{display:flex;gap:8px;overflow-x:auto;padding:6px 0 12px;margin-top:10px}.floor-row button{flex:none;border-radius:99px;border:1px solid var(--line);background:#fff;color:#435472;padding:7px 16px;font-weight:700;min-width:53px}.floor-row button[aria-pressed=true]{color:white;background:var(--blue);border-color:var(--blue)}
+.sum{display:flex;align-items:baseline;gap:14px;background:var(--blue-soft);border-radius:10px;padding:10px 15px;margin-bottom:15px;flex-wrap:wrap}.sum strong{font-size:20px;color:var(--blue)}.sum span{font-size:12px;color:#465d84}
+.map-viewport{position:relative;overflow-x:auto;overflow-y:hidden;scrollbar-color:#b8c3d9 transparent;border:2px solid #dbe4ff;border-radius:11px;max-width:100%;background:#f1f4fc;scroll-behavior:smooth}
+.map-canvas{width:max-content;min-width:100%;position:relative}.map-canvas svg{width:100%;height:auto;display:block;min-width:720px}
+.map-viewport::-webkit-scrollbar{height:9px}.map-viewport::-webkit-scrollbar-thumb{background:#b9c5d7;border-radius:20px}
+.map-error{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:40px 20px;background:#f5f7ff;border-radius:10px;min-height:330px;text-align:center}.map-error[hidden]{display:none}
+.map-error strong{font-size:18px}.map-error p{margin:0;color:var(--muted);max-width:410px}.back{background:var(--blue);color:white;border:0;border-radius:8px;padding:8px 16px;font-weight:700}
+.mobile-note{display:none}.section-label{color:#666;font-size:14px}.target{font-size:23px;font-weight:900;line-height:1.45}.call{color:var(--muted);margin:10px 0 0;font-size:14px;overflow-wrap:anywhere}.side-card{padding:21px}.side-card h3{font-size:15px;font-weight:600;color:#777;margin:0 0 15px}
+.chips{display:flex;flex-wrap:wrap;gap:9px}.chips label{position:relative;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:10px;padding:8px 11px;background:#fff;font-size:13px;cursor:pointer}.chips label:has(input:checked){border-color:var(--blue);background:var(--blue-soft);color:var(--blue);font-weight:800}.chips label:has(input:focus-visible){outline:3px solid var(--blue)}.chips input,.modes input{position:absolute;opacity:0;width:1px;height:1px}.square{width:12px;height:12px;border-radius:3px;border:2px solid}
+.modes{display:grid;gap:9px}.modes label{position:relative;border-radius:9px;border:1px solid var(--line);background:white;padding:8px 11px;display:block;cursor:pointer}.modes label:has(input:checked){border-color:var(--blue);background:var(--blue-soft);color:var(--blue)}.modes b{display:block;font-size:14px}.modes small{display:block;font-size:12px;color:#687990}.modes label:has(input:checked) small{color:#2850bd}
+.steps{list-style:none;margin:0;padding:0;counter-reset:step}.steps li{display:flex;gap:9px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px;line-height:1.55;align-items:start}.steps li:last-child{border:0}.steps li:before{counter-increment:step;content:counter(step);background:var(--blue-soft);color:var(--blue);flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:100%;font-size:12px;font-weight:800}
+.demo-note{font-size:12px;color:#677083;margin:12px 0 0}.selected-book{border-left:3px solid var(--blue);padding:2px 12px;margin-bottom:20px;color:#3f506b;font-size:13px}.selected-book[hidden]{display:none}.selected-book strong{color:var(--blue)}.selected-book .meta{margin-top:4px;overflow-wrap:anywhere}.panel-header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.notice{font-size:12px;line-height:1.6;color:#67738b;margin:11px 0 0}.foot{font-size:12px;color:#758098;text-align:center;padding:16px}
+.map-layer .outline{fill:white;stroke:#626262;stroke-width:2.4;filter:url(#map-shadow)}
+.map-layer .room-shape{fill:#e7edff;stroke:#e1e8ff;stroke-width:1.8}
+.map-layer .secondary{fill:#ddd;stroke:#ddd;stroke-width:1}
+.map-layer .control{stroke-width:1.7;rx:5}
+.map-layer text{font-family:"Noto Sans KR",sans-serif;font-size:12px;fill:#5a5d68;pointer-events:none}
+.map-layer .spot-label{font-size:13px;fill:#3b4150}
+.map-layer .zone-active{fill:#3257e8!important;stroke:#2448d5!important}
+.map-layer .zone-active-text{fill:#fff!important;font-weight:800}
+.map-layer .clickable{cursor:pointer}.map-layer .clickable:focus-visible{outline:none;filter:drop-shadow(0 0 5px #2850ff)}
+.map-layer .path-back{fill:none;stroke:#fff;stroke-width:10;stroke-linecap:round;stroke-linejoin:round}
+.map-layer .path-dash{fill:none;stroke:#ff897f;stroke-width:6;stroke-dasharray:13 11;stroke-linecap:butt;stroke-linejoin:round}
+.map-layer .pin{fill:#ff786c}.map-layer .pin-shadow{fill:#ff786c;stroke:#fff;stroke-width:2}
+@media(max-width:1000px){.layout{gap:14px;grid-template-columns:minmax(0,1fr) 292px}main{padding:20px 14px}.card{padding:15px}.brand{font-size:19px}}
+@media(max-width:780px){.layout{grid-template-columns:minmax(0,1fr)}.brand{font-size:16px}.brand svg{width:24px}.headbar{min-height:60px;padding:7px 12px}.top-actions{gap:6px}.top-actions a{font-size:11px}.top-actions .home-link{padding:6px}.left-card{padding:13px}.floor-row button{padding:7px 13px;min-width:50px}main{padding:18px 10px}.room-name{font-size:19px}.mobile-note{display:block;color:var(--muted);font-size:11px;margin:6px 0}.map-canvas svg{min-width:720px}.side-card{padding:16px}.target{font-size:20px}.sum strong{font-size:18px}h1{font-size:21px;margin-bottom:12px}}
 </style>
-<!-- Beusable Journey Map tracking: paired with the existing UX prototype. -->
 <script type="text/javascript">(function(w,d,a){w.__beusablerumclient__={load:function(src){var b=d.createElement("script");b.src=src;b.async=true;b.type="text/javascript";d.getElementsByTagName("head")[0].appendChild(b)}};w.__beusablerumclient__.load(a+"?url="+encodeURIComponent(d.URL));})(window,document,"//rum.beusable.net/load/b261115e130800u338");</script>
-<style>
-/* Match W02 search's two-link responsive header. */
-.site-header{background:var(--sf);border-bottom:1px solid var(--ln)}
-.site-header .site-header-inner{max-width:1180px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:64px}
-.site-header .brand{flex:1 1 auto;min-width:0;color:inherit;text-decoration:none;font-weight:700;font-size:18px;line-height:1.35;overflow-wrap:break-word;word-break:keep-all}
-.site-header .brand small{display:block;font-weight:400;font-size:12px;color:var(--mu);line-height:1.2}
-.site-header nav{display:flex;flex:0 0 auto;align-items:center;font-size:14px}
-.site-header .header-library-link{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 0 8px 12px;color:var(--br);font-size:14px;font-weight:700;white-space:nowrap;text-decoration:none}
-.site-header .header-library-link:hover{text-decoration:underline;text-underline-offset:3px}
-/* Prevent the 6-floor navigation from imposing a wider min-content grid track. */
-.grid{grid-template-columns:minmax(0,1fr) 340px}
-.grid>*,.card,.floors,.map{min-width:0}
-@media(max-width:760px){.grid{grid-template-columns:minmax(0,1fr)}.grid>*,.card,.floors,.map{min-width:0;max-width:100%}}
-
-.selected-source{max-width:1180px;margin:12px auto 0;padding:10px 24px;color:var(--mu);font-size:12px}
-.selected-source strong{color:var(--br)}
-.selected-holdings{margin-top:10px;padding:12px 14px;background:var(--sf);border:1px solid var(--ln);border-radius:10px}
-.selected-holdings dl{display:grid;grid-template-columns:100px minmax(0,1fr);gap:6px 12px;margin:8px 0 0}
-.selected-holdings dt{font-weight:700;color:var(--mu)}
-.selected-holdings dd{margin:0;color:var(--ink);overflow-wrap:anywhere}
-.selected-source[hidden]{display:none}
-#svgbox svg{touch-action:manipulation}
-@media(max-width:760px){.site-header .site-header-inner{padding:8px 12px;min-height:60px;gap:8px}.site-header .brand{font-size:clamp(12px,3.8vw,16px)}.site-header .brand small{font-size:11px}.site-header .header-library-link{min-height:36px;padding-left:4px;font-size:13px}.selected-source{padding-left:12px;padding-right:12px}}
-@media(max-width:390px){.floors button{padding:7px 12px}.sum{gap:10px;padding:9px 10px}}
-</style><meta name="ux-build" content="2026-11-21-shelf-map-simple-header-v1"><!-- Shared UX task survey: original/improved comparison -->
 <script src="../shared/ux-task-panel.js?v=20261121-task-v3" defer></script>
 </head>
 <body>
-<header class="site-header"><div class="site-header-inner">
-  <a class="brand" href="./" aria-label="개선 UI 홈으로 이동">홍익대학교 중앙도서관<small>서가 위치 안내</small></a>
-  <nav aria-label="내 서재"><a class="header-library-link" href="../account/?ui=improved">내 서재</a></nav>
+<header><div class="headbar">
+ <a href="./" class="brand" aria-label="홍익대학교 중앙도서관 홈"><svg viewBox="0 0 30 21" fill="none" stroke="#0034d8" stroke-width="1.8" aria-hidden="true"><rect x="1" y="3" width="27" height="15"/><path d="M5 8h19M5 12h17"/></svg>홍익대학교 <span class="light">| 중앙도서관</span></a>
+ <nav class="top-actions" aria-label="상단 메뉴"><a class="home-link" href="./">홈</a><a href="./search.html">자료검색</a><a href="../account/?ui=improved">내 서재</a></nav>
 </div></header>
-<div class="selected-source" id="selected-source" hidden><strong id="selected-book"></strong> · 이 지도는 실제 도서의 소장 위치가 아닌 UX 평가용 4층 개념도입니다.</div>
-<div class="page"><div class="grid">
- <section class="card" aria-label="서가 지도">
-  <div class="head"><div><small>중앙도서관</small><h1>H동 4층 대출자료실</h1></div><span class="pill">2D 개념도</span></div>
-  <div class="floors" id="floors" role="group" aria-label="층 선택"></div>
-  <div class="sum" id="sum" aria-live="polite"></div>
-  <div class="map" id="map"><div id="svgbox"></div>
-   <div class="ghost"><p id="gmsg" style="margin:0"></p><button class="btn" id="back">4층 지도 보기</button></div></div>
-  <ul class="legend">
-   <li><i style="background:var(--st-f);border-color:var(--st-s)"></i>계단</li>
-   <li><i style="background:var(--el-f);border-color:var(--el-s)"></i>엘리베이터</li>
-   <li><i style="background:var(--dr-f);border-color:var(--dr-s)"></i>출입문</li>
-   <li><i style="background:var(--dk-f);border-color:var(--dk-s)"></i>안내 데스크</li>
-   <li><i style="background:var(--bn-f);border-color:var(--bn-s)"></i>빈백 휴게존</li>
-   <li><i style="background:var(--tg);border-color:var(--tg)"></i>목표 서가</li>
-   <li><i style="background:var(--rt);border-color:var(--rt);border-radius:50%"></i>추천 경로</li>
-  </ul>
-  <div class="note desk"><b>설계 포인트 W04</b> 실제 평면도가 확인되기 전이므로 정밀한 안내나 자동 위치 인식은 제공하는 것처럼 표현하지 않습니다. 위치·동선·서가 배치는 시연용입니다.</div>
+<main><h1>서가 위치 찾기</h1><div id="selected-book" class="selected-book" hidden></div>
+<div class="layout">
+ <section class="card left-card" aria-label="서가 위치 지도">
+  <div class="panel-header"><div><span class="room" id="library-label">중앙도서관</span><h2 class="room-name" id="room-title">H동 4층 대출자료실</h2></div><span class="pill" id="target-pill">시연용 2D 지도</span></div>
+  <div class="floor-row" id="floor-row" role="group" aria-label="층 선택"></div>
+  <div class="sum" id="summary" aria-live="polite"></div>
+  <div class="map-viewport" id="map-viewport">
+   <div class="map-canvas" id="map-canvas"></div>
+   <div class="map-error" id="map-error" role="status" aria-live="polite" hidden><strong>선택한 위치의 지도가 준비되지 않았어요.</strong><p id="error-description"></p><button class="back" id="return-map">지원되는 지도 보기</button></div>
+  </div>
+  <p class="mobile-note">지도는 좌우로 밀어서 전체 구역을 볼 수 있어요.</p>
+  <p class="demo-note">공간 구조는 제공된 UX 프로젝트 도면을 바탕으로 제작한 시연용 안내입니다. 경로와 거리는 실제 현장 측정값이 아닙니다.</p>
  </section>
-
- <aside>
-  <section class="card">
-   <small class="mu">목표 위치 (예시)</small>
-   <div class="tgt-title">H동 4층 대출자료실</div>
-   <div class="tbadge"><span class="pill">소장층 4F</span><span class="pill">목표 서가 C</span></div>
-   <div class="mu">청구기호 A–123.4 (시연용)</div>
-  </section>
-  <section class="card">
-   <h2>어디에서 출발하나요?</h2>
-   <div class="chips" id="starts" role="radiogroup" aria-label="출발 위치"></div>
-   <p class="mu" style="margin:10px 0 0">지도의 색칠된 장소를 눌러도 선택돼요.</p>
-  </section>
-  <section class="card">
-   <h2>이동 조건</h2>
-   <div class="seg" id="modes" role="radiogroup" aria-label="이동 조건"></div>
-  </section>
-  <section class="card">
-   <h2>현장 이동 안내</h2>
-   <ol class="steps" id="steps"></ol>
-  </section>
-  <div class="warn">자동 위치 추적, 정확한 최적 경로 계산, 책장 내 몇 번째 칸 표시는 이번 초기안에 포함하지 않습니다.</div>
+ <aside aria-label="서가 위치 선택과 경로 안내">
+  <section class="card side-card"><span class="section-label">목표 위치</span><div class="target" id="target-title">H동 4층 대출자료실</div><div id="target-chip" style="margin-top:7px"></div><div class="call" id="call-label"></div></section>
+  <section class="card side-card"><h3>출발 지점</h3><div class="chips" id="starts" role="radiogroup" aria-label="출발 위치"></div><p class="demo-note">지도에서 색칠된 장소를 눌러도 선택할 수 있어요.</p></section>
+  <section class="card side-card"><h3>이동 조건</h3><div class="modes" id="modes" role="radiogroup" aria-label="이동 경로 유형"></div></section>
+  <section class="card side-card"><h3>현장 이동 상세 안내</h3><ol class="steps" id="steps"></ol></section>
  </aside>
-</div></div>
-
+</div></main>
+<footer class="foot">홍익대학교 중앙도서관 UX 디자인 프로젝트 · 실제 도서관 공식 안내가 아닌 시연용 화면</footer>
 <script>
+(function(){
+"use strict";
 const $=s=>document.querySelector(s);
-const W=800,H=560,SC=0.06;
-const P={ST:[105,340],EL:[220,340],N0:[271,340],a:[366,340],b:[456,340],c:[546,340],d:[650,340],h0:[271,165],DESK:[325,165],h1:[366,165],h2:[456,165],T:[501,165],h3:[546,165],h4:[650,165],v0a:[271,420],h3a:[271,490],DOOR:[366,490],BN:[650,430]};
-const E=[["ST","EL"],["EL","N0"],["N0","a"],["a","b"],["b","c"],["c","d"],["h0","DESK","q"],["DESK","h1","q"],["h1","h2"],["h2","T"],["T","h3","q"],["h3","h4","q"],["h0","N0"],["N0","v0a"],["v0a","h3a"],["h3a","DOOR"],["DOOR","a","n"],["h1","a","n"],["h2","b","n"],["h3","c","n"],["h4","d"],["BN","d","q"]];
-const ADJ={};E.forEach(([a,b,f=""])=>{(ADJ[a]=ADJ[a]||[]).push([b,f]);(ADJ[b]=ADJ[b]||[]).push([a,f])});
-const STARTS=[{id:"elev",label:"엘리베이터 앞",node:"EL",c:"el"},{id:"stairs",label:"계단 앞",node:"ST",c:"st"},{id:"door",label:"4층 출입문",node:"DOOR",c:"dr"},{id:"desk",label:"안내 데스크",node:"DESK",c:"dk"},{id:"bean",label:"빈백 휴게존",node:"BN",c:"bn"},{id:"f1",label:"1층 출입 게이트",node:null,c:"dr"}];
-const MODES=[["fast","가장 빠른 길","거리가 가장 짧은 길"],["quiet","조용한 길","데스크, 열람석, 휴게존 앞을 피해요"],["wide","넓은 통로","좁은 서가 사이를 피해요 (휠체어, 유모차)"]];
-const st={start:"elev",mode:"fast",floor:4};
-const wt=(a,b,f)=>{let l=Math.hypot(P[a][0]-P[b][0],P[a][1]-P[b][1]);if(P[a][1]===165&&P[b][1]===165)l*=1.01;if(st.mode==="quiet"&&f.includes("q"))l*=4;if(st.mode==="wide"&&f.includes("n"))l*=4;return l};
-function path(s){const d={},pv={},todo=new Set(Object.keys(P));todo.forEach(k=>d[k]=1e9);d[s]=0;
- while(todo.size){let u=null;todo.forEach(k=>{if(u===null||d[k]<d[u])u=k});todo.delete(u);if(u==="T")break;
-  ADJ[u].forEach(([v,f])=>{const w=d[u]+wt(u,v,f);if(w<d[v]){d[v]=w;pv[v]=u}})}
- const r=["T"];while(r[0]!==s)r.unshift(pv[r[0]]);return r}
-function plan(){
- const S=STARTS.find(x=>x.id===st.start);
- const arrive=st.mode==="fast"?"ST":"EL";
- const node=S.node||arrive;
- const r=path(node),pts=r.map(k=>P[k]);
- let len=0;for(let i=1;i<pts.length;i++)len+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);
- const dir=(a,b)=>[Math.sign(b[0]-a[0]),Math.sign(b[1]-a[1])];
- const cor=[pts[0]];for(let i=1;i<pts.length-1;i++){const p=dir(pts[i-1],pts[i]),q=dir(pts[i],pts[i+1]);if(p[0]!==q[0]||p[1]!==q[1])cor.push(pts[i])}cor.push(pts[pts.length-1]);
- const steps=[];
- if(!S.node)steps.push(`1층 출입 게이트에서 ${arrive==="EL"?"엘리베이터":"계단"}로 4층까지 이동`);
- steps.push(`4층 ${S.node?S.label:(arrive==="EL"?"엘리베이터 앞":"계단 앞")}에서 출발`);
- let h=null;
- for(let i=1;i<cor.length;i++){const v=dir(cor[i-1],cor[i]),m=Math.max(1,Math.round(Math.hypot(cor[i][0]-cor[i-1][0],cor[i][1]-cor[i-1][1])*SC));
-  const turn=h?((h[0]*v[1]-h[1]*v[0])>0?"오른쪽":"왼쪽")+"으로 꺾어 ":"앞으로 ";
-  steps.push(`${turn}약 ${m}m ${h?"이동":"직진"}`);h=v}
- steps.push("목표 서가 C 앞에 도착해 서가 표지와 청구기호 A–123.4 비교");
- const m=Math.round(len*SC),min=Math.max(1,Math.round(m/72))+(S.node?0:(arrive==="EL"?2:1));
- return{pts,steps,m,min,S,node}
+const params=new URLSearchParams(location.search);
+const title=params.get("title")||"";
+const raw=params.get("holdingLocation")||params.get("location")||"";
+const lib=params.get("holdingLibrary")||"";
+const call=params.get("holdingCallNumber")||params.get("callNumber")||"";
+const sourceText=(raw+" "+lib).replace(/\s+/g," ");
+const isQ=/(Q동|Q\s*building|정보통신센터|정기간행물실)/i.test(sourceText)&&/(7\s*층|7\s*F|정기간행물실)/i.test(sourceText);
+const isH= !isQ&&/(H동|중앙도서관|대출자료실)/i.test(sourceText)&&/(4\s*층|4\s*F|4F)/i.test(sourceText);
+const direct=!title&&!raw;
+const building=isQ?"Q":isH||direct?"H":"";
+const targetFloor=building==="Q"?7:4;
+const roomName=building==="Q"?"Q동 7층 정기간행물실":"H동 4층 대출자료실";
+const numMatch=call.match(/(?:^|[^\d])(?:[a-zA-Z]{0,3}\s*)?(\d{3})(?=\.|[^\d]|$)/);
+const number=numMatch?Number(numMatch[1]):null;
+const HZ=[
+ {min:100,max:199,label:"100–199",x:1090,y:372},
+ {min:200,max:299,label:"200–299",x:967,y:400},
+ {min:300,max:326,label:"300–326",x:88,y:213},
+ {min:327,max:390,label:"327–390",x:165,y:130},
+ {min:391,max:399,label:"391–399",x:165,y:57},
+ {min:400,max:499,label:"400–499",x:868,y:189},
+ {min:500,max:599,label:"500–599",x:389,y:58},
+ {min:600,max:658,label:"600–658",x:402,y:399},
+ {min:659,max:699,label:"659–699",x:294,y:354},
+ {min:800,max:842,label:"800–842",x:735,y:57},
+ {min:843,max:899,label:"843–899",x:957,y:192}
+];
+const QZ=[
+ {min:0,max:399,label:"000–399",x:182,y:418},
+ {min:700,max:999,label:"700–999",x:650,y:121}
+];
+const zones=building==="Q"?QZ:HZ;
+const selectedZone=number===null?null:zones.find(z=>number>=z.min&&number<=z.max)||null;
+const landmarks={
+ H:[
+  {id:"elev",name:"엘리베이터 앞",x:210,y:206,color:"#00a79c",fill:"#d4f2ef"},
+  {id:"wc",name:"화장실 앞",x:279,y:208,color:"#ee761a",fill:"#ffe6d1"},
+  {id:"exit",name:"4층 출입문",x:601,y:209,color:"#218d37",fill:"#dff4df"},
+  {id:"desk",name:"안내데스크",x:685,y:214,color:"#d79910",fill:"#fff1c5"},
+  {id:"pc",name:"검색 PC",x:488,y:164,color:"#b441b0",fill:"#f4d7f4"},
+  {id:"corridor",name:"연결통로",x:993,y:255,color:"#399b3c",fill:"#e2f1db"}],
+ Q:[
+  {id:"entry",name:"7층 출입구",x:452,y:255,color:"#00a79c",fill:"#d4f2ef"},
+  {id:"paper",name:"신간잡지",x:575,y:305,color:"#f17c14",fill:"#ffe9d4"},
+  {id:"corridor",name:"연결통로",x:299,y:294,color:"#218d37",fill:"#dff4df"},
+  {id:"desk",name:"안내데스크",x:423,y:332,color:"#d79910",fill:"#fff1c5"},
+  {id:"pc",name:"검색 PC",x:420,y:394,color:"#b441b0",fill:"#f4d7f4"},
+  {id:"copy",name:"복사기",x:306,y:393,color:"#219934",fill:"#dff4df"},
+  {id:"old",name:"과월신문",x:718,y:210,color:"#f06969",fill:"#ffe0e0"}]
+};
+const modes=[
+ {id:"fast",title:"가장 빠른 길",detail:"거리가 가장 짧은 길"},
+ {id:"quiet",title:"조용한 길",detail:"데스크, 열람석, 휴게존 앞을 피해요"},
+ {id:"wide",title:"넓은 통로",detail:"좁은 서가 사이를 피하도록 안내해요"}];
+const state={floor:targetFloor,start:building==="Q"?"entry":"elev",mode:"fast"};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=n=>Math.round(n);
+function rect(x,y,w,h,fill,stroke="#d4ddeb",rad=5,extra=""){
+ return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="'+rad+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.7" '+extra+'/>';
 }
-function svg(pl){
- const M=matchMedia("(max-width:760px)").matches,fs=M?18:14;
- const mp=(x,y)=>M?[H-y,x]:[x,y];
- const R=(x,y,w,h,c,ex="")=>{const[X,Y]=M?[H-y-h,x]:[x,y],[a,b]=M?[h,w]:[w,h];return `<rect class="${c}" x="${X}" y="${Y}" width="${a}" height="${b}" ${ex}/>`};
- const T=(x,y,s,c="",f=fs)=>{const[cx,cy]=mp(x,y),L=s.split("\n");return `<text class="t ${c}" text-anchor="middle" font-size="${f}">`+L.map((l,i)=>`<tspan x="${cx}" y="${cy+(i-(L.length-1)/2)*f*1.25}" dy=".35em">${l}</tspan>`).join("")+`</text>`};
- const LM=(id,c,x,y,w,h,label,f=fs)=>`<g class="lm ${c}${st.start===id?" sel":""}" data-s="${id}" tabindex="0" role="button" aria-label="${label} 출발지로 선택">${R(x,y,w,h,"",`rx="8"`)}${T(x+w/2,y+h/2,label,"",f)}</g>`;
- let o=`<svg viewBox="0 0 ${M?H:W} ${M?W:H}" role="img" aria-label="H동 4층 서가 2D 개념도">`;
- o+=R(20,20,760,520,"bld",`rx="14"`);
- o+=R(50,50,170,100,"room",`rx="8"`)+T(135,100,"자료실\n영역 A");
- o+=R(520,48,250,105,"rd",`rx="8"`)+T(645,100,M?"열람석":"열람석 (조용한 구역)");
- [290,380,470,560].forEach((x,i)=>{const t=i===2;
-  o+=R(x,190,62,120,t?"tgt":"shelf",`rx="5"`)+T(x+31,250,t?"목표\n서가":"ABCD"[i],t?"w":"b",t?fs-2:fs);
-  o+=R(x,370,62,80,"shelf",`rx="5"`)+T(x+31,410,"EFGH"[i],"b")});
- o+=LM("desk","dk",250,90,150,58,"데스크");
- o+=LM("stairs","st",50,360,110,120,"계단");
- o+=LM("elev","el",180,360,80,120,"엘리베이터",M?17:13);
- o+=LM("door","dr",336,530,60,20,"",fs)+T(366,M?506:513,"출입문","b",M?16:13);
- o+=`<g class="lm bn${st.start==="bean"?" sel":""}" data-s="bean" tabindex="0" role="button" aria-label="빈백 휴게존 출발지로 선택">`+[[712,412,20],[748,440,18],[714,466,17]].map(([x,y,r])=>{const[a,b]=mp(x,y);return `<circle cx="${a}" cy="${b}" r="${r}"/>`}).join("")+R(685,380,85,110,"",`rx="10"`)+T(727,372,"빈백")+`</g>`;
- const pp=pl.pts.map(p=>mp(...p).join(",")).join(" ");
- o+=`<polyline class="rline under" points="${pp}"/><polyline class="rline dash" points="${pp}"/>`;
- o+=`<polygon fill="var(--rt)" points="${[[491,171],[511,171],[501,187]].map(p=>mp(...p).join(",")).join(" ")}"/>`;
- const[sx,sy]=mp(...pl.pts[0]);
- o+=`<circle class="start" cx="${sx}" cy="${sy}" r="${M?13:11}"/><text class="t b" x="${sx}" y="${sy-(M?24:21)}" text-anchor="middle" font-size="${M?17:13}" style="fill:var(--rt)">${pl.S.node?"출발":"4층 도착"}</text></svg>`;
- return o}
-function render(){
- const pl=plan();
- $("#sum").innerHTML=`<b>약 ${pl.m} m</b><b>약 ${pl.min}분</b><span>목표 서가 C, 시연용 수치예요</span>`;
- $("#steps").innerHTML=pl.steps.map(s=>`<li>${s}</li>`).join("");
- $("#svgbox").innerHTML=svg(pl);
- const off=st.floor!==4;$("#map").classList.toggle("off",off);
- $("#gmsg").textContent=`${st.floor}층은 시연용 지도가 준비되지 않았어요. 목표 서가는 4층에 있어요.`;
- document.querySelectorAll("#floors button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.f===st.floor));
+function txt(x,y,t,size=12,color="#626576",weight="500"){
+ return '<text x="'+x+'" y="'+y+'" text-anchor="middle" dominant-baseline="middle" font-size="'+size+'" fill="'+color+'" font-weight="'+weight+'">'+esc(t)+'</text>';
 }
-$("#floors").innerHTML=[1,2,3,4,5,6].map(f=>`<button type="button" data-f="${f}" aria-pressed="${f===4}" ${f!==4?'disabled title="해당 층은 시연용 지도가 준비되지 않았습니다" aria-label="'+f+'층 지도 준비 중"':""}>${f}F</button>`).join("");
-$("#floors").onclick=e=>{const b=e.target.closest("button:not(:disabled)");if(b){st.floor=+b.dataset.f;render()}};
-$("#back").onclick=()=>{st.floor=4;render()};
-const chip=(n,v,html,ck)=>`<label class="chip"><input type="radio" name="${n}" value="${v}" ${ck?"checked":""}>${html}</label>`;
-$("#starts").innerHTML=STARTS.map(s=>chip("start",s.id,`<i style="background:var(--${s.c}-f);border-color:var(--${s.c}-s)"></i>${s.label}`,s.id===st.start)).join("");
-$("#modes").innerHTML=MODES.map(([v,l,d])=>chip("mode",v,`${l}<small>${d}</small>`,v===st.mode)).join("");
-$("#starts").onchange=e=>{st.start=e.target.value;render()};
-$("#modes").onchange=e=>{st.mode=e.target.value;render()};
-function pick(e){const g=e.target.closest(".lm");if(!g)return;if(e.type==="keydown"&&e.key!=="Enter"&&e.key!==" ")return;e.preventDefault();st.start=g.dataset.s;document.querySelector(`#starts input[value="${st.start}"]`).checked=true;render();const n=document.querySelector(`.lm[data-s="${st.start}"]`);if(n)n.focus()}
-$("#svgbox").addEventListener("click",pick);$("#svgbox").addEventListener("keydown",pick);
-matchMedia("(max-width:760px)").addEventListener("change",render);
-render();
-const qs=new URLSearchParams(location.search);
-const chosen=qs.get("title");
-const fromLibrary=qs.get("from")==="library";
-if(chosen){
- const strip=document.querySelector("#selected-source");
- strip.hidden=false;
- document.querySelector("#selected-book").textContent="선택 자료: "+chosen;
- if(fromLibrary) {
-  const holdingRows=[
-   ["소장 도서관",qs.get("holdingLibrary")],
-   ["저장된 자료 위치",qs.get("holdingLocation")],
-   ["청구기호",qs.get("holdingCallNumber")],
-   ["찜 당시 대출 상태",qs.get("holdingAvailability")]
-  ].filter(([,value])=>Boolean(value));
-  if(holdingRows.length) {
-   const box=document.createElement("div");
-   box.className="selected-holdings";
-   const label=document.createElement("strong");
-   label.textContent="찜할 때 저장한 소장정보 (실제 지도 위치와 연동되지 않음)";
-   const dl=document.createElement("dl");
-   holdingRows.forEach(([key,value])=>{
-    const dt=document.createElement("dt");
-    const dd=document.createElement("dd");
-    dt.textContent=key;
-    dd.textContent=value;
-    dl.append(dt,dd);
-   });
-   box.append(label,dl);
-   strip.append(box);
+function label(x,y,w,h,text,meta="",font=12){
+ let v=rect(x,y,w,h,"#e6ebff","none",5,'class="zone"');
+ const content=(text===selectedZone?.label);
+ if(content)v=rect(x,y,w,h,"#3158e7","#254ad4",5,'class="zone-active"');
+ v+=txt(x+w/2,y+h/2-(meta?8:0),text,font,content?"white":"#626575",content?"800":"500");
+ if(meta)v+=txt(x+w/2,y+h/2+13,meta,10,content?"#fff":"#697488");
+ return v;
+}
+function marker(x,y){
+ return '<path class="pin" d="M'+x+' '+(y+4)+' c -19 -20 -9 -35 0 -35 c 20 0 20 21 0 35 Z"/>';
+}
+function landmarkNode(id,name,x,y,w,h,color,fill){
+ const on=state.start===id;
+ return '<g class="clickable" data-start="'+id+'" tabindex="0" role="button" aria-label="'+esc(name)+' 출발 지점" >'+rect(x,y,w,h,fill,color,5,'stroke-width="'+(on?4:1.9)+'"')+txt(x+w/2,y+h/2,name,11,"#3d454e",on?"800":"600")+'</g>';
+}
+function hMap(){
+ let o='';
+ // Connected H-shaped floor outline, arranged to match the supplied 4F reference diagram.
+ o+='<path class="outline" d="M4 5H1042V239H904V296H1153V505H904V243H419V550H253V242H4Z"/>';
+ o+=label(10,12,294,96,"391–399");o+=label(10,108,294,84,"327–390");
+ o+=label(10,185,160,51,"300–326");
+ o+=label(320,12,130,96,"500–599");o+=label(468,12,568,96,"800–842");
+ o+=label(806,134,133,103,"400–499");o+=label(943,134,26,103,"843–899","",9);
+ o+=label(260,299,68,101,"659–699");o+=label(361,299,93,205,"600–658");
+ o+=label(912,317,108,179,"200–299");o+=label(1039,303,108,140,"100–199");
+ o+=rect(260,416,52,60,"#d8d8d8","none",4)+txt(286,448,"계단");
+ o+=rect(410,187,154,48,"#ddd","none",4)+txt(488,210,"계단");
+ o+=rect(1062,454,85,44,"#ddd","none",4)+txt(1104,477,"계단");
+ o+=landmarkNode("elev","E/V",184,186,54,50,"#00a79c","#ddf3f1");
+ o+=landmarkNode("wc","화장실",248,185,65,50,"#f27b19","#ffe9d9");
+ o+=landmarkNode("pc","검색PC",453,142,69,31,"#b341b1","#f5d6f5");
+ o+=landmarkNode("exit","출입구",577,185,43,51,"#1a9f2d","#e4f9e6");
+ o+=landmarkNode("desk","안내데스크",629,205,113,33,"#d99916","#fff0bd");
+ o+=landmarkNode("corridor","연결통로",972,238,46,55,"#269d30","#dff5da");
+ o+=rect(912,267,52,51,"#fff0bd","#dc9818",5)+txt(938,292,"안내");
+ o+=txt(955,236,"8",11);o+=txt(955,249,"4",10);o+=txt(955,262,"3",10);
+ return o;
+}
+function qMap(){
+ let o='';
+ // Q 7F: reference-room spur on the left and an upper-right periodicals area.
+ o+='<path class="outline" d="M4 35H236V268H102V518H490V369H741V144H706V3H569V35H454V272H236V268H4Z"/>';
+ o+=rect(8,39,150,222,"#dadada","none",5)+txt(83,150,"H동 5층",14)+txt(83,169,"참고자료실");
+ o+=label(116,349,128,161,"000–399");
+ o+=rect(457,52,110,150,"#e6ebff","none",5);
+ o+=label(570,10,132,195,"700–999");
+ o+=rect(246,281,121,41,"#e7edff","none",5)+txt(306,300,"금일신문 / 이달의잡지",11);
+ o+=rect(359,462,90,48,"#d5d5d5","none",4)+txt(405,486,"계단");
+ o+=landmarkNode("entry","7층 출입구",412,230,78,40,"#00a99d","#d9f6f2");
+ o+=landmarkNode("corridor","연결통로",165,258,46,112,"#27952a","#dbf6de");
+ o+=landmarkNode("desk","안내",391,326,70,30,"#d89b0c","#fff0c8");
+ o+=landmarkNode("paper","신간잡지",574,326,112,35,"#f28b10","#ffe8d6");
+ o+=landmarkNode("pc","검색PC",401,376,37,66,"#ad49b2","#f6d8f3");
+ o+=landmarkNode("copy","복사기",251,354,32,63,"#28933c","#ddf5e2");
+ o+=landmarkNode("old","과월신문",715,147,22,117,"#f06868","#ffd6d7");
+ o+=rect(387,432,24,75,"#ffe7d1","#e77e12",3)+txt(398,467,"신간");
+ return o;
+}
+function currentLandmark(){return landmarks[building]?.find(p=>p.id===state.start)||landmarks[building]?.[0]}
+function getDestination(){
+ if(selectedZone)return [selectedZone.x,selectedZone.y];
+ if(building==="Q")return [475,260];
+ return [597,209];
+}
+function routePoints(){
+ const start=currentLandmark(),dst=getDestination();
+ if(!start)return [];
+ const a=[start.x,start.y],x=dst[0],y=dst[1];
+ if(building==="H"){
+  if(x>=900){
+   if(state.mode==="wide")return [a,[start.x,150],[597,150],[597,122],[993,122],[993,364],[x,364],[x,y]];
+   if(state.mode==="quiet")return [a,[start.x,130],[419,130],[419,122],[993,122],[993,364],[x,364],[x,y]];
+   return [a,[start.x,156],[419,156],[419,123],[993,123],[993,364],[x,364],[x,y]];
   }
+  if(y>280)return [a,[start.x,159],[404,159],[404,285],[x,285],[x,y]];
+  return [a,[start.x,158],[x,158],[x,y]];
+ }
+ if(x<300)return [a,[start.x,283],[337,283],[337,424],[x,424],[x,y]];
+ if(x>560)return [a,[start.x,229],[645,229],[645,y],[x,y]];
+ return [a,[start.x,290],[x,290],[x,y]];
+}
+function pathSvg(points){
+ if(points.length<2)return "";
+ const coords=points.map(p=>p.join(",")).join(" ");
+ const [sx,sy]=points[0],dst=points[points.length-1];
+ let o='<polyline class="path-back" points="'+coords+'"/><polyline class="path-dash" points="'+coords+'"/>';
+ o+='<circle cx="'+sx+'" cy="'+sy+'" r="12" fill="#ff786c" stroke="white" stroke-width="3"/>';
+ if(selectedZone)o+=marker(dst[0],dst[1]-4);
+ return o;
+}
+function renderMap(){
+ const error=!building || state.floor!==targetFloor;
+ $("#map-error").hidden=!error;
+ $("#map-canvas").hidden=error;
+ if(error){
+  $("#error-description").textContent=!building
+   ?"선택한 책의 소장 위치는 시연용 지도가 준비되지 않았어요. H동 4층 및 Q동 7층에 소장된 자료만 안내할 수 있습니다."
+   :state.floor+"층은 시연용 지도가 준비되지 않았어요. "+targetFloor+"층 지도만 제공됩니다.";
+  $("#summary").innerHTML="<span>지원되지 않는 건물 또는 층입니다.</span>";
+  return;
+ }
+ const w=building==="Q"?752:1173,h=building==="Q"?533:565;
+ const points=routePoints();
+ const svg='<svg class="map-layer" viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" role="img" aria-label="'+roomName+' 지도, '+(selectedZone?selectedZone.label+" 구역":"서가 영역 확인 중")+'">' +
+ '<defs><filter id="map-shadow" x="-10%" y="-10%" width="130%" height="140%"><feDropShadow dx="2" dy="5" stdDeviation="3" flood-opacity=".22"/></filter></defs>'+
+ '<g>'+(building==="Q"?qMap():hMap())+'</g>'+pathSvg(points)+'</svg>';
+ const canvas=$("#map-canvas");canvas.innerHTML=svg;
+ const lineLength=points.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p[0]-points[i][0],p[1]-points[i][1]),0);
+ const factor=building==="Q"?.048:.065;
+ const meters=fmt(lineLength*factor),minutes=Math.max(1,Math.round(meters/65));
+ const zonePart=selectedZone?" · "+selectedZone.label+" 구역":" · 해당 소장실 안내";
+ $("#summary").innerHTML='<strong>약 '+meters+'m</strong><strong>약 '+minutes+'분</strong><span>시연용 추정치'+zonePart+'</span>';
+ if(selectedZone&&$("#map-viewport").clientWidth<w){
+  const scrollToX=Math.max(0,Math.min(w-$("#map-viewport").clientWidth,selectedZone.x-$("#map-viewport").clientWidth/2));
+  $("#map-viewport").scrollLeft=scrollToX;
+ }
+ $("#steps").innerHTML="";
+ let steps=[currentLandmark().name+"에서 출발"];
+ if(building==="H"){
+  if(selectedZone&&selectedZone.x>900)steps.push("상단 통로를 따라 이동한 뒤 연결통로 쪽으로 진행");
+  else if(selectedZone&&selectedZone.y>280)steps.push("4층 대출자료실의 좌측 하단 서가 구역으로 진행");
+  else steps.push("4층 대출자료실 내부 통로를 따라 이동");
+ }else{
+  if(selectedZone&&selectedZone.x<300)steps.push("7층 출입구에서 금일신문 / 이달의잡지 방향으로 이동");
+  else steps.push("7층 정기간행물실 내부 통로를 따라 이동");
+ }
+ if(state.mode==="quiet")steps.push("안내데스크 및 열람석 주변을 피해서 이동");
+ if(state.mode==="wide")steps.push("가급적 넓은 통로를 따라 이동");
+ steps.push(selectedZone?"청구기호 "+(call||"미제공")+"가 속한 "+selectedZone.label+" 구역 도착":"소장실 도착 후 서가 표지를 확인해 주세요 (정확한 서가 위치 미확인)");
+ $("#steps").innerHTML=steps.map(s=>"<li>"+esc(s)+"</li>").join("");
+}
+function renderFloor(){
+ const floors=building==="Q"?[6,7,8,9]:[1,2,3,4,5,6];
+ $("#floor-row").innerHTML=floors.map(f=>'<button type="button" data-floor="'+f+'" aria-pressed="'+(f===state.floor)+'">'+f+'F</button>').join("");
+ $("#floor-row").hidden=!building;
+}
+function renderStarts(){
+ const items=landmarks[building]||[];
+ $("#starts").innerHTML=items.length?items.map(p=>'<label><input type="radio" name="start" value="'+p.id+'" '+(state.start===p.id?"checked":"")+'><i class="square" style="background:'+p.fill+';border-color:'+p.color+'"></i>'+esc(p.name)+'</label>').join(""):'<p class="tiny">이용할 수 있는 출발 위치 정보가 없어요.</p>';
+ $("#modes").innerHTML=modes.map(p=>'<label><input type="radio" name="mode" value="'+p.id+'" '+(state.mode===p.id?"checked":"")+'><b>'+p.title+'</b><small>'+p.detail+'</small></label>').join("");
+ $("#starts").closest(".card").hidden=!building;
+ $("#modes").closest(".card").hidden=!building;
+}
+function init(){
+ const currentBook=$("#selected-book");
+ if(title){currentBook.hidden=false;currentBook.innerHTML='<strong>선택한 도서</strong> '+esc(title)+(raw?'<div class="meta"><b>선택한 소장정보:</b> '+esc(raw)+'</div>':'');}
+ $("#library-label").textContent=building==="Q"?"정보통신센터":"중앙도서관";
+ $("#room-title").textContent=building?roomName:"지원되지 않는 소장 위치";
+ $("#target-title").textContent=building?roomName:"서가 위치 정보 미제공";
+ $("#target-chip").innerHTML=building?'<span class="pill">'+targetFloor+'F'+(selectedZone?' · '+selectedZone.label:' · 서가 미확인')+'</span>':'<span class="pill">지원되지 않는 소장처</span>';
+ $("#call-label").textContent=call?"청구기호 "+call:"청구기호 미제공 · 정확한 서가 구역 확인 불가";
+ if(!building)$("#target-pill").textContent="지도 미지원";
+ renderFloor();renderStarts();renderMap();
+ if(!selectedZone&&building){
+  $("#call-label").textContent+=" (이 도면에서 청구기호와 대응하는 서가 범위를 확인하지 못했습니다.)";
  }
 }
+$("#floor-row").addEventListener("click",e=>{const button=e.target.closest("button[data-floor]");if(!button)return;state.floor=Number(button.dataset.floor);renderFloor();renderMap()});
+$("#return-map").addEventListener("click",()=>{if(!building){location.href="./search.html"+(params.get("q")?"?q="+encodeURIComponent(params.get("q")):"");return;}state.floor=targetFloor;renderFloor();renderMap()});
+$("#starts").addEventListener("change",e=>{if(e.target.name==="start"){state.start=e.target.value;renderMap()}});
+$("#modes").addEventListener("change",e=>{if(e.target.name==="mode"){state.mode=e.target.value;renderMap()}});
+function pick(e){const item=e.target.closest("[data-start]");if(!item||!building||state.floor!==targetFloor)return;
+ if(e.type==="keydown"&&!["Enter"," "].includes(e.key))return;
+ e.preventDefault();state.start=item.getAttribute("data-start");
+ const control=$("#starts input[value='"+state.start+"']");if(control)control.checked=true;renderMap();
+ const newItem=$("#map-canvas [data-start='"+state.start+"']");if(newItem&&e.type==="keydown")newItem.focus();
+}
+$("#map-canvas").addEventListener("click",pick);
+$("#map-canvas").addEventListener("keydown",pick);
+init();
+})();
 </script>
 </body>
 </html>
