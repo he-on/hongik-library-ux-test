@@ -127,7 +127,6 @@ const landmarks={
   {id:"entry",name:"7층 출입구",x:341,y:185,color:"#00a79c",fill:"#cdefec"},
   {id:"paper",name:"신간잡지",x:624,y:358,color:"#f17c14",fill:"#ffdfc4"},
   {id:"corridor",name:"연결통로",x:189,y:264,color:"#218d37",fill:"#d4efd0"},
-  {id:"h5copy",name:"H동 5층 복사기",x:198,y:69,color:"#219934",fill:"#d4efd0"},
   {id:"desk",name:"안내데스크",x:426,y:326,color:"#d79910",fill:"#ffedb8"},
   {id:"pc",name:"검색 PC",x:305,y:380,color:"#b441b0",fill:"#f0d6ef"},
   {id:"copy",name:"복사기",x:256,y:381,color:"#219934",fill:"#d4efd0"},
@@ -160,7 +159,7 @@ function marker(x,y){
 }
 function landmarkNode(id,name,x,y,w,h,color,fill,lines=1){
  const on=state.start===id;
- const lbl=lines===1?txt(x+w/2,y+h/2,name,11,"#414141",on?"800":"500"):
+ const lbl=lines===1?txt(x+w/2,y+h/2,name,name.length>10?9:11,"#414141",on?"800":"500"):
  name.split("|").map((v,i,a)=>txt(x+w/2,y+h/2+(i-(a.length-1)/2)*13,v,10,"#414141",on?"800":"500")).join("");
  return '<g class="clickable" data-start="'+id+'" tabindex="0" role="button" aria-label="'+esc(name.replaceAll("|"," "))+' 출발 지점">'+rect(x,y,w,h,fill,color,5,'stroke-width="'+(on?3.4:1.7)+'"')+lbl+'</g>';
 }
@@ -206,7 +205,7 @@ function qMap(){
  // H동 5층 자료실 wing, staircase, and connecting corridor.
  o+=rect(1,42,157,215,"#d9d9d9","none",5);
  o+=txt(80,150,"H동 5층",11);o+=txt(80,166,"참고자료실",11);
- o+=landmarkNode("h5copy","복사기",166,45,64,46,"#299239","#d4efd0");
+ o+=rect(166,45,64,46,"#d4efd0","#299239",5)+txt(198,68,"복사기",11);
   // The upper right 700–999 shelves consist of TWO separate adjacent blue shapes.
  const up=selectedZone?.label==="700–999";
  o+=rect(460,56,105,175,up?"#3456e4":"#e7ecff","none",5);
@@ -222,11 +221,10 @@ function qMap(){
  o+=landmarkNode("pc","검색|PC",293,347,24,67,"#b341b1","#f0d6ef",2);
  o+=landmarkNode("copy","복사기",245,347,24,67,"#269d30","#d4efd0");
  o+=landmarkNode("old","과월|신문",708,150,20,122,"#ff6550","#ffc4c4",2);
- o+=landmarkNode("newspaper","금일신문",245,293,137,43,"#65749b","#e7ecff");
+ o+=landmarkNode("newspaper","금일신문 / 이달의잡지",245,293,137,43,"#65749b","#e7ecff");
  o+=rect(265,218,25,60,"#ffedb8","#d99916",5)+txt(277,246,"안",11)+txt(277,260,"내",11);
  o+=rect(361,347,21,164,"#ffdfc4","#ee7900",4)+txt(372,402,"신",11)+txt(372,416,"간",11)+txt(372,430,"잡",11)+txt(372,444,"지",11);
- o+=rect(390,317,70,19,"#ffedb8","#d99916",4)+txt(425,326,"안내",10);
- o+=rect(472,317,70,19,"#ffdfc4","#ee7900",4)+txt(507,326,"신간잡지",10);
+  o+=rect(472,317,70,19,"#ffdfc4","#ee7900",4)+txt(507,326,"신간잡지",10);
  o+=rect(253,446,88,20,"#ffedb8","#d99916",4)+txt(297,455,"안내",10);
  return o;
 }
@@ -247,7 +245,7 @@ function routePoints(){
   }
   if(y>=280){
    // Lower central H wing is connected from the left at x~285, not via the black notch.
-   return [a,[start.x,170],[285,170],[285,310],[347,310],[347,y],[x,y]];
+   return [a,[start.x,174],[320,174],[320,240],[285,240],[285,310],[347,310],[347,y],[x,y]];
   }
   if(x<=180)return [a,[start.x,174],[177,174],[x,174],[x,y]];
   if(y<=112)return [a,[start.x,176],[x,176],[x,y]];
@@ -255,7 +253,7 @@ function routePoints(){
  }
  // For Q, preserve the entry-to-lower-left zigzag shown in the provided map.
  const hub=[341,214];
- const prefix=state.start==="entry"?[a,hub]:[a,[start.x,284],[341,284],hub];
+ const prefix=state.start==="entry"?[a]:[a,[start.x,284],[341,284],hub];
  if(x<300)return [...prefix,[341,285],[230,285],[230,367],[x,367],[x,y]];
  if(x>560)return [...prefix,[452,214],[452,141],[x,141],[x,y]];
  return [...prefix,[x,285],[x,y]];
