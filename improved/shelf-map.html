@@ -41,6 +41,14 @@ main{max-width:1330px;margin:auto;padding:28px 26px 55px}h1{font-size:23px;color
 /* No white halo behind paths; gaps remain transparent so map labels stay readable. */
 .map-layer .path-dash{fill:none;stroke:#ff897f;stroke-width:6;stroke-dasharray:13 11;stroke-linecap:butt;stroke-linejoin:round}
 .map-layer .pin{fill:#ff786c}.map-layer .pin-shadow{fill:#ff786c;stroke:#fff;stroke-width:2}
+/* Q7 reference visual styles sampled from the supplied source image (752 × 533).
+   Use the original flat palette and small neutral lettering, not the general UI palette. */
+.map-layer.q-reference-map .outline{stroke:#595959;stroke-width:2}
+.map-layer.q-reference-map text{font-family:Arial,"Malgun Gothic",sans-serif;font-weight:400!important}
+.map-layer.q-reference-map .zone-active{fill:#3456e4!important;stroke:none!important}
+.map-layer.q-reference-map .path-dash{stroke:#ff9283;stroke-width:6;stroke-dasharray:9 10}
+.map-layer.q-reference-map .pin{fill:#ff6550}
+.map-layer.q-reference-map .clickable:focus-visible{filter:none}
 @media(max-width:1000px){.layout{gap:14px;grid-template-columns:minmax(0,1fr) 292px}main{padding:20px 14px}.card{padding:15px}.brand{font-size:19px}}
 @media(max-width:780px){.layout{grid-template-columns:minmax(0,1fr)}.brand{font-size:16px}.brand svg{width:24px}.headbar{min-height:60px;padding:7px 12px}.top-actions{gap:6px}.top-actions a{font-size:11px}.top-actions .home-link{padding:6px}.left-card{padding:13px}.floor-row button{padding:7px 13px;min-width:50px}main{padding:18px 10px}.room-name{font-size:19px}.mobile-note{display:block;color:var(--muted);font-size:11px;margin:6px 0}.map-canvas svg{min-width:720px}.side-card{padding:16px}.target{font-size:20px}.sum strong{font-size:18px}h1{font-size:21px;margin-bottom:12px}}
 </style>
@@ -283,7 +291,7 @@ function pathSvg(points){
  const coords=points.map(p=>p.join(",")).join(" ");
  const [sx,sy]=points[0],dst=points[points.length-1];
  let o='<polyline class="path-dash" points="'+coords+'"/>';
- o+='<circle cx="'+sx+'" cy="'+sy+'" r="12" fill="#ff786c" stroke="white" stroke-width="3"/>';
+ o+='<circle cx="'+sx+'" cy="'+sy+'" r="12" fill="'+(building==="Q"?"#ff6550":"#ff786c")+'" stroke="white" stroke-width="2"/>';
  if(selectedZone)o+=marker(dst[0],dst[1]-4);
  return o;
 }
@@ -300,7 +308,7 @@ function renderMap(){
  }
  const w=building==="Q"?752:1173,h=building==="Q"?533:565;
  const points=routePoints();
- const svg='<svg class="map-layer" viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" role="img" aria-label="'+roomName+' 지도, '+(selectedZone?selectedZone.label+" 구역":"서가 영역 확인 중")+'">' +
+ const svg='<svg class="map-layer '+(building==="Q"?"q-reference-map":"")+'" viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" role="img" aria-label="'+roomName+' 지도, '+(selectedZone?selectedZone.label+" 구역":"서가 영역 확인 중")+'">' +
  '<defs><filter id="map-shadow" x="-10%" y="-10%" width="130%" height="140%"><feDropShadow dx="2" dy="5" stdDeviation="3" flood-opacity=".22"/></filter></defs>'+
  '<g>'+(building==="Q"?qMap():hMap())+'</g>'+pathSvg(points)+'</svg>';
  const canvas=$("#map-canvas");canvas.innerHTML=svg;
