@@ -10,6 +10,8 @@
   if (!variant || document.querySelector("[data-ux-task-panel]")) return;
 
   const stateKey = "hongik-ux-task-state-v1:" + variant;
+  // Keep a dismissed panel minimized across refreshes and page navigation for each UI variant.
+  const dismissedKey = "hongik-ux-task-panel-dismissed-v1:" + variant;
   const resultsKey = "hongik-ux-task-responses-v1";
   const participantKey = "hongik-ux-task-participant-v1";
   const taskId = "library-hours-today-v1";
@@ -47,7 +49,13 @@
   }
   let state = read(sessionStorage, stateKey, { stage: "intro" });
   if (!["intro", "task", "difficulty", "done"].includes(state.stage)) state = { stage: "intro" };
-  let collapsed = false;
+  // Once dismissed, open only through the explicit reopen button (including after navigation).
+  let collapsed = read(localStorage, dismissedKey, false) === true || state.stage === "task";
+  function dismissPanel() {
+    collapsed = true;
+    write(localStorage, dismissedKey, true);
+    host.setAttribute("data-collapsed", "");
+  }
 
   const host = document.createElement("div");
   host.setAttribute("data-ux-task-panel", variant);
@@ -196,13 +204,12 @@
     event.stopPropagation();
     const action = button.dataset.action;
     if (action === "collapse") {
-      collapsed = true; host.setAttribute("data-collapsed", "");
+      dismissPanel();
     } else if (action === "expand") {
       collapsed = false; host.removeAttribute("data-collapsed");
     } else if (action === "start") {
       updateState({ stage: "task", startedAt: Date.now(), taskDate: dateKey, dateLabel, draft: "", answer: "", difficulty: null });
-      collapsed = true;
-      host.setAttribute("data-collapsed", "");
+      dismissPanel();
       shell.querySelector(".reopen").focus();
     } else if (action === "answer" || action === "notfound") {
       const answer = action === "notfound" ? "정보를 찾지 못함" :
@@ -247,10 +254,7 @@
     }
   });
   document.body.appendChild(host);
-  if (state.stage === "task") {
-    collapsed = true;
-    host.setAttribute("data-collapsed", "");
-  }
+  if (collapsed) host.setAttribute("data-collapsed", "");
   render();
   if (state.stage === "done" && state.sendState === "sending") {
     upload(activeResult());
