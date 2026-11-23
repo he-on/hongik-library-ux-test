@@ -206,13 +206,32 @@
     if(d.sourceUrl){link.href=d.sourceUrl;link.style.display='block'}else{link.removeAttribute('href');link.style.display='none'}
     const mapButton=$id('detail-map');
     mapButton.hidden=d.type!=='단행본';
-    mapButton.onclick=()=>openMap(d);
+    const holdingChoice=$id('holding-choice'),choiceWrap=$id('holding-choice-container');
+    const holdings=Array.isArray(d.holdings)?d.holdings.filter(Boolean):[];
+    choiceWrap.hidden=d.type!=='단행본'||holdings.length<2;
+    holdingChoice.replaceChildren();
+    holdings.forEach((holding,index)=>{
+      const option=document.createElement('option');
+      option.value=holding;option.textContent=holding;
+      holdingChoice.appendChild(option);
+    });
+    mapButton.onclick=()=>openMap(d,holdingChoice.value||'');
     dialog.showModal();
   }
-  function openMap(d){
+  function openMap(d,chosenHolding){
+    /* Forward the exact selected holding; do not substitute an invented shelf. */
+    const holdings=Array.isArray(d.holdings)?d.holdings:[];
+    const raw=String(chosenHolding||holdings[0]||field(d.r,'위치')||'').trim();
+    const withoutStatus=raw.replace(/\s*\((?:이용가능|이용불가|대출중|대출가능|대출 중)\)\s*$/,'');
+    const matched=withoutStatus.match(/\(([^()]+)\)\s*$/);
+    const call=matched?matched[1].trim():field(d.r,'청구기호');
     const params=new URLSearchParams();
     params.set('q',$id('q').value.trim());
     params.set('title',d.t);
+    params.set('holdingLibrary',d.lib||'');
+    params.set('holdingLocation',raw);
+    if(call&&call!=='미제공')params.set('holdingCallNumber',call);
+    params.set('from','search');
     window.location.href='./shelf-map.html?'+params.toString();
   }
   $id('list').addEventListener('click',e=>{
