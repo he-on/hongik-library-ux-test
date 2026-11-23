@@ -12,9 +12,51 @@
 <style>
 :root{--blue:#0039db;--blue-soft:#e8edff;--ink:#121c32;--muted:#647086;--line:#d4dcef;--page:#f4f6fc;--red:#ff8378;--purple:#ab37b0;--orange:#ee8b18;--green:#218a29;--teal:#00a299;box-sizing:border-box}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:var(--page);font:15px/1.6 "Noto Sans KR",sans-serif}button,select{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}:focus-visible{outline:3px solid #2453fa;outline-offset:3px}
-header{background:#fff;border-bottom:1px solid var(--line)}.headbar{min-height:72px;padding:8px 26px;max-width:1560px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.brand{color:#0034d8;font-size:23px;font-weight:900;letter-spacing:-.045em;white-space:nowrap;display:inline-flex;align-items:center;gap:7px}.brand svg{width:32px;height:20px;flex:none}.brand .light{font-weight:600}
-.top-actions{display:flex;gap:14px;align-items:center;color:#435674}.top-actions a{font-size:13px}.top-actions a:hover{color:var(--blue)}.top-actions .home-link{border:1px solid var(--line);padding:6px 12px;border-radius:99px}
+header{background:#fff;border-bottom:1px solid var(--line)}
+.top{z-index:100;border:0}.header-line{height:89px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;gap:14px}
+.logo{color:#0033d7;font-size:24px;font-weight:900;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;letter-spacing:-.05em}
+.logo span{color:inherit}.logo .library-name{font-weight:500}
+.logo .logo-icon{width:24px;height:17px;display:block;flex:none;color:#0033d7}
+.header-tools{display:flex;align-items:center;gap:18px}
+.header-tool{height:42px;width:36px;border:0;background:none;display:grid;place-items:center;color:#475877;cursor:pointer;padding:0}
+.header-tool svg{width:25px;height:25px}.header-lang{height:48px;width:48px;border:0;border-radius:50%;background:#0033d7;color:#fff;font-weight:800;cursor:pointer}
+.hours-anchor{position:relative}
+.hours-toggle{border:1.5px solid #cbd5e9;border-radius:40px;height:46px;padding:0 16px;display:flex;align-items:center;gap:9px;background:#fff;white-space:nowrap;cursor:pointer}
+.hours-toggle .hint{color:#51617c;font-size:14px;font-weight:700}.hours-toggle .clock{font-size:18px;font-weight:900;color:#11172d}
+.hours-toggle svg{height:18px;width:18px;color:#475877;transition:transform .2s}.hours-toggle[aria-expanded=true] svg{transform:rotate(180deg)}
+.hours-popup{position:fixed;right:32px;top:98px;width:min(490px,calc(100vw - 20px));background:#0733d6;border-radius:17px;padding:24px 17px 18px;box-shadow:0 16px 25px #101a3f55,0 2px 40px #0002;z-index:155;color:#fff}
+.hours-popup[hidden]{display:none!important}
+.hours-popup-title{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:0 10px 17px}.hours-popup-title h2{font-size:24px;color:#fff;font-weight:900}.hours-popup-title time{font-size:15px;font-weight:600}
+.hours-popup-body{background:white;border-radius:13px;padding:10px 24px 17px;color:#222}
+.hour-item{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:63px;border-bottom:2px solid #dce3f2}.hour-item:last-child{border:0}
+.hour-item strong{color:#0034dc;font-size:20px;font-weight:800;white-space:nowrap}.hour-item time{color:#666;font-size:22px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.hours-popup-body p{color:#666;font-size:14px;line-height:1.5;margin:10px 1px 15px}.hours-popup-body a{display:block;text-align:right;color:#0034dc;font-weight:700;font-size:14px}
+
+/* Keep the shelf-map header visually consistent with improved/index.html. */
+@media(max-width:1100px){
+ .logo{font-size:21px}.header-line{padding:0 18px}.header-tools{gap:9px}
+}
+@media(max-width:800px){
+ .header-line{height:72px}.logo{font-size:18px}
+ .hours-toggle{height:38px;padding:0 8px;gap:5px}.hours-toggle .hint{display:none}.hours-toggle .clock{font-size:13px}
+ .header-tool{width:28px}.header-tool svg{height:20px;width:20px}
+ .header-tool.help,.header-tool.search-top{display:none}
+ .header-lang{width:35px;height:35px;font-size:11px}.hours-popup{top:78px;right:12px}
+}
+@media(max-width:600px){
+ .header-line{padding:0 10px;gap:5px}.logo{font-size:15px;gap:2px}.logo .logo-icon{width:17px;height:13px}
+ .hours-toggle{height:32px;padding:0 7px}.hours-toggle .clock{font-size:11px}.header-tool.user-top{display:none}
+ .header-lang{width:30px;height:30px}
+ .hours-popup{top:72px;right:8px;width:calc(100vw - 16px);padding:15px 10px}
+ .hours-popup-title h2{font-size:19px}.hours-popup-title time{font-size:13px}
+ .hours-popup-body{padding:8px 16px 14px}.hour-item{min-height:51px}
+ .hour-item strong{font-size:14px}.hour-item time{font-size:16px}
+ .hours-popup-body p,.hours-popup-body a{font-size:12px}
+}
+.hours-popup-title h2{margin:0;line-height:1.35}
+.hours-popup-body a{text-decoration:none}
+.header-tool:hover,.logo:hover{opacity:.85}
+
 main{max-width:1330px;margin:auto;padding:28px 26px 55px}h1{font-size:23px;color:var(--blue);margin:0 0 20px;font-weight:900}h2{font-size:20px;margin:0;font-weight:800;line-height:1.35}.layout{display:grid;grid-template-columns:minmax(0,1fr) 333px;gap:35px;align-items:start}.card{border:1px solid var(--line);background:white;border-radius:16px;padding:20px;margin-bottom:16px;min-width:0}.left-card{border-color:#b3b3b3}.room{font-size:14px;color:#686868}.room-name{font-size:22px;font-weight:800;color:#606060;margin:1px 0 10px}.heading-row{display:flex;align-items:center;justify-content:space-between;gap:8px}.tiny{font-size:12px;color:var(--muted)}.pill{border:0;color:var(--blue);font-size:12px;background:var(--blue-soft);border-radius:20px;padding:5px 11px;font-weight:700}
 .floor-row{display:flex;gap:8px;overflow-x:auto;padding:6px 0 12px;margin-top:10px}.floor-row button{flex:none;border-radius:99px;border:1px solid var(--line);background:#fff;color:#435472;padding:7px 16px;font-weight:700;min-width:53px}.floor-row button[aria-pressed=true]{color:white;background:var(--blue);border-color:var(--blue)}
 .sum{display:flex;align-items:baseline;gap:14px;background:var(--blue-soft);border-radius:10px;padding:10px 15px;margin-bottom:15px;flex-wrap:wrap}.sum strong{font-size:20px;color:var(--blue)}.sum span{font-size:12px;color:#465d84}
@@ -56,16 +98,19 @@ main{max-width:1330px;margin:auto;padding:28px 26px 55px}h1{font-size:23px;color
 .map-layer.q-reference-map .q-hitbox:focus-visible{outline:none}
 .map-layer.q-reference-map .q-hitbox:focus-visible rect{stroke:#2854e8;stroke-width:3}
 .map-layer .path-dash{pointer-events:none}
-@media(max-width:1000px){.layout{gap:14px;grid-template-columns:minmax(0,1fr) 292px}main{padding:20px 14px}.card{padding:15px}.brand{font-size:19px}}
-@media(max-width:780px){.layout{grid-template-columns:minmax(0,1fr)}.brand{font-size:16px}.brand svg{width:24px}.headbar{min-height:60px;padding:7px 12px}.top-actions{gap:6px}.top-actions a{font-size:11px}.top-actions .home-link{padding:6px}.left-card{padding:13px}.floor-row button{padding:7px 13px;min-width:50px}main{padding:18px 10px}.room-name{font-size:19px}.mobile-note{display:block;color:var(--muted);font-size:11px;margin:6px 0}.map-canvas svg{min-width:720px}.side-card{padding:16px}.target{font-size:20px}.sum strong{font-size:18px}h1{font-size:21px;margin-bottom:12px}}
+@media(max-width:1000px){.layout{gap:14px;grid-template-columns:minmax(0,1fr) 292px}main{padding:20px 14px}.card{padding:15px}}
+@media(max-width:780px){.layout{grid-template-columns:minmax(0,1fr)}.left-card{padding:13px}.floor-row button{padding:7px 13px;min-width:50px}main{padding:18px 10px}.room-name{font-size:19px}.mobile-note{display:block;color:var(--muted);font-size:11px;margin:6px 0}.map-canvas svg{min-width:720px}.side-card{padding:16px}.target{font-size:20px}.sum strong{font-size:18px}h1{font-size:21px;margin-bottom:12px}}
 </style>
 <script type="text/javascript">(function(w,d,a){w.__beusablerumclient__={load:function(src){var b=d.createElement("script");b.src=src;b.async=true;b.type="text/javascript";d.getElementsByTagName("head")[0].appendChild(b)}};w.__beusablerumclient__.load(a+"?url="+encodeURIComponent(d.URL));})(window,document,"//rum.beusable.net/load/b261115e130800u338");</script>
 <script src="../shared/ux-task-panel.js?v=20261123-persistent-close-v4" defer></script>
 </head>
 <body>
-<header><div class="headbar">
- <a href="./" class="brand" aria-label="홍익대학교 중앙도서관 홈"><svg viewBox="0 0 30 21" fill="none" stroke="#0034d8" stroke-width="1.8" aria-hidden="true"><rect x="1" y="3" width="27" height="15"/><path d="M5 8h19M5 12h17"/></svg>홍익대학교 <span class="light">| 중앙도서관</span></a>
- <nav class="top-actions" aria-label="상단 메뉴"><a class="home-link" href="./">홈</a><a href="./search.html">자료검색</a><a href="../account/?ui=improved">내 서재</a></nav>
+<header class="top" id="top"><div class="header-line">
+ <a class="logo" href="./" aria-label="홍익대학교 중앙도서관 홈"><svg class="logo-icon" viewBox="0 0 28 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1.5" y="2" width="25" height="14" rx="1"/><path d="M6 7h16M6 11h11"/></svg>홍익대학교 <span>|</span><span class="library-name">중앙도서관</span></a>
+ <div class="header-tools"><div class="hours-anchor" id="hours">
+ <button class="hours-toggle" type="button" id="hours-toggle" aria-expanded="false" aria-controls="hours-popup" aria-label="시설 운영 시간 펼치기"><span class="hint" id="hours-date-label">중앙도서관 오늘</span><strong class="clock" id="hours-summary">09:00 - 20:00</strong><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+ <aside class="hours-popup" id="hours-popup" hidden aria-label="시설 운영 시간"><div class="hours-popup-title"><h2>시설 운영 시간</h2><time id="today"></time></div><div class="hours-popup-body"><div id="hl"></div><p>학기 중 기준 시간으로, 시험기간, 방학, 공휴일에는 달라질 수 있습니다.</p><a href="https://honors.hongik.ac.kr/community/library-introduction/reading-time/">자세히보기</a></div></aside>
+ </div><button type="button" class="header-tool help" aria-label="도움말" data-na><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 9c0-3 5-3 5 .5 0 2-3 2-3 4M12 17h.01"/></svg></button><a class="header-tool user-top" aria-label="내 계정" href="../account/?ui=improved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-8 16-8 16 0"/></svg></a><button type="button" class="header-lang" data-na aria-label="언어 선택">EN</button><a class="header-tool search-top" href="./search.html" aria-label="도서 검색"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/></svg></a></div>
 </div></header>
 <main><h1>서가 위치 찾기</h1><div id="selected-book" class="selected-book" hidden></div>
 <div class="layout">
@@ -376,6 +421,81 @@ function pick(e){const item=e.target.closest("[data-start]");if(!item||!building
 $("#map-canvas").addEventListener("click",pick);
 $("#map-canvas").addEventListener("keydown",pick);
 init();
+})();
+</script>
+<script>
+
+/* Shared improved-header behavior; shelf-map remains independent from map JS. */
+(() => {
+ "use strict";
+ const query=s=>document.querySelector(s);
+ const toggle=query("#hours-toggle");
+ const popup=query("#hours-popup");
+ const pad=n=>String(n).padStart(2,"0");
+ const schedule=[
+ ["중앙도서관",[9,20],[9,18],[9,18]],
+ ["자료열람실",[9,20],[9,13],null],
+ ["일반열람실",[6,23],[6,23],[6,23]],
+ ["법학도서관",[9,20],null,null],
+ ["The H Reading Lounge",[9,20],[10,18],[10,18]],
+ ["대출·반납 데스크",[9,20],[9,13],null]
+ ];
+ function renderHours(){
+  const now=new Date();
+  const parts=new Intl.DateTimeFormat("ko-KR",{
+   timeZone:"Asia/Seoul",month:"numeric",day:"numeric",weekday:"short"
+  }).formatToParts(now);
+  const get=t=>parts.find(p=>p.type===t)?.value||"";
+  const month=Number(get("month")),day=Number(get("day")),weekday=get("weekday");
+  const dayName=weekday.replace(/[()]/g,"").trim().slice(0,1);
+  const weekdayIndex="일월화수목금토".indexOf(dayName);
+  const kind=weekdayIndex===0?3:weekdayIndex===6?2:1;
+  const dateText=month+"월 "+day+"일 ("+dayName+")";
+  query("#hours-date-label").textContent="중앙도서관 "+dateText;
+  query("#today").textContent=dateText;
+  query("#hl").innerHTML=schedule.map(item=>{
+   const times=item[kind];
+   const text=times?pad(times[0])+":00 – "+pad(times[1])+":00":"오늘 휴실";
+   return '<div class="hour-item"><strong>'+item[0]+'</strong><time>'+text+'</time></div>';
+  }).join("");
+  const libraryTimes=schedule[0][kind];
+  query("#hours-summary").textContent=libraryTimes?
+   pad(libraryTimes[0])+":00 - "+pad(libraryTimes[1])+":00":"오늘 휴실";
+ }
+ function syncGuide(){
+  const host=document.querySelector('[data-ux-task-panel="improved"]');
+  if(!host)return;
+  const panel=host.shadowRoot?.querySelector(".panel");
+  if(!popup.hidden&&window.innerWidth>800){
+   const top=Math.ceil(popup.getBoundingClientRect().bottom+12);
+   host.style.setProperty("top",top+"px","important");
+   if(panel)panel.style.maxHeight="max(120px,calc(100dvh - "+(top+12)+"px))";
+  } else {
+   host.style.removeProperty("top");
+   if(panel)panel.style.removeProperty("max-height");
+  }
+ }
+ function close(){
+  popup.hidden=true;
+  toggle.setAttribute("aria-expanded","false");
+  toggle.setAttribute("aria-label","시설 운영 시간 펼치기");
+  syncGuide();
+ }
+ toggle.addEventListener("click",()=>{
+  const show=popup.hidden;
+  popup.hidden=!show;
+  toggle.setAttribute("aria-expanded",String(show));
+  toggle.setAttribute("aria-label",show?"시설 운영 시간 접기":"시설 운영 시간 펼치기");
+  syncGuide();
+ });
+ document.addEventListener("click",e=>{
+  if(!e.target.closest(".hours-anchor"))close();
+ });
+ document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"&&!popup.hidden){close();toggle.focus()}
+ });
+ window.addEventListener("resize",syncGuide);
+ renderHours();
 })();
 </script>
 </body>
