@@ -38,7 +38,7 @@ main{max-width:1330px;margin:auto;padding:28px 26px 55px}h1{font-size:23px;color
 .map-layer .zone-active{fill:#3257e8!important;stroke:#2448d5!important}
 .map-layer .zone-active-text{fill:#fff!important;font-weight:800}
 .map-layer .clickable{cursor:pointer}.map-layer .clickable:focus-visible{outline:none;filter:drop-shadow(0 0 5px #2850ff)}
-.map-layer .path-back{fill:none;stroke:#fff;stroke-width:10;stroke-linecap:round;stroke-linejoin:round}
+/* No white halo behind paths; gaps remain transparent so map labels stay readable. */
 .map-layer .path-dash{fill:none;stroke:#ff897f;stroke-width:6;stroke-dasharray:13 11;stroke-linecap:butt;stroke-linejoin:round}
 .map-layer .pin{fill:#ff786c}.map-layer .pin-shadow{fill:#ff786c;stroke:#fff;stroke-width:2}
 @media(max-width:1000px){.layout{gap:14px;grid-template-columns:minmax(0,1fr) 292px}main{padding:20px 14px}.card{padding:15px}.brand{font-size:19px}}
@@ -282,7 +282,7 @@ function pathSvg(points){
  if(points.length<2)return "";
  const coords=points.map(p=>p.join(",")).join(" ");
  const [sx,sy]=points[0],dst=points[points.length-1];
- let o='<polyline class="path-back" points="'+coords+'"/><polyline class="path-dash" points="'+coords+'"/>';
+ let o='<polyline class="path-dash" points="'+coords+'"/>';
  o+='<circle cx="'+sx+'" cy="'+sy+'" r="12" fill="#ff786c" stroke="white" stroke-width="3"/>';
  if(selectedZone)o+=marker(dst[0],dst[1]-4);
  return o;
