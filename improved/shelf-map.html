@@ -92,40 +92,47 @@ const roomName=building==="Q"?"Q동 7층 정기간행물실":"H동 4층 대출�
 const numMatch=call.match(/(?:^|[^\d])(?:[a-zA-Z]{0,3}\s*)?(\d{3})(?=\.|[^\d]|$)/);
 const number=numMatch?Number(numMatch[1]):null;
 const HZ=[
- {min:100,max:199,label:"100–199",x:1090,y:372},
- {min:200,max:299,label:"200–299",x:967,y:400},
- {min:300,max:326,label:"300–326",x:88,y:213},
- {min:327,max:390,label:"327–390",x:165,y:130},
- {min:391,max:399,label:"391–399",x:165,y:57},
- {min:400,max:499,label:"400–499",x:868,y:189},
- {min:500,max:599,label:"500–599",x:389,y:58},
- {min:600,max:658,label:"600–658",x:402,y:399},
- {min:659,max:699,label:"659–699",x:294,y:354},
- {min:800,max:842,label:"800–842",x:735,y:57},
- {min:843,max:899,label:"843–899",x:957,y:192}
+ {min:100,max:199,label:"100–199",x:1048,y:336},
+ {min:200,max:299,label:"200–299",x:965,y:414},
+ {min:300,max:326,label:"300–326",x:91,y:210},
+ {min:327,max:390,label:"327–390",x:156,y:110},
+ {min:391,max:399,label:"391–399",x:156,y:53},
+ {min:400,max:499,label:"400–499",x:870,y:186},
+ {min:500,max:599,label:"500–599",x:389,y:60},
+ {min:600,max:658,label:"600–658",x:409,y:399},
+ {min:659,max:699,label:"659–699",x:294,y:347},
+ {min:800,max:842,label:"800–842",x:755,y:59},
+ {min:843,max:899,label:"843–899",x:957,y:189}
 ];
 const QZ=[
- {min:0,max:399,label:"000–399",x:182,y:418},
- {min:700,max:999,label:"700–999",x:650,y:121}
+ {min:0,max:399,label:"000–399",x:209,y:345},
+ {min:700,max:999,label:"700–999",x:625,y:139}
 ];
 const zones=building==="Q"?QZ:HZ;
 const selectedZone=number===null?null:zones.find(z=>number>=z.min&&number<=z.max)||null;
+/* Landmark centers and zone rectangles follow the reference drawings' native pixels:
+   H 1173×565; Q 752×533. Source maps are UX team drawings, not surveyed floor plans. */
 const landmarks={
  H:[
-  {id:"elev",name:"엘리베이터 앞",x:210,y:206,color:"#00a79c",fill:"#d4f2ef"},
-  {id:"wc",name:"화장실 앞",x:279,y:208,color:"#ee761a",fill:"#ffe6d1"},
-  {id:"exit",name:"4층 출입문",x:601,y:209,color:"#218d37",fill:"#dff4df"},
-  {id:"desk",name:"안내데스크",x:685,y:214,color:"#d79910",fill:"#fff1c5"},
-  {id:"pc",name:"검색 PC",x:488,y:164,color:"#b441b0",fill:"#f4d7f4"},
-  {id:"corridor",name:"연결통로",x:993,y:255,color:"#399b3c",fill:"#e2f1db"}],
+  {id:"elev",name:"엘리베이터 앞",x:211,y:211,color:"#00a79c",fill:"#cdefec"},
+  {id:"wc",name:"화장실 앞",x:280,y:211,color:"#f07300",fill:"#ffe0c7"},
+  {id:"exit",name:"4층 출입문",x:598,y:211,color:"#218d37",fill:"#d4efd0"},
+  {id:"desk",name:"안내데스크",x:686,y:222,color:"#d79910",fill:"#ffedb8"},
+  {id:"pc",name:"검색 PC",x:487,y:159,color:"#b441b0",fill:"#f0d6ef"},
+  {id:"corridor",name:"연결통로",x:995,y:263,color:"#399b3c",fill:"#d4efd0"},
+  {id:"rightDesk",name:"오른쪽 안내",x:940,y:284,color:"#d79910",fill:"#ffedb8"},
+  {id:"rightPc",name:"오른쪽 검색 PC",x:1063,y:284,color:"#b441b0",fill:"#f0d6ef"}
+ ],
  Q:[
-  {id:"entry",name:"7층 출입구",x:452,y:255,color:"#00a79c",fill:"#d4f2ef"},
-  {id:"paper",name:"신간잡지",x:575,y:305,color:"#f17c14",fill:"#ffe9d4"},
-  {id:"corridor",name:"연결통로",x:299,y:294,color:"#218d37",fill:"#dff4df"},
-  {id:"desk",name:"안내데스크",x:423,y:332,color:"#d79910",fill:"#fff1c5"},
-  {id:"pc",name:"검색 PC",x:420,y:394,color:"#b441b0",fill:"#f4d7f4"},
-  {id:"copy",name:"복사기",x:306,y:393,color:"#219934",fill:"#dff4df"},
-  {id:"old",name:"과월신문",x:718,y:210,color:"#f06969",fill:"#ffe0e0"}]
+  {id:"entry",name:"7층 출입구",x:341,y:185,color:"#00a79c",fill:"#cdefec"},
+  {id:"paper",name:"신간잡지",x:624,y:358,color:"#f17c14",fill:"#ffdfc4"},
+  {id:"corridor",name:"연결통로",x:189,y:264,color:"#218d37",fill:"#d4efd0"},
+  {id:"desk",name:"안내데스크",x:426,y:326,color:"#d79910",fill:"#ffedb8"},
+  {id:"pc",name:"검색 PC",x:305,y:380,color:"#b441b0",fill:"#f0d6ef"},
+  {id:"copy",name:"복사기",x:256,y:381,color:"#219934",fill:"#d4efd0"},
+  {id:"old",name:"과월신문",x:718,y:211,color:"#f06969",fill:"#ffc4c4"},
+  {id:"newspaper",name:"금일신문·이달의잡지",x:312,y:312,color:"#65749b",fill:"#e7ecff"}
+ ]
 };
 const modes=[
  {id:"fast",title:"가장 빠른 길",detail:"거리가 가장 짧은 길"},
@@ -140,86 +147,118 @@ function rect(x,y,w,h,fill,stroke="#d4ddeb",rad=5,extra=""){
 function txt(x,y,t,size=12,color="#626576",weight="500"){
  return '<text x="'+x+'" y="'+y+'" text-anchor="middle" dominant-baseline="middle" font-size="'+size+'" fill="'+color+'" font-weight="'+weight+'">'+esc(t)+'</text>';
 }
-function label(x,y,w,h,text,meta="",font=12){
- let v=rect(x,y,w,h,"#e6ebff","none",5,'class="zone"');
- const content=(text===selectedZone?.label);
- if(content)v=rect(x,y,w,h,"#3158e7","#254ad4",5,'class="zone-active"');
- v+=txt(x+w/2,y+h/2-(meta?8:0),text,font,content?"white":"#626575",content?"800":"500");
- if(meta)v+=txt(x+w/2,y+h/2+13,meta,10,content?"#fff":"#697488");
+function label(x,y,w,h,text,meta="",font=12,activeLabel=text){
+ const selected=selectedZone?.label===activeLabel;
+ let v=rect(x,y,w,h,selected?"#3456e4":"#e7ecff","none",5,selected?'class="zone-active"':'class="zone"');
+ v+=txt(x+w/2,y+h/2-(meta?8:0),text,font,selected?"#fff":"#595959",selected?"800":"500");
+ if(meta)v+=txt(x+w/2,y+h/2+13,meta,10,selected?"#fff":"#595959");
  return v;
 }
 function marker(x,y){
  return '<path class="pin" d="M'+x+' '+(y+4)+' c -19 -20 -9 -35 0 -35 c 20 0 20 21 0 35 Z"/>';
 }
-function landmarkNode(id,name,x,y,w,h,color,fill){
+function landmarkNode(id,name,x,y,w,h,color,fill,lines=1){
  const on=state.start===id;
- return '<g class="clickable" data-start="'+id+'" tabindex="0" role="button" aria-label="'+esc(name)+' 출발 지점" >'+rect(x,y,w,h,fill,color,5,'stroke-width="'+(on?4:1.9)+'"')+txt(x+w/2,y+h/2,name,11,"#3d454e",on?"800":"600")+'</g>';
+ const lbl=lines===1?txt(x+w/2,y+h/2,name,11,"#414141",on?"800":"500"):
+ name.split("|").map((v,i,a)=>txt(x+w/2,y+h/2+(i-(a.length-1)/2)*13,v,10,"#414141",on?"800":"500")).join("");
+ return '<g class="clickable" data-start="'+id+'" tabindex="0" role="button" aria-label="'+esc(name.replaceAll("|"," "))+' 출발 지점">'+rect(x,y,w,h,fill,color,5,'stroke-width="'+(on?3.4:1.7)+'"')+lbl+'</g>';
 }
 function hMap(){
  let o='';
- // Connected H-shaped floor outline, arranged to match the supplied 4F reference diagram.
- o+='<path class="outline" d="M4 5H1042V239H904V296H1153V505H904V243H419V550H253V242H4Z"/>';
- o+=label(10,12,294,96,"391–399");o+=label(10,108,294,84,"327–390");
- o+=label(10,185,160,51,"300–326");
- o+=label(320,12,130,96,"500–599");o+=label(468,12,568,96,"800–842");
- o+=label(806,134,133,103,"400–499");o+=label(943,134,26,103,"843–899","",9);
- o+=label(260,299,68,101,"659–699");o+=label(361,299,93,205,"600–658");
- o+=label(912,317,108,179,"200–299");o+=label(1039,303,108,140,"100–199");
- o+=rect(260,416,52,60,"#d8d8d8","none",4)+txt(286,448,"계단");
- o+=rect(410,187,154,48,"#ddd","none",4)+txt(488,210,"계단");
- o+=rect(1062,454,85,44,"#ddd","none",4)+txt(1104,477,"계단");
- o+=landmarkNode("elev","E/V",184,186,54,50,"#00a79c","#ddf3f1");
- o+=landmarkNode("wc","화장실",248,185,65,50,"#f27b19","#ffe9d9");
- o+=landmarkNode("pc","검색PC",453,142,69,31,"#b341b1","#f5d6f5");
- o+=landmarkNode("exit","출입구",577,185,43,51,"#1a9f2d","#e4f9e6");
- o+=landmarkNode("desk","안내데스크",629,205,113,33,"#d99916","#fff0bd");
- o+=landmarkNode("corridor","연결통로",972,238,46,55,"#269d30","#dff5da");
- o+=rect(912,267,52,51,"#fff0bd","#dc9818",5)+txt(938,292,"안내");
- o+=txt(955,236,"8",11);o+=txt(955,249,"4",10);o+=txt(955,262,"3",10);
+ // Outline closely traced from H동 4층 전체 도면 (1173x565), including both bottom wings.
+ o+='<path class="outline" d="M6 1H1038Q1044 1 1044 7V238Q1044 243 1038 243H1028V256H1150Q1155 256 1155 261V505Q1155 511 1149 511H913Q907 511 907 505V263Q907 258 913 258H962V243H412V286Q412 291 418 291H460Q464 291 464 296V541Q464 547 458 547H261Q255 547 255 541V296Q255 291 261 291H309Q313 291 313 286V243H6Q0 243 0 237V7Q0 1 6 1Z"/>';
+ // The two call-number labels at upper left share ONE pale-blue shelf block.
+ const upperSelected=selectedZone&&["327–390","391–399"].includes(selectedZone.label);
+ o+=rect(10,10,294,153,upperSelected?"#3456e4":"#e7ecff","none",5);
+ o+=txt(157,53,"391 ≫ 399",12,upperSelected?"#fff":"#595959");
+ o+=txt(157,108,"390 ≪ 327",12,upperSelected?"#fff":"#595959");
+ o+=label(10,185,161,52,"327 ≪ 300","","11","300–326");
+ o+=label(322,10,129,97,"500 ≫ 599","","11","500–599");
+ o+=label(470,10,564,97,"800 ≫ 899","","12","800–842");
+ o+=label(806,136,131,101,"400 ≫ 499","","11","400–499");
+ // Narrow 843–899 strip is adjacent to the 400–499 wing, not inside it.
+ o+=rect(946,136,22,101,selectedZone?.label==="843–899"?"#3456e4":"#e7ecff","none",4);
+ o+=["8","4","3",">","8","9","9"].map((a,i)=>txt(957,145+14*i,a,10,selectedZone?.label==="843–899"?"#fff":"#595959")).join("");
+ o+=label(264,299,67,101,"659 ≫ 699","","11","659–699");
+ o+=label(363,299,91,239,"600 ≫ 658","","11","600–658");
+ o+=label(915,381,104,101,"200 ≫ 299","","11","200–299");
+ o+=label(1040,304,109,137,"100 ≫ 199","","11","100–199");
+ // Stairs and marked access points use measured positions from the supplied illustration.
+ o+=rect(263,415,50,68,"#d9d9d9","none",4)+txt(288,449,"계단",11);
+ o+=rect(412,185,154,52,"#d9d9d9","none",4)+txt(489,211,"계단",11);
+ o+=rect(1063,455,86,48,"#d9d9d9","none",4)+txt(1106,479,"계단",11);
+ o+=landmarkNode("elev","E/V",185,186,53,51,"#00a79c","#cdefec");
+ o+=landmarkNode("wc","화장실",249,186,64,51,"#ee7700","#ffe0c7");
+ o+=landmarkNode("pc","검색PC",452,143,70,32,"#b441b0","#f0d6ef");
+ o+=landmarkNode("exit","출입구",576,185,44,52,"#1a9f2d","#d4efd0");
+ o+=landmarkNode("desk","안내데스크",628,206,115,32,"#d99916","#ffedb8");
+ o+=landmarkNode("corridor","연결|통로",973,237,45,51,"#269d30","#d4efd0",2);
+ o+=landmarkNode("rightDesk","안내",915,268,50,33,"#d99916","#ffedb8");
+ o+=landmarkNode("rightPc","검색PC",1029,268,69,33,"#b441b0","#f0d6ef");
  return o;
 }
 function qMap(){
  let o='';
- // Q 7F: reference-room spur on the left and an upper-right periodicals area.
- o+='<path class="outline" d="M4 35H236V268H102V518H490V369H741V144H706V3H569V35H454V272H236V268H4Z"/>';
- o+=rect(8,39,150,222,"#dadada","none",5)+txt(83,150,"H동 5층",14)+txt(83,169,"참고자료실");
- o+=label(116,349,128,161,"000–399");
- o+=rect(457,52,110,150,"#e6ebff","none",5);
- o+=label(570,10,132,195,"700–999");
- o+=rect(246,281,121,41,"#e7edff","none",5)+txt(306,300,"금일신문 / 이달의잡지",11);
- o+=rect(359,462,90,48,"#d5d5d5","none",4)+txt(405,486,"계단");
- o+=landmarkNode("entry","7층 출입구",412,230,78,40,"#00a99d","#d9f6f2");
- o+=landmarkNode("corridor","연결통로",165,258,46,112,"#27952a","#dbf6de");
- o+=landmarkNode("desk","안내",391,326,70,30,"#d89b0c","#fff0c8");
- o+=landmarkNode("paper","신간잡지",574,326,112,35,"#f28b10","#ffe8d6");
- o+=landmarkNode("pc","검색PC",401,376,37,66,"#ad49b2","#f6d8f3");
- o+=landmarkNode("copy","복사기",251,354,32,63,"#28933c","#ddf5e2");
- o+=landmarkNode("old","과월신문",715,147,22,117,"#f06868","#ffd6d7");
- o+=rect(387,432,24,75,"#ffe7d1","#e77e12",3)+txt(398,467,"신간");
+ // Outline traced from Q동 7층 전체 도면 (752x533), preserving its step-shaped
+ // connection between H5 reference wing and the Q7 periodicals wing.
+ o+='<path class="outline" d="M707 5Q707 0 702 0H574Q569 0 569 5V43Q569 48 564 48H458Q453 48 453 53V137Q453 142 448 142H267Q262 142 262 147V273Q262 278 257 278H223Q218 278 218 273V264H234V39Q234 34 229 34H5Q0 34 0 39V260Q0 265 5 265H157V273Q157 278 152 278H107Q102 278 102 283V512Q102 517 107 517H382Q387 517 387 512V353Q387 348 392 348H540Q545 348 545 353V372Q545 377 550 377H731Q736 377 736 372V147Q736 142 731 142H712Q707 142 707 137Z"/>';
+ // H동 5층 자료실 wing, staircase, and connecting corridor.
+ o+=rect(1,42,157,215,"#d9d9d9","none",5);
+ o+=txt(80,150,"H동 5층",11);o+=txt(80,166,"참고자료실",11);
+ o+=landmarkNode("h5copy","복사기",166,45,64,46,"#299239","#d4efd0");
+ o+=landmarkNode("upperBridge","연결|통로",166,239,45,50,"#269d30","#d4efd0",2);
+ // The upper right 700–999 shelves consist of TWO separate adjacent blue shapes.
+ const up=selectedZone?.label==="700–999";
+ o+=rect(460,56,105,175,up?"#3456e4":"#e7ecff","none",5);
+ o+=rect(575,9,125,222,up?"#3456e4":"#e7ecff","none",5);
+ o+=txt(582,140,"700 ≫ 999",11,up?"#fff":"#595959");
+ o+=label(115,347,127,124,"000 ≫ 399","","11","000–399");
+ // Central periodicals, 안내, magazines, and stair block.
+ o+=rect(245,293,137,43,"#e7ecff","none",4)+txt(313,314,"금일신문 / 이달의잡지",11);
+ o+=rect(254,475,87,40,"#d9d9d9","none",4)+txt(298,496,"계단",11);
+ o+=landmarkNode("entry","Q동 7층|출입구",303,159,76,53,"#00a79c","#cdefec",2);
+ o+=landmarkNode("corridor","연결|통로",166,239,45,50,"#269d30","#d4efd0",2);
+ o+=landmarkNode("desk","안내",391,316,71,20,"#d99916","#ffedb8");
+ o+=landmarkNode("paper","신간잡지",567,348,116,20,"#ee7900","#ffdfc4");
+ o+=landmarkNode("pc","검색|PC",293,347,24,67,"#b341b1","#f0d6ef",2);
+ o+=landmarkNode("copy","복사기",245,347,24,67,"#269d30","#d4efd0");
+ o+=landmarkNode("old","과월|신문",708,150,20,122,"#ff6550","#ffc4c4",2);
+ o+=landmarkNode("newspaper","금일신문",245,293,137,43,"#65749b","#e7ecff");
+ o+=rect(265,218,25,60,"#ffedb8","#d99916",5)+txt(277,246,"안",11)+txt(277,260,"내",11);
+ o+=rect(361,347,21,164,"#ffdfc4","#ee7900",4)+txt(372,402,"신",11)+txt(372,416,"간",11)+txt(372,430,"잡",11)+txt(372,444,"지",11);
+ o+=rect(390,317,70,19,"#ffedb8","#d99916",4)+txt(425,326,"안내",10);
+ o+=rect(472,317,70,19,"#ffdfc4","#ee7900",4)+txt(507,326,"신간잡지",10);
+ o+=rect(253,446,88,20,"#ffedb8","#d99916",4)+txt(297,455,"안내",10);
  return o;
 }
 function currentLandmark(){return landmarks[building]?.find(p=>p.id===state.start)||landmarks[building]?.[0]}
-function getDestination(){
- if(selectedZone)return [selectedZone.x,selectedZone.y];
- if(building==="Q")return [475,260];
- return [597,209];
-}
+function getDestination(){return selectedZone?[selectedZone.x,selectedZone.y]:null}
 function routePoints(){
  const start=currentLandmark(),dst=getDestination();
- if(!start)return [];
+ if(!start||!dst)return [];
  const a=[start.x,start.y],x=dst[0],y=dst[1];
+ // Illustrative routes follow corridors shown in reference. Distances are not surveyed.
  if(building==="H"){
   if(x>=900){
-   if(state.mode==="wide")return [a,[start.x,150],[597,150],[597,122],[993,122],[993,364],[x,364],[x,y]];
-   if(state.mode==="quiet")return [a,[start.x,130],[419,130],[419,122],[993,122],[993,364],[x,364],[x,y]];
-   return [a,[start.x,156],[419,156],[419,123],[993,123],[993,364],[x,364],[x,y]];
+   const trunkY=state.mode==="quiet"?119:state.mode==="wide"?136:128;
+   if(start.x>=900)return [a,[995,start.y],[995,361],[x,361],[x,y]];
+   const passX=start.x>422?start.x:422;
+   return [a,[start.x,156],[passX,156],[passX,trunkY],[995,trunkY],[995,361],[x,361],[x,y]];
   }
-  if(y>280)return [a,[start.x,159],[404,159],[404,285],[x,285],[x,y]];
-  return [a,[start.x,158],[x,158],[x,y]];
+  if(y>=280){
+   // Lower central H wing is connected from the left at x~285, not via the black notch.
+   return [a,[start.x,170],[285,170],[285,310],[347,310],[347,y],[x,y]];
+  }
+  if(x<=180)return [a,[start.x,174],[177,174],[x,174],[x,y]];
+  if(y<=112)return [a,[start.x,176],[x,176],[x,y]];
+  return [a,[start.x,173],[x,173],[x,y]];
  }
- if(x<300)return [a,[start.x,283],[337,283],[337,424],[x,424],[x,y]];
- if(x>560)return [a,[start.x,229],[645,229],[645,y],[x,y]];
- return [a,[start.x,290],[x,290],[x,y]];
+ // For Q, preserve the entry-to-lower-left zigzag shown in the provided map.
+ const hub=[341,214];
+ const prefix=state.start==="entry"?[a,hub]:[a,[start.x,284],[341,284],hub];
+ if(x<300)return [...prefix,[341,285],[230,285],[230,367],[x,367],[x,y]];
+ if(x>560)return [...prefix,[452,214],[452,141],[x,141],[x,y]];
+ return [...prefix,[x,285],[x,y]];
 }
 function pathSvg(points){
  if(points.length<2)return "";
