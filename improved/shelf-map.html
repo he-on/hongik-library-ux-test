@@ -127,6 +127,7 @@ const landmarks={
   {id:"entry",name:"7층 출입구",x:341,y:185,color:"#00a79c",fill:"#cdefec"},
   {id:"paper",name:"신간잡지",x:624,y:358,color:"#f17c14",fill:"#ffdfc4"},
   {id:"corridor",name:"연결통로",x:189,y:264,color:"#218d37",fill:"#d4efd0"},
+  {id:"h5copy",name:"H동 5층 복사기",x:198,y:69,color:"#219934",fill:"#d4efd0"},
   {id:"desk",name:"안내데스크",x:426,y:326,color:"#d79910",fill:"#ffedb8"},
   {id:"pc",name:"검색 PC",x:305,y:380,color:"#b441b0",fill:"#f0d6ef"},
   {id:"copy",name:"복사기",x:256,y:381,color:"#219934",fill:"#d4efd0"},
@@ -206,16 +207,14 @@ function qMap(){
  o+=rect(1,42,157,215,"#d9d9d9","none",5);
  o+=txt(80,150,"H동 5층",11);o+=txt(80,166,"참고자료실",11);
  o+=landmarkNode("h5copy","복사기",166,45,64,46,"#299239","#d4efd0");
- o+=landmarkNode("upperBridge","연결|통로",166,239,45,50,"#269d30","#d4efd0",2);
- // The upper right 700–999 shelves consist of TWO separate adjacent blue shapes.
+  // The upper right 700–999 shelves consist of TWO separate adjacent blue shapes.
  const up=selectedZone?.label==="700–999";
  o+=rect(460,56,105,175,up?"#3456e4":"#e7ecff","none",5);
  o+=rect(575,9,125,222,up?"#3456e4":"#e7ecff","none",5);
  o+=txt(582,140,"700 ≫ 999",11,up?"#fff":"#595959");
  o+=label(115,347,127,124,"000 ≫ 399","","11","000–399");
  // Central periodicals, 안내, magazines, and stair block.
- o+=rect(245,293,137,43,"#e7ecff","none",4)+txt(313,314,"금일신문 / 이달의잡지",11);
- o+=rect(254,475,87,40,"#d9d9d9","none",4)+txt(298,496,"계단",11);
+  o+=rect(254,475,87,40,"#d9d9d9","none",4)+txt(298,496,"계단",11);
  o+=landmarkNode("entry","Q동 7층|출입구",303,159,76,53,"#00a79c","#cdefec",2);
  o+=landmarkNode("corridor","연결|통로",166,239,45,50,"#269d30","#d4efd0",2);
  o+=landmarkNode("desk","안내",391,316,71,20,"#d99916","#ffedb8");
@@ -236,7 +235,8 @@ function getDestination(){return selectedZone?[selectedZone.x,selectedZone.y]:nu
 function routePoints(){
  const start=currentLandmark(),dst=getDestination();
  if(!start||!dst)return [];
- const a=[start.x,start.y],x=dst[0],y=dst[1];
+ const a=building==="H"&&state.start==="elev"?[211,181]:building==="Q"&&state.start==="entry"?[341,214]:[start.x,start.y];
+ const x=dst[0],y=dst[1];
  // Illustrative routes follow corridors shown in reference. Distances are not surveyed.
  if(building==="H"){
   if(x>=900){
