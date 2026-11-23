@@ -121,12 +121,7 @@ section.sec{padding:44px 0 8px}
 .cv{aspect-ratio:3/4;border-radius:3px 8px 8px 3px;background:var(--cov);box-shadow:inset 7px 0 0 rgba(0,0,0,.08);display:flex;align-items:flex-end;padding:10px;font-size:11px;color:var(--br);font-weight:700;margin-bottom:8px}
 .dp{margin:40px 0 24px;border:1px dashed var(--ln);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--mu);background:var(--sf)}
 footer{border-top:1px solid var(--ln);padding:20px 0 40px;font-size:12.5px;color:var(--mu);background:var(--sf)}
-/* rail, drawer, toast */
-.rail{position:fixed;right:14px;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:2px;background:var(--sf);border:1px solid var(--ln);border-radius:12px;padding:8px;font-size:12.5px;box-shadow:0 4px 18px rgba(0,0,0,.08)}
-.rail b{font-size:11px;color:var(--mu);padding:2px 8px}
-.rail a{padding:5px 10px;border-radius:6px;font-weight:500;color:var(--mu)}
-.rail a.on{background:var(--bs);color:var(--br);font-weight:700}
-.fab{display:none;position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:45;border:0;background:var(--br);color:var(--on);border-radius:999px;padding:12px 20px;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,.25);cursor:pointer}
+/* drawer, toast */
 .ov{position:fixed;inset:0;background:rgba(10,15,40,.5);z-index:60;opacity:0;pointer-events:none;transition:opacity .2s}
 .ov.on{opacity:1;pointer-events:auto}
 .dr{position:fixed;top:0;right:0;bottom:0;width:min(400px,92vw);background:var(--sf);z-index:61;transform:translateX(100%);transition:transform .25s;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
@@ -143,7 +138,6 @@ footer{border-top:1px solid var(--ln);padding:20px 0 40px;font-size:12.5px;color
 .db li a{display:block;padding:7px 10px;border-radius:8px;font-size:14.5px}.db li a:hover{background:var(--bs);color:var(--br)}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:#141A2E;color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;z-index:80;opacity:0;pointer-events:none;transition:.2s}
 .toast.on{opacity:1;transform:translate(-50%,0)}
-@media (max-width:1100px){.rail{display:none}.fab{display:block}}
 @media (max-width:900px){.nav nav{display:none}.nav{justify-content:space-between}.hin{grid-template-columns:1fr;padding:28px 16px}.gin{grid-template-columns:1fr}.gr{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}.bk{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:600px){.w{padding:0 16px}.hero h1{font-size:26px}.gin{padding:14px 16px}.steps{grid-template-columns:1fr}.gr{grid-template-columns:1fr}.bk{grid-template-columns:repeat(2,1fr)}.sf button{padding:0 16px}.sf select{display:none}.nb.hide{display:none}.sh h2{font-size:21px}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.dr,.ov,.toast{transition:none}}
@@ -169,7 +163,7 @@ footer{border-top:1px solid var(--ln);padding:20px 0 40px;font-size:12.5px;color
 .hour-item{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:63px;border-bottom:2px solid #dce3f2}.hour-item:last-child{border:0}
 .hour-item strong{color:#0034dc;font-size:20px;font-weight:800;white-space:nowrap}.hour-item time{color:#666;font-size:22px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .hours-popup-body p{color:#666;font-size:14px;line-height:1.5;margin:10px 1px 15px}.hours-popup-body a{display:block;text-align:right;color:#0034dc;font-weight:700;font-size:14px}
-.primo-strip{height:138px;display:flex;align-items:center;justify-content:flex-start;gap:24px;max-width:1128px;margin:0 auto}
+.primo-strip{height:138px;display:flex;align-items:center;justify-content:center;gap:24px;max-width:1128px;margin:0 auto}
 .primo-wrap{width:490px;flex:none}.primo-label{display:block;color:#0034dc;font-size:19px;font-weight:900;margin-bottom:5px;line-height:1.35}
 .primo-form{display:flex;overflow:hidden;border:2.5px solid #0c1327;border-radius:13px;height:67px;background:#fff}
 .primo-form select{width:145px;flex:none;background:white;border:0;padding:0 18px;font-size:18px;font-weight:800;cursor:pointer}
@@ -223,7 +217,7 @@ footer{border-top:1px solid var(--ln);padding:20px 0 40px;font-size:12.5px;color
  <a class="logo" href="#top" aria-label="홍익대학교 중앙도서관 홈"><span class="logo-icon" aria-hidden="true">▱</span>홍익대학교 <span>|</span><span class="library-name">중앙도서관</span></a>
  <div class="header-tools"><div class="hours-anchor" id="hours">
  <button class="hours-toggle" type="button" id="hours-toggle" aria-expanded="false" aria-controls="hours-popup" aria-label="시설 운영 시간 펼치기"><span class="hint">중앙도서관 오늘</span><strong class="clock" id="hours-summary">09:00–20:00</strong><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
- <aside class="hours-popup" id="hours-popup" hidden aria-label="시설 운영 시간"><div class="hours-popup-title"><h2>시설 운영 시간</h2><time id="today"></time></div><div class="hours-popup-body"><div id="hl"></div><p>학기 중 기준 시간으로, 시험기간, 방학, 공휴일에는 달라질 수 있습니다.</p><a href="#" data-na>자세히보기</a></div></aside>
+ <aside class="hours-popup" id="hours-popup" hidden aria-label="시설 운영 시간"><div class="hours-popup-title"><h2>시설 운영 시간</h2><time id="today"></time></div><div class="hours-popup-body"><div id="hl"></div><p>학기 중 기준 시간으로, 시험기간, 방학, 공휴일에는 달라질 수 있습니다.</p><a href="https://honors.hongik.ac.kr/community/library-introduction/reading-time/">자세히보기</a></div></aside>
  </div><button type="button" class="header-tool help" aria-label="도움말" data-na><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 9c0-3 5-3 5 .5 0 2-3 2-3 4M12 17h.01"/></svg></button><a class="header-tool user-top" aria-label="내 계정" href="../account/?ui=improved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-8 16-8 16 0"/></svg></a><button type="button" class="header-lang" data-na aria-label="언어 선택">EN</button><button type="button" class="header-tool search-top" id="focus-search" aria-label="검색창으로 이동"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/></svg></button></div>
 </div></header>
 <div class="primo-strip"><div class="primo-wrap"><b class="primo-label">PRIMO RA</b><form class="primo-form" id="sf"><select aria-label="검색 범위"><option>통합검색</option><option>제목</option><option>저자</option><option>주제어</option></select><input aria-label="검색어" placeholder="도서, 학술논문, 저널 등을 검색하세요" autocomplete="off"><button type="submit" aria-label="검색"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/></svg></button></form></div><a class="advanced-link" href="#" data-na>고급검색</a></div>
@@ -266,8 +260,6 @@ footer{border-top:1px solid var(--ln);padding:20px 0 40px;font-size:12.5px;color
 </main>
 <footer><div class="w">홍익대학교 중앙도서관 · UX 개선 와이어프레임<br>실제 서비스와 무관한 학생 프로젝트 시연 화면입니다. 결제와 개인정보 입력은 하지 않아요.</div></footer>
 
-<nav class="rail" id="rail" aria-label="목차 바로가기"><b>목차</b><a href="#hours" data-id="hours">오늘 이용 시간</a><a href="#browse" data-id="browse">분류별 찾기</a><a href="#news" data-id="news">소식과 일정</a><a href="#new" data-id="new">신착 자료</a></nav>
-<button class="fab" id="fab">목차</button>
 <div class="ov" id="ov"></div>
 <aside class="dr" id="dr" role="dialog" aria-modal="true" aria-label="전체 메뉴" aria-hidden="true">
  <div class="dh"><h2>전체 메뉴</h2><button class="nb" id="close">닫기</button></div>
@@ -326,7 +318,7 @@ let last;
 function open(g){last=document.activeElement;$("#dr").classList.add("on");$("#ov").classList.add("on");$("#dr").setAttribute("aria-hidden","false");
  $$("#db details").forEach(d=>d.open=g?d.dataset.g===g:d.dataset.g==="find");$("#close").focus()}
 function close(){$("#dr").classList.remove("on");$("#ov").classList.remove("on");$("#dr").setAttribute("aria-hidden","true");if(last)last.focus()}
-$("#open").onclick=()=>open("");$("#fab").onclick=()=>open("");$("#close").onclick=close;$("#ov").onclick=close;
+$("#open").onclick=()=>open("");$("#close").onclick=close;$("#ov").onclick=close;
 document.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
 document.addEventListener("click",e=>{const g=e.target.closest("[data-g]");if(g&&g.tagName==="BUTTON")open(g.dataset.g);
  const a=e.target.closest("[data-na]");if(a){e.preventDefault();toast("시연용 화면이라 아직 연결되지 않은 메뉴예요.")}
@@ -347,9 +339,6 @@ $("#sf").onsubmit=e=>{
  location.assign("./search.html?"+params.toString());
 };
 
-/* scrollspy */
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)$$("#rail a").forEach(a=>a.classList.toggle("on",a.dataset.id===e.target.id))}),{rootMargin:"-30% 0px -60% 0px"});
-["hours","browse","news","new"].forEach(i=>io.observe($("#"+i)));
 </script>
 </body>
 </html>
