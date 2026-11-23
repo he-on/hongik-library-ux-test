@@ -147,6 +147,62 @@ footer{border-top:1px solid var(--ln);padding:20px 0 40px;font-size:12.5px;color
 @media (max-width:900px){.nav nav{display:none}.nav{justify-content:space-between}.hin{grid-template-columns:1fr;padding:28px 16px}.gin{grid-template-columns:1fr}.gr{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}.bk{grid-template-columns:repeat(3,1fr)}}
 @media (max-width:600px){.w{padding:0 16px}.hero h1{font-size:26px}.gin{padding:14px 16px}.steps{grid-template-columns:1fr}.gr{grid-template-columns:1fr}.bk{grid-template-columns:repeat(2,1fr)}.sf button{padding:0 16px}.sf select{display:none}.nb.hide{display:none}.sh h2{font-size:21px}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.dr,.ov,.toast{transition:none}}
+
+/* Group 5 / Group 19 home redesign */
+:root{--bg:#fff;--ink:#121931;--br:#0034dc;--bs:#edf2ff;--ln:#dce3f2}body{background:white}.w{max-width:1604px;padding:0 32px}
+.top{z-index:100;border:0}.header-line{height:89px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;gap:14px}
+.logo{color:#0033d7;font-size:27px;font-weight:900;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;letter-spacing:-.05em}
+.logo span{color:inherit}.logo .library-name{font-weight:500}
+.logo .logo-icon{width:24px;height:17px;border:2px solid #0033d7;border-radius:2px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;line-height:1}
+.header-tools{display:flex;align-items:center;gap:18px}
+.header-tool{height:42px;width:36px;border:0;background:none;display:grid;place-items:center;color:#475877;cursor:pointer;padding:0}
+.header-tool svg{width:25px;height:25px}.header-lang{height:48px;width:48px;border:0;border-radius:50%;background:#0033d7;color:#fff;font-weight:800;cursor:pointer}
+.hours-anchor{position:relative}
+.hours-toggle{border:1.5px solid #cbd5e9;border-radius:40px;height:46px;padding:0 16px;display:flex;align-items:center;gap:9px;background:#fff;white-space:nowrap;cursor:pointer}
+.hours-toggle .hint{color:#51617c;font-size:14px;font-weight:700}.hours-toggle .clock{font-size:18px;font-weight:900;color:#11172d}
+.hours-toggle svg{height:18px;width:18px;color:#475877;transition:transform .2s}.hours-toggle[aria-expanded=true] svg{transform:rotate(180deg)}
+.hours-popup{position:fixed;right:32px;top:98px;width:min(490px,calc(100vw - 20px));background:#0733d6;border-radius:17px;padding:24px 17px 18px;box-shadow:0 16px 25px #101a3f55,0 2px 40px #0002;z-index:155;color:#fff}
+.hours-popup[hidden]{display:none!important}
+.hours-popup-title{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:0 10px 17px}.hours-popup-title h2{font-size:24px;color:#fff;font-weight:900}.hours-popup-title time{font-size:15px;font-weight:600}
+.hours-popup-body{background:white;border-radius:13px;padding:10px 24px 17px;color:#222}
+.hour-item{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:63px;border-bottom:2px solid #dce3f2}.hour-item:last-child{border:0}
+.hour-item strong{color:#0034dc;font-size:20px;font-weight:800;white-space:nowrap}.hour-item time{color:#666;font-size:22px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.hours-popup-body p{color:#666;font-size:14px;line-height:1.5;margin:10px 1px 15px}.hours-popup-body a{display:block;text-align:right;color:#0034dc;font-weight:700;font-size:14px}
+.primo-strip{height:138px;display:flex;align-items:center;justify-content:flex-start;gap:24px;max-width:1128px;margin:0 auto}
+.primo-wrap{width:490px;flex:none}.primo-label{display:block;color:#0034dc;font-size:19px;font-weight:900;margin-bottom:5px;line-height:1.35}
+.primo-form{display:flex;overflow:hidden;border:2.5px solid #0c1327;border-radius:13px;height:67px;background:#fff}
+.primo-form select{width:145px;flex:none;background:white;border:0;padding:0 18px;font-size:18px;font-weight:800;cursor:pointer}
+.primo-form input{min-width:0;flex:1;border:0;background:white;padding:0 10px;font-size:18px;outline:0}
+.primo-form input::placeholder{color:#777}.primo-form button{flex:none;width:71px;border:0;background:#0033d7;color:white;display:grid;place-items:center;cursor:pointer}.primo-form button svg{width:32px;height:32px}
+.advanced-link{font-size:18px;font-weight:800;margin-top:25px;white-space:nowrap}
+.menu-strip{height:76px;border-top:1px solid #dce3f2;border-bottom:1px solid #dce3f2}
+.menu-strip-inner{max-width:1604px;margin:auto;height:100%;display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) 69px}
+.menu-strip a{display:grid;place-items:center;font-size:20px;font-weight:800;white-space:nowrap}.menu-strip a:hover{color:#0034dc;background:#f7f9ff}
+.menu-strip button{border:0;background:#0033d7;color:white;display:grid;place-items:center;cursor:pointer}.menu-strip button svg{height:30px;width:30px}
+.quick-row{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));max-width:1540px;margin:0 auto;min-height:202px;padding-top:43px;border-bottom:1px solid #dce3f2}
+.quick-row a{display:flex;align-items:center;flex-direction:column;gap:14px;padding:10px 5px 21px;color:#536080;font-weight:800;font-size:15px;text-align:center;line-height:1.5;border-bottom:4px solid transparent}
+.quick-row svg{width:40px;height:40px;flex:none}.quick-row a:first-child,.quick-row a:hover{color:#111931;border-bottom-color:#0034dc}
+.sample-banner{margin:32px 32px 0}.sample-banner-inner{height:335px;max-width:1540px;margin:auto;background:#fff4bc;border-radius:23px;overflow:hidden;position:relative;padding:53px 48px;color:#31200e}
+.sample-banner-inner:after{content:"";position:absolute;width:345px;height:460px;right:25px;top:-45px;border:8px solid #ffffffaf;border-radius:24px;transform:rotate(-12deg);box-shadow:inset 0 0 0 40px #ffffff19;pointer-events:none}
+.banner-tag{font:700 22px Georgia,serif}.sample-banner h1{font:900 56px/1.2 Georgia,"Noto Serif KR",serif;letter-spacing:-.02em;margin:10px 0 5px}
+.banner-description{font:700 19px Georgia,"Noto Serif KR",serif;margin:0 0 28px;max-width:880px}
+.banner-info{display:flex;align-items:end;gap:35px;font-size:15px;font-weight:600}.banner-info span{border-top:2px solid #4b3921;padding-top:6px;white-space:nowrap}.banner-info strong{font:700 27px Georgia,serif;white-space:nowrap}
+.banner-ctl{position:absolute;z-index:2;right:24px;bottom:20px;display:flex;align-items:center;gap:10px}.banner-ctl button{border:0;cursor:pointer}
+.banner-circle{height:39px;width:39px;border-radius:50%;background:#aba68c;color:#fff;font-size:22px}
+.banner-dot{height:10px;width:10px;border-radius:40px;background:#c7c0a4;padding:0}.banner-dot.active{background:#0034dc;width:38px}
+.home-feature{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:30px;margin-top:37px}.home-feature .card{padding:33px 37px;min-height:300px;border-radius:22px}
+.home-feature h2{font-size:26px;font-weight:900;padding-bottom:22px;border-bottom:1px solid #d6deed;margin-bottom:17px}
+.home-feature .tabs{gap:8px}.home-feature .tabs button{background:#f3f6ff;border-radius:9px;padding:8px 18px}.home-feature .tabs button[aria-pressed=true]{background:#0033d7;color:#fff}
+.home-feature .nl a{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.home-feature .nl .d{font-size:11px}
+.home-feature .promotion{border:0;min-height:300px;background:#ffdf27;border-radius:22px;padding:28px;color:#10279b;text-align:left;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;cursor:pointer}
+.promotion strong{font-size:32px;font-weight:900;line-height:1.4}.promotion small{font-size:14px;margin-top:8px}
+.infographic p{font-size:16px;font-weight:800}.infograph-line{display:grid;grid-template-columns:1fr 1fr 20px;align-items:center;gap:10px;font-size:13px;margin:10px 0;color:#50617c}
+.infograph-line i{display:block;background:#7ba5e5;height:11px;border-radius:2px}
+.guide{margin-top:30px}
+@media(max-width:1100px){.logo{font-size:21px}.header-line{padding:0 18px}.header-tools{gap:9px}.primo-strip{padding:0 28px}.quick-row a{font-size:12px}.home-feature{gap:14px}.home-feature .card{padding:24px 22px}}
+@media(max-width:800px){.header-line{height:72px}.logo{font-size:18px}.hours-toggle{height:38px;padding:0 8px;gap:5px}.hours-toggle .hint{display:none}.hours-toggle .clock{font-size:13px}.header-tool{width:28px}.header-tool svg{height:20px;width:20px}.header-tool.help,.header-tool.search-top{display:none}.header-lang{width:35px;height:35px;font-size:11px}.hours-popup{top:78px;right:12px}.primo-strip{height:120px}.primo-wrap{width:100%}.primo-form{height:56px}.primo-form select{width:117px;font-size:15px;padding:0 8px}.primo-form input{font-size:15px}.advanced-link{font-size:14px}.menu-strip{height:60px;overflow:hidden}.menu-strip-inner{grid-template-columns:repeat(5,minmax(112px,1fr)) 55px;overflow:auto}.menu-strip a{font-size:14px}.quick-row{display:flex;overflow-x:auto;min-height:128px;padding-top:14px}.quick-row a{min-width:115px;gap:7px;padding-bottom:10px}.quick-row svg{height:32px;width:32px}.sample-banner{margin:18px 16px 0}.sample-banner-inner{height:270px;padding:30px 26px}.sample-banner h1{font-size:38px}.banner-tag{font-size:16px}.banner-description{font-size:14px;max-width:75%}.banner-info{font-size:11px;gap:10px}.banner-info strong{font-size:17px}.home-feature{grid-template-columns:1fr 1fr}.home-feature .notice{grid-column:1/-1}}
+@media(max-width:600px){.header-line{padding:0 10px;gap:5px}.logo{font-size:15px;gap:2px}.logo .logo-icon{width:17px;height:13px}.hours-toggle{height:32px;padding:0 7px}.hours-toggle .clock{font-size:11px}.header-tool.user-top{display:none}.header-lang{width:30px;height:30px}.hours-popup{top:72px;right:8px;width:calc(100vw - 16px);padding:15px 10px}.hours-popup-title h2{font-size:19px}.hours-popup-title time{font-size:13px}.hours-popup-body{padding:8px 16px 14px}.hour-item{min-height:51px}.hour-item strong{font-size:14px}.hour-item time{font-size:16px}.hours-popup-body p,.hours-popup-body a{font-size:12px}.primo-strip{height:auto;min-height:110px;padding:16px;flex-wrap:wrap;gap:4px}.primo-label{font-size:14px}.primo-form{height:48px}.primo-form select{width:101px;font-size:13px;padding:0 4px}.primo-form input{font-size:12px;padding:0 4px}.primo-form button{width:50px}.advanced-link{font-size:12px;margin-top:4px}.sample-banner{margin:13px 10px 0}.sample-banner-inner{height:235px;padding:24px 18px}.banner-tag{font-size:13px}.sample-banner h1{font-size:28px}.banner-description{font-size:11px;margin-bottom:15px;max-width:85%}.banner-info span{display:none}.banner-info strong{font-size:16px}.sample-banner-inner:after{right:-180px}.banner-ctl{bottom:9px;right:9px;gap:6px}.banner-circle{width:27px;height:27px;font-size:16px}.banner-dot{height:8px;width:8px}.banner-dot.active{width:23px}.home-feature{grid-template-columns:1fr;gap:13px;margin-top:18px}.home-feature .notice{grid-column:auto}.home-feature .card,.home-feature .promotion{min-height:210px;border-radius:14px;padding:20px}.home-feature h2{font-size:22px;padding-bottom:12px}.promotion strong{font-size:25px}.home-feature .nl .d{display:none}}
+
 </style>
 <!-- Beusable Journey Map: same project used by the original UI. -->
 <script type="text/javascript">(function(w,d,a){w.__beusablerumclient__={load:function(src){var b=d.createElement("script");b.src=src;b.async=true;b.type="text/javascript";d.getElementsByTagName("head")[0].appendChild(b)}};w.__beusablerumclient__.load(a+"?url="+encodeURIComponent(d.URL));})(window,document,"//rum.beusable.net/load/b261115e130800u338");</script>
@@ -161,30 +217,20 @@ footer{border-top:1px solid var(--ln);padding:20px 0 40px;font-size:12.5px;color
 <script src="../shared/ux-task-panel.js?v=20261121-task-v3" defer></script>
 </head>
 <body>
-<header class="top"><div class="w nav">
- <a class="logo" href="#top">홍익대학교 <span>| 중앙도서관</span></a>
- <nav aria-label="주 메뉴"><a href="./search.html">자료이용</a><a href="#browse">연구학습지원</a><a href="#browse">컬렉션</a><a href="#browse">시설·기기 이용</a><a href="#news">커뮤니티</a></nav>
- <a class="nb hide" href="../account/?ui=improved">My Library</a><button class="nb p" id="open">전체메뉴</button>
+
+<header class="top" id="top"><div class="header-line">
+ <a class="logo" href="#top" aria-label="홍익대학교 중앙도서관 홈"><span class="logo-icon" aria-hidden="true">▱</span>홍익대학교 <span>|</span><span class="library-name">중앙도서관</span></a>
+ <div class="header-tools"><div class="hours-anchor" id="hours">
+ <button class="hours-toggle" type="button" id="hours-toggle" aria-expanded="false" aria-controls="hours-popup" aria-label="시설 운영 시간 펼치기"><span class="hint">중앙도서관 오늘</span><strong class="clock" id="hours-summary">09:00–20:00</strong><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+ <aside class="hours-popup" id="hours-popup" hidden aria-label="시설 운영 시간"><div class="hours-popup-title"><h2>시설 운영 시간</h2><time id="today"></time></div><div class="hours-popup-body"><div id="hl"></div><p>학기 중 기준 시간으로, 시험기간, 방학, 공휴일에는 달라질 수 있습니다.</p><a href="#" data-na>자세히보기</a></div></aside>
+ </div><button type="button" class="header-tool help" aria-label="도움말" data-na><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 9c0-3 5-3 5 .5 0 2-3 2-3 4M12 17h.01"/></svg></button><a class="header-tool user-top" aria-label="내 계정" href="../account/?ui=improved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-8 16-8 16 0"/></svg></a><button type="button" class="header-lang" data-na aria-label="언어 선택">EN</button><button type="button" class="header-tool search-top" id="focus-search" aria-label="검색창으로 이동"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/></svg></button></div>
 </div></header>
-
-<section class="hero" id="top"><div class="w hin">
- <div>
-  <div class="eyebrow">HONGIK UNIVERSITY LIBRARY</div>
-  <h1>도서관과 함께 세상을 이룰게!</h1>
-  <p>도서, 학술논문, 저널 등 다양한 자료를 찾아보세요.</p>
-  <div class="stabs" role="tablist"><button role="tab" aria-selected="true">통합검색</button><button role="tab" aria-selected="false">소장자료</button><button role="tab" aria-selected="false">전자자료</button></div>
-  <form class="sf" id="sf"><select aria-label="검색 범위"><option>전체</option><option>제목</option><option>저자</option><option>주제어</option></select><input aria-label="검색어" value="" placeholder="도서명, 저자, 주제어 등을 검색하세요" autocomplete="off"><button>검색</button></form>
-  <div class="ql"><b>PRIMO RA</b><a href="#" data-na>홍익대 자료 통합검색</a><a href="#" data-na>고급검색</a><a href="#" data-na>검색 도움말</a></div>
- </div>
- <aside class="card hours" id="hours" aria-label="오늘 이용 시간">
-  <div class="hh"><h2>오늘 이용 시간</h2><span id="today"></span></div>
-  <p class="hsub">학기 중 기준이에요. 시험기간, 방학, 공휴일에는 달라질 수 있어요.</p>
-  <div id="hl"></div>
-  <button class="tg" id="tg" aria-expanded="false" aria-controls="more">다른 열람실·시설 이용 시간</button>
-  <div class="hfoot"><span>시연용 데이터</span><a href="#" data-na>전체 이용시간 보기</a></div>
- </aside>
+<div class="primo-strip"><div class="primo-wrap"><b class="primo-label">PRIMO RA</b><form class="primo-form" id="sf"><select aria-label="검색 범위"><option>통합검색</option><option>제목</option><option>저자</option><option>주제어</option></select><input aria-label="검색어" placeholder="도서, 학술논문, 저널 등을 검색하세요" autocomplete="off"><button type="submit" aria-label="검색"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/></svg></button></form></div><a class="advanced-link" href="#" data-na>고급검색</a></div>
+<nav class="menu-strip" aria-label="주 메뉴"><div class="menu-strip-inner"><a href="./search.html">자료이용</a><a href="#browse">연구학습지원</a><a href="#new">컬렉션</a><a href="#browse">시설·기기 이용</a><a href="#news">커뮤니티</a><button type="button" id="open" aria-label="전체 메뉴"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h12M4 18h16"/></svg></button></div></nav>
+<div class="quick-row"><a href="#news"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9h5l8-5v16l-8-5H3zm16 1c2 2 2 3 0 5"/></svg><span>도서관 소식</span></a><a href="#browse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-9 14-9 14 0M17 5a4 4 0 0 1 0 7M17 15c3 0 5 3 5 6"/></svg><span>이용자별 안내</span></a><a href="#browse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="1"/><path d="M12 7v10M7 12h10"/></svg><span>자료 구입 신청</span></a><a href="#new"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z"/></svg><span>추천도서/큐레이션</span></a><a href="#browse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2c-6 6-6 14 0 20M12 2c6 6 6 14 0 20"/></svg><span>교외접속</span></a><a href="./search.html?view=electronic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="15" rx="2"/><path d="M8 22h8m-4-4v4"/></svg><span>주요 전자자료</span></a><a href="./search.html?view=electronic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="m10 8 5 4-5 4"/></svg><span>전자책·러닝·전자잡지</span></a><a href="#browse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 10 10-7 10 7M5 21V10m14 11V10M9 21v-7h6v7M2 21h20"/></svg><span>도서관 시설 안내</span></a><a href="#browse"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h5"/></svg><span>연체료 온라인 납부</span></a></div>
+<section class="sample-banner" aria-label="도서관 주요 알림"><div class="sample-banner-inner"><div class="banner-tag" id="banner-tag">[도서관 문화살롱 #3]</div><h1 id="banner-title">나만의 에세이 써보기</h1><p class="banner-description" id="banner-description">홍익대학교 도서관 관련 자유 주제 (도서관에서 있었던 일, 이용 경험, 추억 등)</p><div class="banner-info"><span>대상 &nbsp; 홍익대 전 구성원</span><span>접수방법 &nbsp; 도서관 홈페이지 온라인 접수</span><strong id="banner-date">2026. 11. 11.(수) – 11. 30.(월)</strong></div>
+<div class="banner-ctl"><button type="button" class="banner-circle" id="banner-prev" aria-label="이전 배너">‹</button><button type="button" class="banner-dot active" data-slide="0" aria-label="첫 번째 배너"></button><button type="button" class="banner-dot" data-slide="1" aria-label="두 번째 배너"></button><button type="button" class="banner-dot" data-slide="2" aria-label="세 번째 배너"></button><button type="button" class="banner-circle" id="banner-next" aria-label="다음 배너">›</button></div>
 </div></section>
-
 <div class="guide"><div class="w gin">
  <div><small>LIBRARY GUIDE</small><strong>도서관 길잡이</strong><span style="font-size:12.5px;color:var(--mu)">원하는 자료를 찾고, 서가까지 가는 3단계</span></div>
  <ol class="steps" style="list-style:none">
@@ -195,26 +241,25 @@ footer{border-top:1px solid var(--ln);padding:20px 0 40px;font-size:12.5px;color
 </div></div>
 
 <main class="w">
+<section class="home-feature" id="news">
+<div class="card notice"><h2>공지사항</h2><div class="tabs" id="nt"><button aria-pressed="true" data-k="전체">전체</button><button aria-pressed="false" data-k="일반">일반공지</button><button aria-pressed="false" data-k="학술">학술공지</button></div><ul class="nl" id="nl"></ul></div>
+<button type="button" class="promotion" data-na><strong>졸업생 및 수료생<br>도서관 이용 안내</strong><small>도서관 서비스 이용 정보 확인하기</small></button>
+<div class="card infographic"><h2>인포그래픽</h2><p>인기대출 도서 현황 (최근 1개월간)</p><div class="infograph-line"><span>데미안</span><i style="width:95%"></i><b>7</b></div><div class="infograph-line"><span>현대미술의 이해</span><i style="width:90%"></i><b>7</b></div><div class="infograph-line"><span>디자인의 디자인</span><i style="width:75%"></i><b>6</b></div></div></section>
+
  <section class="sec" id="browse">
   <div class="sh"><div><small>BROWSE</small><h2>무엇을 찾으세요?</h2><p>하고 싶은 일에 맞춰 4개 분류로 모았어요. 더 많은 메뉴는 전체메뉴에서 볼 수 있어요.</p></div><button class="nb" data-g="">전체 메뉴 열기</button></div>
   <div class="gr" id="gr"></div>
   <div class="who"><b>이용자별 안내</b><a href="#" data-na>학부생</a><a href="#" data-na>대학원생·연구자</a><a href="#" data-na>교직원</a><a href="#" data-na>외부 이용자</a></div>
  </section>
 
- <section class="sec" id="news">
-  <div class="sh"><div><small>NEWS</small><h2>소식과 일정</h2></div></div>
-  <div class="two">
-   <div class="card"><div class="sh" style="margin-bottom:6px"><h3>공지사항</h3><div class="tabs" id="nt"><button aria-pressed="true" data-k="전체">전체</button><button aria-pressed="false" data-k="일반">일반공지</button><button aria-pressed="false" data-k="학술">학술공지</button></div></div><ul class="nl" id="nl"></ul></div>
-   <div class="card"><div class="sh" style="margin-bottom:6px"><h3>도서관 일정</h3></div><div id="ev"></div></div>
-  </div>
- </section>
+ <section class="sec" id="events"><div class="sh"><div><small>EVENTS</small><h2>도서관 일정</h2></div></div><div class="card" id="ev"></div></section>
 
  <section class="sec" id="new">
   <div class="sh"><div><small>NEW</small><h2>신착 자료</h2><p>이번 달 새로 들어온 책이에요.</p></div></div>
   <div class="bk" id="bk"></div>
  </section>
 
- <div class="dp"><b>W01 수정 포인트</b> 오늘 이용 시간을 첫 화면에 바로 노출하고, 정보를 4개 대분류(자료 찾기, 이용하기, 연구·학습 지원, 안내·소식)로 위계화했습니다. 세부 메뉴는 전체메뉴와 목차 바로가기로 접근합니다. 모든 이용시간, 공지, 도서 정보는 시연용 예시입니다.</div>
+ 
 </main>
 <footer><div class="w">홍익대학교 중앙도서관 · UX 개선 와이어프레임<br>실제 서비스와 무관한 학생 프로젝트 시연 화면입니다. 결제와 개인정보 입력은 하지 않아요.</div></footer>
 
@@ -250,15 +295,22 @@ $("#gr").innerHTML=G.map(g=>`<article class="card gc" id="g-${g.id}"><div class=
 $("#db").innerHTML=G.map(g=>`<details data-g="${g.id}"><summary><span>${g.t}<small>${g.d}</small></span></summary><ul>${g.m.map(i=>`<li>${link(i)}${i[0]}</a></li>`).join("")+g.x.map(x=>`<li><a href="#" data-na>${x}</a></li>`).join("")}</ul></details>`).join("");
 /* hours */
 const pad=n=>String(n).padStart(2,"0");
-const HR=[["중앙도서관 (전체)",[8,22],[9,18],[9,18],1],["자료열람실",[9,20],[9,13],null],["일반열람실",[6,23],[6,23],[6,23]],["법학도서관",[9,17],null,null],["The H Reading Lounge",[9,22],[10,18],[10,18]],["대출·반납 데스크",[9,18],[9,13],null]];
-function hours(){
- const now=new Date(),dow=now.getDay(),k=dow===0?3:dow===6?2:1;
+const HR=[["중앙도서관",[9,20],[9,18],[9,18]],["자료열람실",[9,20],[9,13],null],["일반열람실",[6,23],[6,23],[6,23]],["법학도서관",[9,20],null,null],["The H Reading Lounge",[9,20],[10,18],[10,18]],["대출·반납 데스크",[9,20],[9,13],null]];
+function hours(){const now=new Date(),dow=now.getDay(),k=dow===0?3:dow===6?2:1;
  $("#today").textContent=`${now.getMonth()+1}월 ${now.getDate()}일 (${"일월화수목금토"[dow]})`;
- const row=r=>{const h=r[k];return `<div class="hr"><div class="hn${r[4]?" big":""}">${r[0]}</div><div class="ht${h?"":" off"}">${h?`${pad(h[0])}:00 – ${pad(h[1])}:00`:"오늘 휴실"}</div></div>`};
- $("#hl").innerHTML=row(HR[0])+`<div id="more" hidden>${HR.slice(1).map(row).join("")}</div>`;
-}
+ $("#hl").innerHTML=HR.map(r=>{const t=r[k];return `<div class="hour-item"><strong>${r[0]}</strong><time>${t?`${pad(t[0])}:00 – ${pad(t[1])}:00`:"오늘 휴실"}</time></div>`}).join("");
+ const a=HR[0][k];$("#hours-summary").textContent=a?`${pad(a[0])}:00–${pad(a[1])}:00`:"오늘 휴실";}
 hours();
-$("#tg").onclick=e=>{const b=e.currentTarget,o=b.getAttribute("aria-expanded")!=="true";b.setAttribute("aria-expanded",o);$("#more").hidden=!o;b.textContent=o?"접기":"다른 열람실·시설 이용 시간"};
+const hoursToggle=$("#hours-toggle"),hoursPopup=$("#hours-popup");
+function hideHours(){hoursPopup.hidden=true;hoursToggle.setAttribute("aria-expanded","false");hoursToggle.setAttribute("aria-label","시설 운영 시간 펼치기")}
+hoursToggle.onclick=()=>{const visible=hoursPopup.hidden;hoursPopup.hidden=!visible;hoursToggle.setAttribute("aria-expanded",String(visible));hoursToggle.setAttribute("aria-label",visible?"시설 운영 시간 접기":"시설 운영 시간 펼치기")};
+document.addEventListener("click",e=>{if(!e.target.closest(".hours-anchor"))hideHours()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!hoursPopup.hidden){hideHours();hoursToggle.focus()}});
+$("#focus-search").onclick=()=>{$("#sf input").focus();$("#sf").scrollIntoView({behavior:"smooth",block:"center"})};
+const slides=[["[도서관 문화살롱 #3]","나만의 에세이 써보기","홍익대학교 도서관 관련 자유 주제 (도서관에서 있었던 일, 이용 경험, 추억 등)","2026. 11. 11.(수) – 11. 30.(월)"],["[중앙도서관 이용 안내]","도서관과 함께하는 하루","자료 검색부터 공간 이용까지, 다양한 도서관 서비스를 확인하세요.","도서관 이용 안내"],["[도서관 추천 콘텐츠]","새로운 책과의 만남","새롭게 들어온 자료와 추천 도서를 만나보세요.","신착 자료 소개"]];
+let slideIndex=0;
+function slide(i){slideIndex=(i+slides.length)%slides.length;const d=slides[slideIndex];$("#banner-tag").textContent=d[0];$("#banner-title").textContent=d[1];$("#banner-description").textContent=d[2];$("#banner-date").textContent=d[3];$$("[data-slide]").forEach(b=>b.classList.toggle("active",+b.dataset.slide===slideIndex))}
+$("#banner-prev").onclick=()=>slide(slideIndex-1);$("#banner-next").onclick=()=>slide(slideIndex+1);$$("[data-slide]").forEach(b=>b.onclick=()=>slide(+b.dataset.slide));
 /* news */
 const N=[["일반","11월 정기교육 안내"],["학술","학술DB 이용교육 및 전자정보 안내"],["일반","중앙도서관 자료열람실 이용 변경"],["학술","정보활용교육 일정 안내"],["일반","시험기간 열람실 연장 운영 안내"]];
 function news(k){$("#nl").innerHTML=N.filter(n=>k==="전체"||n[0]===k).map(n=>`<li><em>${n[0]}</em><a href="#" data-na>${n[1]}</a><span class="d">공지 예시</span></li>`).join("");$$("#nt button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.k===k))}
@@ -285,13 +337,13 @@ $("#sf").onsubmit=e=>{
  if(!query){input.focus();toast("검색어를 입력해 주세요.");return}
  const field=$("#sf select").value;
  if(field==="주제어"){toast("주제어별 검색은 이번 시연에서 제공되지 않습니다. 제목 또는 저자로 검색해 주세요.");return}
- const selected=$$(".stabs button").find(b=>b.getAttribute("aria-selected")==="true")?.textContent.trim();
+ const selected="통합검색";
  const view=selected==="소장자료"?"book":selected==="전자자료"?"electronic":"all";
  const params=new URLSearchParams({q:query,view,pg:"1"});
  if(field==="제목"||field==="저자")params.set("field",field);
  location.assign("./search.html?"+params.toString());
 };
-$$(".stabs button").forEach(b=>b.onclick=()=>$$(".stabs button").forEach(x=>x.setAttribute("aria-selected",x===b)));
+
 /* scrollspy */
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)$$("#rail a").forEach(a=>a.classList.toggle("on",a.dataset.id===e.target.id))}),{rootMargin:"-30% 0px -60% 0px"});
 ["hours","browse","news","new"].forEach(i=>io.observe($("#"+i)));
