@@ -6,6 +6,7 @@
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#F3F5FB">
 <title>My Library · 홍익대학교 중앙도서관 UX 시연</title>
+<script>if(new URLSearchParams(location.search).get("ui")!=="original")document.documentElement.classList.add("improved-library-view");</script>
 <style>
 :root{color-scheme:light}
 *{box-sizing:border-box}body{margin:0;background:#f4f6fb;color:#202636;font-family:Arial,"Malgun Gothic",sans-serif;font-size:15px;line-height:1.6}
@@ -53,6 +54,78 @@ input{width:100%;padding:11px;border:1px solid #bac5d8;border-radius:6px}
  header nav .header-library-link{min-height:36px;padding-left:4px;font-size:13px}
  h1{font-size:25px}.panel{padding:18px}.book-entry{flex-direction:column;align-items:flex-start}.book-meta{grid-template-columns:100px minmax(0,1fr)}
 }
+
+/* My Library: fidelity to supplied screenshots, scoped to the improved UI only. */
+html.improved-library-view body{background:#f4f6fc;color:#141414;font-family:Arial,"Malgun Gothic",sans-serif;font-size:14px;line-height:1.55}
+html.improved-library-view main{max-width:930px;margin:13px auto 0;padding:0 18px 52px}
+html.improved-library-view main h1{font-size:29px;line-height:1.25;margin:0 0 14px;font-weight:800;letter-spacing:-.025em;color:#0033d7}
+html.improved-library-view main>.muted{color:#526a87;margin:0 0 12px;font-size:13px;letter-spacing:.01em}
+html.improved-library-view .panel{background:#fff;border:1px solid #d5def3;border-radius:11px;padding:27px 29px 20px;margin-top:19px}
+html.improved-library-view .panel h2{font-size:21px;line-height:1.4;font-weight:800;color:#111;margin:0 0 7px}
+html.improved-library-view .panel .muted{font-size:12px;color:#5b5b5b}
+html.improved-library-view #session-heading{font-size:21px}
+html.improved-library-view .panel:has(#signed-in:not([hidden]))>#session-heading{display:none}
+html.improved-library-view .panel:has(#signed-in:not([hidden]))>.warn{display:none}
+html.improved-library-view #signed-in{display:block}
+html.improved-library-view .account-summary{display:flex;align-items:center;justify-content:space-between;gap:20px}
+html.improved-library-view .account-identity{font-size:21px;color:#111;margin:0;font-weight:800;line-height:1.4}
+html.improved-library-view .account-code{font-size:21px;color:#111;font-weight:500;letter-spacing:0;margin-left:5px}
+html.improved-library-view .account-controls{gap:11px;justify-content:flex-end;flex-wrap:nowrap}
+html.improved-library-view .btn{background:#fff;border:1px solid #0033db;border-radius:4px;color:#0033d7;font-size:13px;padding:7px 15px;min-height:36px;line-height:1.4;font-weight:700}
+html.improved-library-view .btn.primary{background:#0033dc;border-color:#0033dc;color:white}
+html.improved-library-view .session-info{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:9px}
+html.improved-library-view .session-info .muted{margin:0;color:#626262;font-size:12px}
+html.improved-library-view .signed-status{display:flex;align-items:center;gap:8px;color:#626262;font-size:12px;white-space:nowrap;margin:0}
+html.improved-library-view .signed-status::before{content:"";width:10px;height:10px;border-radius:50%;display:inline-block;background:#00e934}
+html.improved-library-view .account-original-label{display:none}
+html.improved-library-view #message:empty{display:none}
+html.improved-library-view .panel:has(#signed-in:not([hidden])) #message:not(.error){display:none}
+html.improved-library-view #library-section{padding-top:26px;margin-top:22px}
+html.improved-library-view #library-section h2{margin:0 0 4px}
+html.improved-library-view #list-description{margin:0 0 22px;color:#666;font-size:12px;line-height:1.55}
+html.improved-library-view #bookmarks{margin:0;padding:0;list-style:none}
+html.improved-library-view #bookmarks>li.saved-book{padding:15px 18px 26px;margin:0;border-bottom:1px solid #d6def0;position:relative}
+html.improved-library-view #bookmarks>li.saved-book+li.saved-book{padding-top:31px}
+html.improved-library-view #bookmarks>li.saved-book:last-child{border-bottom:0}
+html.improved-library-view .book-entry{gap:16px;align-items:start}
+html.improved-library-view .book-title{font-size:16px;line-height:1.45;color:#0033d7;font-weight:700;text-decoration:underline;text-underline-offset:2px}
+html.improved-library-view .book-by{color:#666;font-size:12px;line-height:1.5;margin-top:4px}
+html.improved-library-view .bookmark-button{flex:none;min-height:35px;background:#0033dc;border:1px solid #0033dc;color:#fff;border-radius:4px;padding:6px 10px;font-size:12px;font-weight:700;line-height:1.4;display:inline-flex;gap:5px;align-items:center;justify-content:center}
+html.improved-library-view .bookmark-button:not([aria-pressed="true"]){color:#0033dc;background:#e7ecff;border-color:#0033dc}
+html.improved-library-view .bookmark-button .star{font-size:17px;line-height:1}
+html.improved-library-view .book-meta{display:grid;grid-template-columns:78px minmax(0,1fr);gap:6px 15px;margin:16px 0 20px;font-size:12px;line-height:1.45}
+html.improved-library-view .book-meta dt{font-weight:600;color:#5b5b5b}
+html.improved-library-view .book-meta dd{color:#666;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+html.improved-library-view .book-links{margin:0;display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+html.improved-library-view .book-links .btn{font-size:13px;min-height:35px;padding:7px 14px;text-decoration:none}
+html.improved-library-view .book-links .shelf-map-link{background:#0033dc;border-color:#0033dc;color:#fff;min-height:35px}
+html.improved-library-view .book-links .search-result-link{border:1px solid #0033dc;color:#0033dc;background:white}
+html.improved-library-view .book-links .detail-extra{font-size:12px}
+html.improved-library-view .other-holdings{background:#e7ecff;border-radius:5px;margin:38px -18px 0;overflow:hidden;color:#333}
+html.improved-library-view .holding-toggle{display:flex;width:100%;min-height:35px;border:0;background:transparent;align-items:center;justify-content:space-between;padding:9px 18px;color:#555;text-align:left;font-size:12px;font-weight:400;cursor:pointer}
+html.improved-library-view .holding-toggle .chevron{width:13px;height:13px;border:solid #666;border-width:0 2px 2px 0;transform:translateY(-3px) rotate(45deg);margin:0 1px 0 9px;flex:none}
+html.improved-library-view .holding-toggle[aria-expanded="true"] .chevron{transform:translateY(4px) rotate(225deg)}
+html.improved-library-view .holding-details{padding:0 18px 12px;color:#222;font-size:12px;line-height:1.55;font-weight:700;white-space:pre-wrap;overflow-wrap:anywhere}
+html.improved-library-view .holding-details[hidden]{display:none}
+html.improved-library-view .book-holdings{display:none}
+html.improved-library-view .panel .saved-hint{margin:12px 0;font-size:12px}
+html.improved-library-view #list-empty{font-size:13px;color:#66738d}
+html.improved-library-view .improved-library-footer{display:none}
+@media(max-width:620px){
+ html.improved-library-view main{padding:0 11px 34px}
+ html.improved-library-view .panel{padding:19px 15px;margin-top:16px}
+ html.improved-library-view .account-summary{flex-wrap:wrap;align-items:flex-start}
+ html.improved-library-view .account-controls{width:100%;justify-content:flex-end}
+ html.improved-library-view .session-info{align-items:flex-start;flex-direction:column;gap:4px}
+ html.improved-library-view #bookmarks>li.saved-book{padding:15px 8px 22px}
+ html.improved-library-view #bookmarks>li.saved-book+li.saved-book{padding-top:24px}
+ html.improved-library-view .book-entry{flex-direction:row;align-items:start}
+ html.improved-library-view .book-title{font-size:15px}
+ html.improved-library-view .bookmark-button{font-size:11px;padding:6px}
+ html.improved-library-view .book-meta{grid-template-columns:73px minmax(0,1fr);gap:5px 8px}
+ html.improved-library-view .other-holdings{margin:24px -8px 0}
+}
+
 </style>
 <!-- Shared UX task survey: original/improved comparison -->
 <script src="../shared/ux-task-panel.js?v=20261123-persistent-close-v4" defer></script>
@@ -82,12 +155,17 @@ input{width:100%;padding:11px;border:1px solid #bac5d8;border-radius:6px}
   </form>
 </div>
 <div id="signed-in" hidden>
-  <p>현재 아이디: <span class="account-code" id="account-id"></span></p>
-  <div class="row">
-    <button id="copy-id" class="btn primary" type="button">아이디 복사</button>
-    <button id="switch-id" class="btn" type="button">다른 아이디로 전환</button>
+  <div class="account-summary">
+    <p class="account-identity"><span class="account-improved-label">내 아이디 :</span><span class="account-original-label">현재 아이디:</span> <span class="account-code" id="account-id"></span></p>
+    <div class="row account-controls">
+      <button id="copy-id" class="btn primary" type="button">아이디 복사</button>
+      <button id="switch-id" class="btn" type="button"><span class="account-improved-label">로그아웃</span><span class="account-original-label">다른 아이디로 전환</span></button>
+    </div>
   </div>
-  <p class="muted">휴대폰에서도 이 아이디를 입력하면 같은 찜 목록을 볼 수 있습니다.</p>
+  <div class="session-info">
+    <p class="signed-status">로그인 중</p>
+    <p class="muted">아이디를 복사하여 모바일 버전에서도 내 서재 기능을 사용할 수 있습니다.</p>
+  </div>
 </div>
 <p class="warn">이 아이디는 비밀번호가 아닙니다. 아이디를 아는 누구나 찜 목록을 조회하거나 변경할 수 있으므로 실험용으로만 이용하세요.</p>
 <p id="message" role="status" aria-live="polite"></p>
@@ -100,6 +178,6 @@ input{width:100%;padding:11px;border:1px solid #bac5d8;border-radius:6px}
 </section>
 <div class="row" style="margin-top:20px"><a id="return-link" href="../original/">← 도서 검색으로 돌아가기</a></div>
 </main>
-<script type="module" src="../shared/account-page.js?v=20261121-home-final-v1"></script>
+<script type="module" src="../shared/account-page.js?v=20261125-library-matched-v2"></script>
 </body>
 </html>
