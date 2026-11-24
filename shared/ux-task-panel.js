@@ -262,7 +262,10 @@
         html+='<p class="message" role="status">서버에 응답을 전송하는 중입니다. 브라우저에 저장된 기록은 유지됩니다.</p>';
       }else{
         html+='<p class="message error" role="status">서버 전송이 완료되지 않았습니다. 이 브라우저에 임시 저장된 응답을 재전송할 수 있습니다.'+
-          (state.error?'<br>오류: '+escape(state.error):'')+'</p>'+
+          (state.error?'<br>오류: '+escape(state.error):'')+
+          (state.error&&String(state.error).includes("permission-denied")?
+            '<br>Firebase에서 저장 권한을 거부했습니다. 최신 Firestore 규칙이 실제 서버에 게시되어 있는지 확인해 주세요.':'')+
+          '</p>'+
           '<div class="actions"><button class="secondary" type="button" data-action="retry">응답 재전송</button></div>';
       }
       if(next){
@@ -315,8 +318,13 @@
         startedAt:new Date(record.startedAt),answeredAt:new Date(record.answeredAt),
         completedAt:dbLib.serverTimestamp()
       };
-      // Task 1 keeps the existing stricter facility/time schema.
-      if(record.taskNumber===1){
+      // Older pending task-1 records predate the taskNumber field. Identify
+      // the payload schema by taskId, not taskNumber, so retries keep the
+      // facility and access-time fields required by Firestore rules.
+      if(record.taskId==="library-hours-access-facility-v2"){
+        if(!record.taskTime||!record.facility||!record.scenarioAccessedAt){
+          throw new Error("운영시간 과업의 날짜·시설 정보가 누락되어 전송할 수 없습니다.");
+        }
         payload.taskTime=record.taskTime;
         payload.facility=record.facility;
         payload.scenarioAccessedAt=new Date(record.scenarioAccessedAt);
