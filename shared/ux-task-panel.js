@@ -79,10 +79,10 @@
     scenario = createScenario();
     write(localStorage, scenarioKey, scenario);
   }
-  let state = read(sessionStorage, stateKey, { stage: "intro" });
+  let state = read(sessionStorage, stateKey, { stage: "intro", taskNumber:1 });
   if (!["intro", "task", "difficulty", "done"].includes(state.stage) ||
       (state.participantId && state.participantId !== participant)) {
-    state = { stage: "intro" };
+    state = { stage: "intro", participantId: participant, taskNumber:1 };
   }
   function taskPrompt(record) {
     const data = record || scenario;
@@ -90,6 +90,67 @@
       "</b>에 <b>" + escape(data.facility) +
       "</b>을 이용하려고 합니다. 그 시간에 이용할 수 있는지와 운영시간을 알려주세요.";
   }
+
+  const taskSpecs = [
+    {
+      id:"library-hours-access-facility-v2", title:"운영시간 확인",
+      label:"이용 가능 여부 및 운영시간",
+      placeholder:"예: 이용 가능 / 운영시간 09:00~20:00",
+      prompt:()=>taskPrompt(scenario)
+    },
+    {
+      id:"library-loan-status-v1", title:"대출 상태 확인",
+      label:"확인한 대출 상태 및 반납 예정일",
+      placeholder:"예: 하이데거 / 대출 가능 (반납 예정일이 표시되면 함께 작성)",
+      prompt:()=>'"<b>하이데거</b>"의 <b>종이책</b>을 지금 빌릴 수 있는지 확인해 주세요. 대출 중이라면 화면에 표시된 반납 예정일도 알려주세요.'
+    },
+    {
+      id:"library-revisit-books-v1", title:"도서 재탐색",
+      label:"두 도서의 소장 위치 및 X를 다시 찾은 방법",
+      placeholder:"예: 하이데거 위치 확인 → 디자인 매거진 CA 검색 → 이전 화면으로 돌아가 하이데거 재확인",
+      prompt:()=>'<b>하이데거</b>의 위치를 확인한 다음 <b>디자인 매거진 CA</b>를 찾아주세요. 마지막으로 <b>하이데거</b>의 위치를 다시 확인해 주세요.'
+    },
+    {
+      id:"library-bookmark-v1", title:"찜하기",
+      label:"책을 저장한 방법 및 확인 결과",
+      placeholder:"예: 하이데거를 찜하고 My Library에서 저장 여부 확인",
+      prompt:()=>'<b>하이데거</b>를 나중에 다시 쉽게 찾을 수 있도록 웹사이트에서 해보세요. 저장 결과도 확인해 주세요.'
+    }
+  ];
+  const currentNumber=()=>Math.min(variant==="improved"?4:3,Math.max(1,Number(state.taskNumber)||1));
+  const currentTask=()=>taskSpecs[currentNumber()-1];
+  const versionDone=(v,n)=>results().some(row=>
+    row.participantId===participant && row.variant===v && row.taskId===taskSpecs[n-1].id
+  );
+  const nextCommon=v=>[1,2,3].find(n=>!versionDone(v,n))||null;
+  function nextDestination(){
+    const n=currentNumber();
+    if(n<3)return {variant,number:n+1};
+    if(n===3){
+      const other=variant==="original"?"improved":"original";
+      const needOther=nextCommon(other);
+      if(needOther)return {variant:other,number:needOther};
+      if(!versionDone("improved",4))return {variant:"improved",number:4};
+      return null;
+    }
+    return null;
+  }
+  const introState=n=>({stage:"intro",participantId:participant,taskNumber:n});
+  const homeHref=v=>new URL("../"+v+"/",scriptBase).href;
+  function goNext(destination){
+    if(!destination)return;
+    const targetState=introState(destination.number);
+    const targetKey="hongik-ux-task-state-v2:"+destination.variant;
+    write(sessionStorage,targetKey,targetState);
+    if(destination.variant===variant){
+      state=targetState; saveState(); render();
+    }
+    const home=homeHref(destination.variant);
+    const here=location.pathname.replace(/index\.html$/,"");
+    const homePath=new URL(home).pathname;
+    if(destination.variant!==variant || here!==homePath)location.assign(home);
+  }
+
   // Once dismissed, open only through the explicit reopen button (including after navigation).
   let collapsed = read(localStorage, dismissedKey, false) === true || state.stage === "task";
   function dismissPanel() {
@@ -151,162 +212,174 @@
   function activeResult() { return results().find(row => row.id === state.responseId); }
   const body = shell.querySelector("#taskBody");
   function render() {
-    let html = '<div class="variant">' + (variant === "original" ? "기존 UI · ORIGINAL" : "개선 UI · IMPROVED") + '</div>';
-    if (state.stage === "intro") {
-      html += '<p class="step">과업 1 · 운영시간 확인</p><h2>운영시간 확인</h2>' +
-        '<p class="instruction">' + taskPrompt(scenario) + '</p>' +
-        '<p>홈페이지에서 이용 가능 여부와 운영시간을 확인해 주세요.</p>' +
-        '<p class="sub">웹사이트를 자유롭게 탐색하세요. 정답은 이 패널에 미리 표시되지 않습니다. 과업 시작 후 패널이 자동으로 접히며, 답을 찾으면 오른쪽의 답변 입력 버튼을 눌러 주세요.</p>' +
-        '<p class="sub">연구용 익명 식별자, 답변, 난이도, 소요 시간을 저장합니다. 이름·학번 등 개인정보는 입력하지 마세요.</p>' +
-        '<div class="actions"><button class="primary" type="button" data-action="start">과업 시작</button>' +
-        '<button class="secondary" type="button" data-action="nextparticipant">진행자: 새 참가자 설정</button></div>';
-    } else if (state.stage === "task") {
-      html += '<p class="step">1 / 2 · 과업 수행 및 답변</p><h2>운영시간을 확인해 주세요</h2>' +
-        '<p class="instruction">' + taskPrompt(state) + '</p>' +
-        '<label class="field" for="taskAnswer">이용 가능 여부 및 확인한 운영시간</label>' +
-        '<textarea id="taskAnswer" maxlength="300" placeholder="예: 이용 가능 / 운영시간 09:00~20:00">' + escape(state.draft || "") + '</textarea>' +
-        '<p class="sub">답변 제출 시 과업 수행 시간이 기록됩니다.</p>' +
-        '<div class="actions"><button class="primary" type="button" data-action="answer">답변 제출</button>' +
-        '<button class="secondary" type="button" data-action="notfound">정보를 찾지 못했어요</button></div>' +
+    const number=currentNumber();
+    const task=currentTask();
+    const total=variant==="improved"?4:3;
+    let html='<div class="variant">'+(variant==="original"?"기존 UI · ORIGINAL":"개선 UI · IMPROVED")+
+      ' · 과업 '+number+' / '+total+'</div>';
+    if(state.stage==="intro"){
+      html+='<p class="step">과업 '+number+' · '+task.title+'</p><h2>'+task.title+'</h2>'+
+        '<p class="instruction">'+task.prompt()+'</p>'+
+        '<p class="sub">진행자가 안내하면 과업을 시작하세요. 과업을 수행하는 동안 테스트 패널은 접혀 있습니다.</p>'+
+        '<p class="sub">과업 1과 2는 홈에서 시작합니다. 과업 3은 X → Y → X 순서로 이어서 진행합니다.</p>'+
+        '<div class="actions"><button class="primary" type="button" data-action="start">과업 '+number+' 시작</button></div>';
+      if(number===1)html+='<div class="actions"><button class="secondary" type="button" data-action="nextparticipant">진행자: 새 참가자 설정</button></div>';
+    }else if(state.stage==="task"){
+      html+='<p class="step">과업 '+number+' 진행 중</p><h2>'+task.title+'</h2>'+
+        '<p class="instruction">'+task.prompt()+'</p>'+
+        '<label class="field" for="taskAnswer">'+task.label+'</label>'+
+        '<textarea id="taskAnswer" maxlength="300" placeholder="'+escape(task.placeholder)+'">'+escape(state.draft||"")+'</textarea>'+
+        '<p class="sub">정보를 확인한 뒤 답변을 제출하면 수행 시간이 기록됩니다.</p>'+
+        '<div class="actions"><button class="primary" type="button" data-action="answer">답변 제출</button>'+
+        '<button class="secondary" type="button" data-action="notfound">완료하지 못했어요</button></div>'+
         '<p class="message" id="validation" hidden></p>';
-    } else if (state.stage === "difficulty") {
-      html += '<p class="step">2 / 2 · 체감 난이도 평가</p><h2>시간 정보를 찾는 과정은 얼마나 어려웠나요?</h2>' +
-        '<p class="sub">실제 정보 탐색 과정에서 느꼈던 난이도를 선택해 주세요.</p>' +
-        '<div class="rating" role="radiogroup" aria-label="체감 난이도">' +
-        [1,2,3,4,5].map(n => '<label aria-label="' + n + '점"><input name="difficulty" type="radio" value="' + n +
-          '" ' + (Number(state.difficulty) === n ? 'checked' : '') + '><span>' + n + '</span></label>').join("") +
-        '</div><div class="scale"><span>1점 · 매우 쉬움</span><span>5점 · 매우 어려움</span></div>' +
-        '<div class="actions"><button class="primary" id="finish" type="button" data-action="finish" ' +
-        (state.difficulty ? '' : 'disabled') + '>평가 제출</button></div>' +
-        '<p class="sub" style="margin-top:10px">답변: ' + escape(state.answer) + '</p>';
-    } else {
-      const record = activeResult();
-      html += '<p class="step">과업 완료</p><h2>평가가 완료되었습니다</h2>' +
-        '<p>답변과 체감 난이도가 기록되었습니다.</p>' +
-        '<p class="sub">난이도: <b>' + escape(record ? record.difficulty : state.difficulty || "-") + '점</b> / 5점</p>';
-      if (state.sendState === "sent" || (record && record.synced)) {
-        html += '<p class="message" role="status">✓ 서버에 응답이 저장되었습니다.</p>';
-      } else if (state.sendState === "sending") {
-        html += '<p class="message" role="status">서버에 응답을 저장하고 있습니다…</p>';
-      } else {
-        html += '<p class="message error" role="status">중앙 수집 서버 전송이 완료되지 않았습니다. 브라우저에 임시 보관된 응답을 재전송해 주세요.' +
-          (state.error ? '<br>오류: ' + escape(state.error) : '') + '</p>' +
-          '<div class="actions"><button class="primary" type="button" data-action="retry">재전송</button></div>';
+    }else if(state.stage==="difficulty"){
+      html+='<p class="step">과업 '+number+' · 마지막 단계</p><h2>이 과업을 수행하는 데 얼마나 어려움이 있었나요?</h2>'+
+        '<p class="sub">체감 난이도를 선택해 주세요.</p>'+
+        '<div class="rating" role="radiogroup" aria-label="체감 난이도">'+
+        [1,2,3,4,5].map(n=>'<label aria-label="'+n+'점"><input name="difficulty" type="radio" value="'+n+
+          '" '+(Number(state.difficulty)===n?'checked':'')+'><span>'+n+'</span></label>').join("")+
+        '</div><div class="scale"><span>1점 · 매우 쉬움</span><span>5점 · 매우 어려움</span></div>'+
+        '<div class="actions"><button class="primary" id="finish" type="button" data-action="finish" '+
+        (state.difficulty?'':'disabled')+'>과업 '+number+' 완료</button></div>'+
+        '<p class="sub" style="margin-top:10px">작성한 답변: '+escape(state.answer||"")+'</p>';
+    }else{
+      const record=activeResult(),next=nextDestination();
+      html+='<p class="step">과업 '+number+' 완료</p><h2>'+task.title+' 과업을 마쳤습니다</h2>'+
+        '<p class="sub">답변과 난이도를 기록했습니다. 난이도: <b>'+
+        escape(record?record.difficulty:state.difficulty||"-")+'점 / 5점</b></p>';
+      if(state.sendState==="sent"||(record&&record.synced)){
+        html+='<p class="message" role="status">✓ 테스트 응답이 서버에 저장되었습니다.</p>';
+      }else if(state.sendState==="sending"){
+        html+='<p class="message" role="status">서버에 응답을 전송하는 중입니다. 브라우저에 저장된 기록은 유지됩니다.</p>';
+      }else{
+        html+='<p class="message error" role="status">서버 전송이 완료되지 않았습니다. 이 브라우저에 임시 저장된 응답을 재전송할 수 있습니다.'+
+          (state.error?'<br>오류: '+escape(state.error):'')+'</p>'+
+          '<div class="actions"><button class="secondary" type="button" data-action="retry">응답 재전송</button></div>';
       }
-      html += '<div class="actions"><button class="secondary" type="button" data-action="restart">같은 참가자로 다시 평가</button>' +
-        '<button class="secondary" type="button" data-action="nextparticipant">진행자: 다음 참가자 (두 사이트 완료 후)</button></div>';
+      if(next){
+        const nextTask=taskSpecs[next.number-1];
+        html+='<div class="next-task"><p class="step">다음 과업 안내</p><h2>과업 '+next.number+' · '+nextTask.title+'</h2>'+
+          '<p class="instruction">'+(next.number===1?taskPrompt(scenario):nextTask.prompt())+'</p>'+
+          '<p class="sub">'+(next.variant===variant?"같은 사이트에서 계속 진행합니다.":"이제 "+(next.variant==="original"?"기존 UI(original)":"개선 UI(improved)")+"에서 진행합니다.")+
+          '</p><div class="actions"><button class="primary" type="button" data-action="nexttask">'+
+          (next.variant===variant?"과업 "+next.number+"로 이동":"다음 사이트에서 과업 "+next.number+" 진행")+'</button></div></div>';
+      }else{
+        html+='<p class="message">공통 과업 1~3과 개선안 찜하기 과업까지 모두 완료했습니다.</p>'+
+          '<div class="actions"><button class="secondary" type="button" data-action="nextparticipant">진행자: 다음 참가자 설정</button></div>';
+      }
     }
-    body.innerHTML = html;
-    const reopen = shell.querySelector(".reopen");
-    if (reopen) {
-      reopen.textContent = state.stage === "task" ? "✎ 답변 입력하기" : "📝 테스트 안내 열기";
-      reopen.setAttribute("aria-label", reopen.textContent);
+    body.innerHTML=html;
+    const reopen=shell.querySelector(".reopen");
+    if(reopen){
+      reopen.textContent=state.stage==="task"?"✎ 과업 "+number+" 답변 입력":"📝 과업 "+number+" 안내 열기";
+      reopen.setAttribute("aria-label",reopen.textContent);
     }
   }
   function updateState(changes) { Object.assign(state, changes); saveState(); render(); }
 
   async function upload(record) {
-    if (!record) { updateState({ sendState: "failed", error: "임시 응답을 찾을 수 없음" }); return; }
-    updateState({ sendState: "sending", error: "" });
-    try {
-      const [appLib, authLib, dbLib, configuration] = await Promise.all([
+    if(!record)return;
+    if(state.responseId===record.id&&state.stage==="done")updateState({sendState:"sending",error:""});
+    try{
+      const [appLib,authLib,dbLib,configuration]=await Promise.all([
         import("https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js"),
         import("https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js"),
         import("https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js"),
-        import(new URL("firebase-config.js", scriptBase).href)
+        import(new URL("firebase-config.js",scriptBase).href)
       ]);
-      const app = appLib.getApps().length ? appLib.getApp() : appLib.initializeApp(configuration.firebaseConfig);
-      const auth = authLib.getAuth(app);
+      const app=appLib.getApps().length?appLib.getApp():appLib.initializeApp(configuration.firebaseConfig);
+      const auth=authLib.getAuth(app);
       await auth.authStateReady();
-      if (!auth.currentUser) await authLib.signInAnonymously(auth);
-      const db = dbLib.getFirestore(app);
-      await dbLib.setDoc(dbLib.doc(db, "uxTaskResponses", record.id), {
-        anonymousUid: auth.currentUser.uid,
-        participantId: record.participantId,
-        variant: record.variant,
-        taskId: record.taskId,
-        taskDate: record.taskDate,
-        taskTime: record.taskTime,
-        facility: record.facility,
-        scenarioAccessedAt: new Date(record.scenarioAccessedAt),
-        answer: record.answer,
-        difficulty: record.difficulty,
-        elapsedSeconds: record.elapsedSeconds,
-        startedAt: new Date(record.startedAt),
-        answeredAt: new Date(record.answeredAt),
-        completedAt: dbLib.serverTimestamp()
-      });
-      record.synced = true;
+      if(!auth.currentUser)await authLib.signInAnonymously(auth);
+      const db=dbLib.getFirestore(app);
+      const payload={
+        anonymousUid:auth.currentUser.uid,
+        participantId:record.participantId,variant:record.variant,taskId:record.taskId,
+        taskDate:record.taskDate,answer:record.answer,
+        difficulty:record.difficulty,elapsedSeconds:record.elapsedSeconds,
+        startedAt:new Date(record.startedAt),answeredAt:new Date(record.answeredAt),
+        completedAt:dbLib.serverTimestamp()
+      };
+      // Task 1 keeps the existing stricter facility/time schema.
+      if(record.taskNumber===1){
+        payload.taskTime=record.taskTime;
+        payload.facility=record.facility;
+        payload.scenarioAccessedAt=new Date(record.scenarioAccessedAt);
+      }
+      await dbLib.setDoc(dbLib.doc(db,"uxTaskResponses",record.id),payload);
+      record.synced=true;
       saveResult(record);
-      updateState({ sendState: "sent", error: "" });
-    } catch (error) {
-      updateState({ sendState: "failed", error: String(error.code || error.message || "전송 오류").slice(0, 90) });
+      if(state.responseId===record.id&&state.stage==="done")updateState({sendState:"sent",error:""});
+    }catch(error){
+      if(state.responseId===record.id&&state.stage==="done")
+        updateState({sendState:"failed",error:String(error.code||error.message||"전송 오류").slice(0,90)});
     }
   }
 
-  shell.addEventListener("click", event => {
-    const button = event.target.closest("button[data-action]");
-    if (!button) return;
+  shell.addEventListener("click",event=>{
+    const button=event.target.closest("button[data-action]");
+    if(!button)return;
     event.stopPropagation();
-    const action = button.dataset.action;
-    if (action === "collapse") {
+    const action=button.dataset.action;
+    if(action==="collapse"){
       dismissPanel();
-    } else if (action === "expand") {
-      collapsed = false; host.removeAttribute("data-collapsed");
-    } else if (action === "start") {
+    }else if(action==="expand"){
+      collapsed=false;
+      host.removeAttribute("data-collapsed");
+    }else if(action==="start"){
+      const n=currentNumber();
       updateState({
-        stage: "task", participantId: participant, startedAt: Date.now(),
-        taskDate: scenario.dateKey, dateLabel: scenario.dateLabel,
-        timeLabel: scenario.timeLabel, facility: scenario.facility,
-        scenarioAccessedAt: scenario.accessedAt,
-        draft: "", answer: "", difficulty: null
+        stage:"task",participantId:participant,taskNumber:n,
+        startedAt:Date.now(),taskDate:scenario.dateKey,
+        dateLabel:scenario.dateLabel,timeLabel:scenario.timeLabel,
+        facility:scenario.facility,scenarioAccessedAt:scenario.accessedAt,
+        draft:"",answer:"",difficulty:null,responseId:null,error:"",sendState:""
       });
       dismissPanel();
       shell.querySelector(".reopen").focus();
-    } else if (action === "answer" || action === "notfound") {
-      const answer = action === "notfound" ? "정보를 찾지 못함" :
-        String((body.querySelector("#taskAnswer") || {}).value || "").trim();
-      if (!answer) {
-        const warning = body.querySelector("#validation");
-        if (warning) { warning.hidden = false; warning.textContent = "시간대를 입력하거나 '정보를 찾지 못했어요'를 선택해 주세요."; }
+    }else if(action==="answer"||action==="notfound"){
+      const answer=action==="notfound"?"과업을 완료하지 못함":
+        String((body.querySelector("#taskAnswer")||{}).value||"").trim();
+      if(!answer){
+        const warning=body.querySelector("#validation");
+        if(warning){warning.hidden=false;warning.textContent="답변을 입력하거나 '완료하지 못했어요'를 선택해 주세요."}
         return;
       }
-      updateState({ stage: "difficulty", answer: answer.slice(0, 300), answeredAt: Date.now(), draft: "" });
-    } else if (action === "finish") {
-      if (!(state.difficulty >= 1 && state.difficulty <= 5)) return;
-      const response = {
-        id: newId(), participantId: participant, variant, taskId,
-        taskDate: state.taskDate || scenario.dateKey,
-        taskTime: state.timeLabel || scenario.timeLabel,
-        facility: state.facility || scenario.facility,
-        scenarioAccessedAt: state.scenarioAccessedAt || scenario.accessedAt,
-        answer: String(state.answer || "").slice(0, 300),
-        difficulty: Number(state.difficulty),
-        elapsedSeconds: Math.max(0, Math.min(86400, Math.round((state.answeredAt - state.startedAt) / 1000))),
-        startedAt: state.startedAt, answeredAt: state.answeredAt, synced: false
+      updateState({stage:"difficulty",answer:answer.slice(0,300),answeredAt:Date.now(),draft:""});
+    }else if(action==="finish"){
+      if(!(state.difficulty>=1&&state.difficulty<=5))return;
+      const n=currentNumber(), task=taskSpecs[n-1];
+      const response={
+        id:newId(),participantId:participant,variant,taskNumber:n,taskId:task.id,
+        taskDate:state.taskDate||scenario.dateKey,
+        taskTime:state.timeLabel||scenario.timeLabel,
+        facility:state.facility||scenario.facility,
+        scenarioAccessedAt:state.scenarioAccessedAt||scenario.accessedAt,
+        answer:String(state.answer||"").slice(0,300),
+        difficulty:Number(state.difficulty),
+        elapsedSeconds:Math.max(0,Math.min(86400,Math.round((state.answeredAt-state.startedAt)/1000))),
+        startedAt:state.startedAt,answeredAt:state.answeredAt,synced:false
       };
-      const locallySaved = saveResult(response);
-      updateState({ stage: "done", responseId: response.id, sendState: locallySaved ? "sending" : "failed",
-        error: locallySaved ? "" : "브라우저 저장이 허용되지 않음" });
-      if (locallySaved) upload(response);
-    } else if (action === "retry") {
-      upload(activeResult());
-    } else if (action === "restart") {
-      state = { stage: "intro", participantId: participant }; saveState(); render();
-    } else if (action === "nextparticipant") {
-      // Rotate only after the facilitator explicitly advances to a new person.
-      // Both site variants continue to use the same stored scenario.
-      participant = "uxp-" + newId().replace(/-/g, "").slice(0, 12);
-      try { localStorage.setItem(participantKey, participant); } catch (_) {}
-      scenario = createScenario();
-      write(localStorage, scenarioKey, scenario);
-      try {
+      const saved=saveResult(response);
+      updateState({stage:"done",taskNumber:n,responseId:response.id,sendState:saved?"sending":"failed",
+        error:saved?"":"브라우저 저장이 허용되지 않음"});
+      if(saved)upload(response);
+    }else if(action==="retry"){
+      const existing=activeResult();
+      if(existing&&!existing.synced)upload(existing);
+    }else if(action==="nexttask"){
+      goNext(nextDestination());
+    }else if(action==="nextparticipant"){
+      participant="uxp-"+newId().replace(/-/g,"").slice(0,12);
+      try{localStorage.setItem(participantKey,participant)}catch(_){}
+      scenario=createScenario();
+      write(localStorage,scenarioKey,scenario);
+      try{
         sessionStorage.removeItem("hongik-ux-task-state-v2:original");
         sessionStorage.removeItem("hongik-ux-task-state-v2:improved");
-      } catch (_) {}
-      state = { stage: "intro", participantId: participant };
-      saveState();
-      render();
+      }catch(_){}
+      state=introState(1);saveState();render();
     }
   });
   shell.addEventListener("input", event => {
