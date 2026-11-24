@@ -36,14 +36,14 @@ const books=[
 ];
 const quick=[
  ["도서관 소식","news","megaphone"],
- ["이용자별 안내","news","users"],
- ["자료 구입 신청","news","cart"],
+ ["이용자별 안내","","users"],
+ ["자료 구입 신청","","cart"],
  ["추천도서/큐레이션","new","pictures"],
- ["교외접속","new","layers"],
- ["주요 전자자료","new","monitor"],
- ["전자책·이러닝·전자잡지","new","headphones"],
- ["도서관 시설 안내","news","building"],
- ["연체료 온라인 납부","news","chevron"]
+ ["교외접속","","layers"],
+ ["주요 전자자료","","monitor"],
+ ["전자책·이러닝·전자잡지","","headphones"],
+ ["도서관 시설 안내","","building"],
+ ["연체료 온라인 납부","","chevron"]
 ];
 const svgShapes={
  megaphone:'<path d="M4 9h5l9-5v16l-9-5H4zM9 15l2 5M21 9c2 2 2 4 0 6"/>',
@@ -73,7 +73,7 @@ const styleText=[
 '.ux-home-snapshot .snap-hero-cats{position:absolute;bottom:8px;left:11%;right:11%;display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:15px;font-weight:900;white-space:nowrap}',
 '.ux-home-snapshot .snap-hero-cta{position:absolute;bottom:0;left:45%;transform:translateX(-50%);background:#1d522f;color:#fff;border-radius:18px 18px 0 0;border:0;min-height:43px;padding:8px 18px;font-weight:800}',
 '.ux-home-snapshot .snap-star{position:absolute;color:#1d522f;font-size:33px}.ux-home-snapshot .star-1{left:20%;bottom:48px}.ux-home-snapshot .star-2{left:74%;bottom:60px}',
-'.ux-home-snapshot .snap-quick{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:0;border-bottom:1px solid #dedede;margin-bottom:24px}',
+'.ux-home-snapshot .snap-quick{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:0;border-top:0;border-bottom:1px solid #dedede;margin-bottom:24px;height:auto;min-height:112px;position:static;align-items:stretch;justify-content:initial}',
 '.ux-home-snapshot .snap-quick a{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:12px;min-height:110px;padding:9px 2px 18px;color:#707070;text-decoration:none;text-align:center;font-size:12px;font-weight:750;line-height:1.45;border-bottom:4px solid transparent}',
 '.ux-home-snapshot .snap-quick a:first-child{border-color:#0034dc;color:#222}.ux-home-snapshot .snap-quick a:hover,.ux-home-snapshot .snap-quick a:focus-visible{color:#0034dc;border-color:#0034dc}',
 '.ux-home-snapshot .snap-quick svg{flex:none;height:43px;width:43px;stroke-width:1.2}',
@@ -152,10 +152,10 @@ function mount(target,options){
  if(!target || target.dataset.snapshotMounted==="1")return;
  target.dataset.snapshotMounted="1";
  const isOriginal=options&&options.variant==="original";
- const searchHref=isOriginal?'./?q=%EC%95%84%EB%AA%AC%EB%93%9C&view=results':'./search.html';
+ const searchHref=title=>isOriginal?'./?q='+encodeURIComponent(title)+'&view=results':'./search.html?q='+encodeURIComponent(title);
  const imgPosts=posts.map(p=>'<article class="snap-thumb"><a href="#" data-snap-sample="'+escape(p[1])+'"><div class="snap-graphic '+p[2]+'"><strong>'+escape(p[0])+'</strong></div><span class="snap-thumb-category">'+escape(p[0])+'</span><span class="snap-thumb-title">'+escape(p[1])+'</span></a></article>').join('');
  const imgPapers=papers.map(p=>'<article class="snap-thumb"><a href="#" data-snap-sample="'+escape(p[1])+'"><div class="snap-graphic paper-graphic '+p[2]+'"><strong>'+({materials:'ADVANCED MATERIALS',ieee:'IEEE TRANSACTIONS',small:'small',science:'ADVANCED SCIENCE',access:'IEEE Access'}[p[2]])+'</strong></div><span class="snap-thumb-category">'+escape(p[0])+'</span><span class="snap-thumb-title">'+escape(p[1])+'</span></a></article>').join('');
- const imgBooks=books.map(p=>'<article class="snap-thumb"><a href="'+searchHref+'"><div class="snap-graphic book-graphic '+p[1]+'"><strong>'+escape(p[0])+'</strong></div><span class="snap-thumb-title">'+escape(p[0])+'</span></a></article>').join('');
+ const imgBooks=books.map(p=>'<article class="snap-thumb"><a href="'+searchHref(p[0])+'"><div class="snap-graphic book-graphic '+p[1]+'"><strong>'+escape(p[0])+'</strong></div><span class="snap-thumb-title">'+escape(p[0])+'</span></a></article>').join('');
  const notices=filter=>noticeData.filter(n=>!filter||n[0]===filter).map(n=>
  '<li>'+(n[0]?'<span class="kind '+(n[0]==="학술"?'academic':'')+'">'+escape(n[0])+'</span>':'<span class="speaker" aria-hidden="true">◖))</span>')+
  '<a class="n-title" href="#" data-snap-sample="'+escape(n[1])+'" title="'+escape(n[1])+'">'+escape(n[1])+'</a><time>'+escape(n[2])+'</time></li>').join('');
@@ -167,7 +167,7 @@ function mount(target,options){
    '<div class="snap-hero-cats"><span>인문/법/역사</span><span>소설/에세이/자기계발/취미</span><span>경제/경영/과학/공학</span><span>디자인/미술</span><span>예술/음악</span></div>'+
    '<button type="button" class="snap-hero-cta" data-snap-sample="신입생 추천 도서">바로가기</button></section>'+
    '<nav class="snap-quick" aria-label="도서관 주요 바로가기">'+quick.map((q,i)=>
-    '<a href="#'+q[1]+'" aria-label="'+escape(q[0])+'"'+(i===0?' aria-current="page"':'')+'>'+glyph(q[2])+'<span>'+escape(q[0])+'</span></a>').join('')+'</nav>'+
+    '<a href="'+(q[1]?'#'+q[1]:'#')+'" aria-label="'+escape(q[0])+'"'+(!q[1]?' data-snap-sample="'+escape(q[0])+'"':'')+(i===0?' aria-current="page"':'')+'>'+glyph(q[2])+'<span>'+escape(q[0])+'</span></a>').join('')+'</nav>'+
    '<div class="snap-panels">'+
     '<section class="snap-panel" id="news"><h2 class="snap-section-heading">공지사항 <button type="button" aria-label="공지사항 더보기" data-snap-sample="공지사항 더보기">···</button></h2>'+
      '<div class="snap-tabs" role="group" aria-label="공지사항 유형"><button type="button" aria-pressed="true" data-snap-filter="">전체</button><button type="button" aria-pressed="false" data-snap-filter="일반">일반공지</button><button type="button" aria-pressed="false" data-snap-filter="학술">학술공지</button></div>'+
