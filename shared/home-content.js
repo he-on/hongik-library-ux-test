@@ -148,6 +148,27 @@ const styleText=[
 '@media(max-width:900px){.ux-home-snapshot .snap-panels{gap:12px}.ux-home-snapshot .snap-panel{padding:16px 12px}.ux-home-snapshot .snap-hero{height:285px}.ux-home-snapshot .snap-hero-title{top:70px}.ux-home-snapshot .snap-hero-second{top:153px}.ux-home-snapshot .snap-hero-cats{font-size:11px}.ux-home-snapshot .rapid-logo{font-size:27px}.ux-home-snapshot .rapid-logo small{font-size:9px}.ux-home-snapshot .snap-notices li{font-size:10px}.ux-home-snapshot .snap-notices li time{font-size:9px}}',
 '@media(max-width:680px){.ux-home-snapshot{padding:0 12px}.ux-home-snapshot .snap-hero{height:225px}.ux-home-snapshot .snap-hero-title{top:65px;font-size:clamp(25px,6.2vw,42px)}.ux-home-snapshot .snap-hero-second{top:122px;font-size:clamp(27px,6.6vw,42px);left:13%}.ux-home-snapshot .snap-hero-outline{margin-right:6px}.ux-home-snapshot .snap-hero-cats{font-size:8px;left:6%;right:5%;bottom:8px}.ux-home-snapshot .snap-hero-cta{bottom:29px;font-size:10px;min-height:26px;padding:3px 10px}.ux-home-snapshot .snap-quick{grid-template-columns:repeat(3,1fr)}.ux-home-snapshot .snap-quick a{min-height:100px}.ux-home-snapshot .snap-panels{grid-template-columns:1fr}.ux-home-snapshot .snap-panel{min-height:300px}.ux-home-snapshot .snap-rail{grid-auto-columns:calc((100% - 15px)/2)}.ux-home-snapshot .snap-rail.paper-rail,.ux-home-snapshot .snap-rail.book-rail{grid-auto-columns:calc((100% - 20px)/2.5)}.ux-home-snapshot .snap-rails{padding:0 13px}.ux-home-snapshot .snap-rapid{min-height:350px}.ux-home-snapshot .snap-notices li{min-height:30px}}'
 ].join('\n');
+
+const screenshotLayoutRules=[
+ '.ux-home-snapshot{width:100%!important;max-width:1340px!important;margin:0 auto!important;padding:0 14px 34px!important;overflow:visible!important}',
+ '.ux-home-snapshot .snap-carousel{position:relative;width:100%;height:auto;display:block}',
+ '.ux-home-snapshot .snap-pager{height:60px;width:calc(100% - 32px);display:flex;justify-content:flex-end;align-items:flex-end;gap:12px;padding:0 10px 12px 0;box-sizing:border-box}',
+ '.ux-home-snapshot .snap-pager i{display:block;width:10px;height:10px;border-radius:999px;background:#c5c5c5;flex:none}',
+ '.ux-home-snapshot .snap-pager i.active{width:40px;background:#002fe4}',
+ '.ux-home-snapshot .snap-hero{width:calc(100% - 32px);height:auto;aspect-ratio:1280/385;min-height:0;max-height:none;display:block;margin:0;border-radius:10px;box-sizing:border-box}',
+ '.ux-home-snapshot .snap-outer-arrow{position:absolute;top:calc(60px + (100% - 60px)/2);line-height:1;transform:translateY(-50%);font:44px/1 Arial,sans-serif;color:#303030;user-select:none;pointer-events:none}',
+ '.ux-home-snapshot .snap-outer-arrow.left{left:-32px}',
+ '.ux-home-snapshot .snap-outer-arrow.right{right:0}',
+ '.ux-home-snapshot .snap-hero-title{top:15%;font-size:clamp(25px,5.9vw,81px);line-height:1.05}',
+ '.ux-home-snapshot .snap-hero-second{top:44%;font-size:clamp(28px,6vw,83px)}',
+ '.ux-home-snapshot .snap-hero-cats{bottom:9px}',
+ '.ux-home-snapshot .snap-quick{display:grid!important;position:relative!important;grid-template-columns:repeat(9,minmax(0,1fr))!important;width:calc(100% - 32px);height:124px!important;min-height:124px!important;margin:27px 0 24px!important;padding:0!important;overflow:visible!important;border:0!important;border-bottom:1px solid #ddd!important;align-items:stretch!important;justify-content:stretch!important;gap:0!important;box-sizing:border-box!important;background:transparent!important}',
+ '.ux-home-snapshot .snap-quick a{display:flex!important;align-items:center!important;flex-direction:column!important;justify-content:flex-start!important;height:124px!important;min-height:0!important;padding:8px 3px 12px!important;gap:13px!important;text-align:center!important;border:0!important;border-bottom:5px solid transparent!important;box-sizing:border-box!important;font-size:12px!important;font-weight:750!important;line-height:1.45!important;white-space:normal!important;text-decoration:none!important}',
+ '.ux-home-snapshot .snap-quick svg{display:block;width:45px!important;height:45px!important;min-width:45px!important;flex:none!important}',
+ '.ux-home-snapshot .snap-quick a:first-child{border-bottom-color:#0034dc!important}',
+ '@media(max-width:1100px){.ux-home-snapshot{max-width:100%!important;padding:0 28px 28px!important}.ux-home-snapshot .snap-hero{height:auto;aspect-ratio:1280/385}.ux-home-snapshot .snap-pager{height:49px}.ux-home-snapshot .snap-outer-arrow{top:calc(49px + (100% - 49px)/2)}.ux-home-snapshot .snap-quick{height:116px!important;min-height:116px!important}.ux-home-snapshot .snap-quick a{height:116px!important;font-size:10px!important;gap:10px!important}.ux-home-snapshot .snap-quick svg{height:38px!important;width:38px!important;min-width:38px!important}}',
+ '@media(max-width:680px){.ux-home-snapshot{padding:0 13px 22px!important}.ux-home-snapshot .snap-pager{height:40px;gap:6px;padding-right:4px;padding-bottom:10px}.ux-home-snapshot .snap-pager i{width:7px;height:7px}.ux-home-snapshot .snap-pager i.active{width:23px}.ux-home-snapshot .snap-hero{width:100%;aspect-ratio:auto;height:235px;min-height:0}.ux-home-snapshot .snap-hero-title{top:18%;font-size:clamp(23px,5.9vw,41px)}.ux-home-snapshot .snap-hero-second{top:47%;font-size:clamp(23px,6vw,42px);left:11%}.ux-home-snapshot .snap-outer-arrow{display:none}.ux-home-snapshot .snap-quick{display:flex!important;overflow-x:auto!important;width:100%;height:117px!important;min-height:117px!important;margin:17px 0 24px!important}.ux-home-snapshot .snap-quick a{min-width:108px!important;height:117px!important;padding:12px 4px!important;font-size:11px!important}.ux-home-snapshot .snap-quick svg{height:34px!important;width:34px!important;min-width:34px!important}}'
+].join('\n');
 function mount(target,options){
  if(!target || target.dataset.snapshotMounted==="1")return;
  target.dataset.snapshotMounted="1";
@@ -160,12 +181,12 @@ function mount(target,options){
  '<li>'+(n[0]?'<span class="kind '+(n[0]==="학술"?'academic':'')+'">'+escape(n[0])+'</span>':'<span class="speaker" aria-hidden="true">◖))</span>')+
  '<a class="n-title" href="#" data-snap-sample="'+escape(n[1])+'" title="'+escape(n[1])+'">'+escape(n[1])+'</a><time>'+escape(n[2])+'</time></li>').join('');
  target.classList.add('ux-home-snapshot');
- target.innerHTML='<section class="snap-hero" aria-label="신입생 추천 도서 안내 배너">'+
+ target.innerHTML='<div class="snap-carousel"><div class="snap-pager" aria-hidden="true">'+Array.from({length:11},(_,i)=>'<i'+(i===5?' class="active"':'')+'></i>').join('')+'</div><span class="snap-outer-arrow left" aria-hidden="true">‹</span><section class="snap-hero" aria-label="신입생 추천 도서 안내 배너">'+
    '<span class="snap-star star-1" aria-hidden="true">✳</span><span class="snap-star star-2" aria-hidden="true">✳</span>'+
    '<div class="snap-hero-title">보법이 다른 대학생활을 위한</div>'+
    '<div class="snap-hero-second"><span class="snap-hero-outline">신입생</span> 추천 도서</div>'+
    '<div class="snap-hero-cats"><span>인문/법/역사</span><span>소설/에세이/자기계발/취미</span><span>경제/경영/과학/공학</span><span>디자인/미술</span><span>예술/음악</span></div>'+
-   '<button type="button" class="snap-hero-cta" data-snap-sample="신입생 추천 도서">바로가기</button></section>'+
+   '<button type="button" class="snap-hero-cta" data-snap-sample="신입생 추천 도서">바로가기</button></section><span class="snap-outer-arrow right" aria-hidden="true">›</span></div>'+
    '<nav class="snap-quick" aria-label="도서관 주요 바로가기">'+quick.map((q,i)=>
     '<a href="'+(q[1]?'#'+q[1]:'#')+'" aria-label="'+escape(q[0])+'"'+(!q[1]?' data-snap-sample="'+escape(q[0])+'"':'')+(i===0?' aria-current="page"':'')+'>'+glyph(q[2])+'<span>'+escape(q[0])+'</span></a>').join('')+'</nav>'+
    '<div class="snap-panels">'+
@@ -213,6 +234,6 @@ function mount(target,options){
   }
  });
 }
-const stylesheet=document.createElement('style');stylesheet.id='shared-home-content-style';stylesheet.textContent=styleText;document.head.appendChild(stylesheet);
+const stylesheet=document.createElement('style');stylesheet.id='shared-home-content-style';stylesheet.textContent=styleText+'\n'+screenshotLayoutRules;document.head.appendChild(stylesheet);
 window.HongikHomeContent={mount,noticeData,posts,papers,books};
 })();
