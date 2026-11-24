@@ -111,6 +111,20 @@ dialog::backdrop{background:#0005}
 .reading-page .reading-notes p:before{content:'!';position:absolute;top:2px;left:0;width:12px;height:12px;line-height:12px;text-align:center;border-radius:50%;font-weight:700;font-size:9px;color:#fff;background:#1000d9}
 @media(max-width:700px){.reading-page{padding:22px 16px 40px}.reading-layout{display:block;margin-top:20px}.reading-page h2.section-title{margin-bottom:15px}.reading-page .hours-table{min-width:590px}}
 
+
+.top .brand.brand-image{display:inline-flex;align-items:center;line-height:1;margin:0;padding:0;text-decoration:none;max-width:100%;flex:0 1 auto}
+.top .brand-image img{display:block;width:309px;height:auto;max-width:100%;object-fit:contain}
+.top .tools{display:flex;align-items:center;gap:18px}
+.top .tools .optional{padding:0;display:grid;place-items:center;width:25px;height:32px}
+.top .tools .original-help-icon{height:20px;width:20px;border-radius:50%;background:#565656;color:white;display:grid;place-items:center;font:bold 14px/1 Arial,sans-serif}
+.top .tools .original-ui-tool-icon{color:#535353;display:block}
+.top .tools .login{background:#fff;color:#0033d7;border:1.5px solid #0033d7;border-radius:4px;height:30px;padding:0 11px;font:700 12px Arial,sans-serif}
+.top .tools .language{background:#002be1;color:white;border-radius:50%;width:32px;height:32px;display:grid;place-items:center;padding:0;font:700 11px Arial,sans-serif}
+.top .tools #focusSearch{padding:0;width:27px;height:32px;display:grid;place-items:center;color:#555}
+.top .tools #focusSearch svg{display:block}
+@media(min-width:1101px){.top{padding-left:48px;padding-right:34px}}
+@media(max-width:1100px){.top .brand-image img{width:213px}.top .tools{gap:10px}}
+@media(max-width:550px){.top .brand-image img{width:170px}.top .tools{gap:5px}.top .tools .optional{display:none}}
 </style>
 <!-- Beusable Journey Map: UX research tracking (authorized test site). -->
 <script type="text/javascript">
@@ -129,7 +143,7 @@ dialog::backdrop{background:#0005}
 </head>
 <body>
 <header>
-<div class="top"><a class="brand" href="../../../">▣ 홍익대학교 | 중앙도서관</a><div class="tools"><button class="optional" data-info="문의 / 연락처">❔</button><button class="optional" data-info="홍익대학교 홈페이지">▣</button><button class="login" data-info="LOGIN">LOGIN</button><button class="language" data-info="English">EN</button><button id="focusSearch" aria-label="검색창으로 이동">⌕</button></div></div>
+<div class="top"><a class="brand brand-image" href="../../../" aria-label="홍익대학교 중앙도서관 홈"><img src="../../../../shared/assets/hongik-library-brand-crop.png" width="309" height="34" alt="홍익대학교 | 중앙도서관"></a><div class="tools"><button class="optional" data-info="문의 / 연락처" aria-label="도움말"><span class="original-help-icon" aria-hidden="true">?</span></button><button class="optional" data-info="홍익대학교 홈페이지" aria-label="홍익대학교 홈페이지"><svg class="original-ui-tool-icon" viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="1"/><path d="M7 3v2M17 3v2M3 11h18M8 21h8"/></svg></button><button class="login" data-info="LOGIN">LOGIN</button><button class="language" data-info="English">EN</button><button id="focusSearch" aria-label="검색창으로 이동"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/></svg></button></div></div>
 <div class="searcharea"><div class="searchwrap"><div class="ra">✣ PRIMO RA</div><form class="searchbox" action="../../../" method="get"><select aria-label="검색 범위"><option>통합검색</option><option>소장자료</option><option>전자자료</option></select><input id="query" type="search" name="q" aria-label="검색어" placeholder="도서, 학술논문, 저널 등을 검색하세요." required><input type="hidden" name="view" value="results"><button aria-label="검색" type="submit">⌕</button></form></div><button class="advanced" data-info="고급검색">☷ 고급검색</button></div>
 <nav aria-label="주 메뉴"><a href="../../../">자료이용</a><a href="../../../">연구학습지원</a><a href="../../../">컬렉션</a><a href="../../../">시설 · 기기 이용</a><a href="./">커뮤니티</a><button id="allmenu" aria-label="전체 메뉴" aria-expanded="false">☰</button></nav>
 </header>
