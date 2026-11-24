@@ -95,6 +95,21 @@ body.menu-open{overflow:hidden}
 @media(min-width:1101px){.top{padding-left:48px;padding-right:34px}}
 @media(max-width:1100px){.top .brand-image img{width:213px}.top .tools{gap:10px}}
 @media(max-width:550px){.top .brand-image img{width:170px}.top .tools{gap:5px}.top .tools .optional{display:none}}
+
+/* Original home viewport proportions from the user-supplied 1442×827 reference. */
+@media(min-width:801px){
+ header>.top{height:69px;min-height:69px}
+ header>.searcharea{height:109px;min-height:109px}
+ header>nav[aria-label="주 메뉴"]{height:52px;min-height:52px;padding-left:clamp(20px,3.6vw,52px);padding-right:clamp(20px,6vw,87px);box-sizing:border-box;display:flex;align-items:stretch}
+ header>nav[aria-label="주 메뉴"]>button{flex:1 1 0;font-size:18px;font-weight:800;white-space:nowrap}
+ header>nav[aria-label="주 메뉴"]>button#allmenu{flex:0 0 50px!important;width:50px!important;margin:0!important;display:grid;place-items:center}
+ .ux-home-snapshot .snap-carousel{padding-top:0}
+}
+@media(max-width:800px){
+ header>nav[aria-label="주 메뉴"]{height:52px;min-height:52px}
+ header>nav[aria-label="주 메뉴"]>button#allmenu{margin-right:0}
+}
+
 </style><link rel="stylesheet" href="./live-search.css?v=20261115-holding-modal2"><!-- Beusable Journey Map: UX research tracking (authorized test site). -->
 <script type="text/javascript">
 (function(w, d, a){
