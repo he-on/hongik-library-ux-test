@@ -79,6 +79,47 @@ service cloud.firestore {
         && request.resource.data.startedAt is timestamp
         && request.resource.data.answeredAt is timestamp
         && request.resource.data.completedAt is timestamp
+
+      ) || (
+        // Tasks 2 and 3 are common; task 4 is improved-only.
+        request.auth != null
+        && responseId.matches('^[0-9a-f-]{32,40}$')
+        && request.resource.data.keys().hasOnly([
+          'anonymousUid', 'participantId', 'variant', 'taskId', 'taskDate',
+          'answer', 'difficulty', 'elapsedSeconds',
+          'startedAt', 'answeredAt', 'completedAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'anonymousUid', 'participantId', 'variant', 'taskId', 'taskDate',
+          'answer', 'difficulty', 'elapsedSeconds',
+          'startedAt', 'answeredAt', 'completedAt'
+        ])
+        && request.resource.data.anonymousUid == request.auth.uid
+        && request.resource.data.participantId is string
+        && request.resource.data.participantId.matches('^uxp-[0-9a-f]{12}$')
+        && request.resource.data.variant in ['original', 'improved']
+        && (
+          request.resource.data.taskId in [
+            'library-loan-status-v1',
+            'library-revisit-books-v1'
+          ] ||
+          (request.resource.data.taskId == 'library-bookmark-v1' &&
+            request.resource.data.variant == 'improved')
+        )
+        && request.resource.data.taskDate is string
+        && request.resource.data.taskDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && request.resource.data.answer is string
+        && request.resource.data.answer.size() > 0
+        && request.resource.data.answer.size() <= 300
+        && request.resource.data.difficulty is int
+        && request.resource.data.difficulty >= 1
+        && request.resource.data.difficulty <= 5
+        && request.resource.data.elapsedSeconds is int
+        && request.resource.data.elapsedSeconds >= 0
+        && request.resource.data.elapsedSeconds <= 86400
+        && request.resource.data.startedAt is timestamp
+        && request.resource.data.answeredAt is timestamp
+        && request.resource.data.completedAt is timestamp
       );
     }
 
