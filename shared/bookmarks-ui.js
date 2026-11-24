@@ -10,12 +10,19 @@ let legacyBookmarks = new Map();
 const upgrading = new Set();
 
 const style = document.createElement("style");
-style.textContent = [
+style.textContent = (variant === "improved" ? [
+  /* Align bookmark control with the reference: blue-filled star, three-button stack. */
+  "#list .card .actions .ux-bookmark-btn{margin:0!important;width:100%;min-height:35px;border:1px solid #0033dc!important;border-radius:4px!important;padding:7px 8px!important;font-size:13px!important;background:#0033dc!important;color:#fff!important;font-family:'Jeju Gothic',sans-serif!important;line-height:1.35;cursor:pointer;font-weight:700}",
+  "#list .card .actions .ux-bookmark-btn[aria-pressed=false]{background:#e7ecff!important;color:#0033dc!important;border-color:#0033dc!important}",
+  "#list .card .actions .ux-bookmark-btn[aria-pressed=true]{background:#0033dc!important;color:#fff!important}",
+  ".ux-bookmark-btn:disabled{opacity:.55;cursor:progress}",
+  ".ux-account-link{font-size:13px;white-space:nowrap;color:#193c93;text-decoration:underline}"
+] : [
   ".ux-bookmark-btn{margin-top:10px;border:1px solid #697fbb!important;border-radius:6px!important;padding:7px 12px!important;font-size:13px!important;background:#fff!important;color:#193c93!important;cursor:pointer}",
   ".ux-bookmark-btn[aria-pressed=true]{background:#edf2ff!important;font-weight:700}",
   ".ux-bookmark-btn:disabled{opacity:.55;cursor:progress}",
   ".ux-account-link{font-size:13px;white-space:nowrap;color:#193c93;text-decoration:underline}"
-].join("");
+]).join("");
 document.head.appendChild(style);
 
 function accountLink(label) {
@@ -156,9 +163,9 @@ function paintButtons() {
     if (btn.getAttribute("aria-pressed") !== String(isSaved)) {
       btn.setAttribute("aria-pressed", String(isSaved));
     }
-    const label = isSaved ? "♥ 찜 해제" : "♡ 찜하기";
+    const label = variant === "improved" ? (isSaved ? "★ 찜 해제" : "☆ 찜 하기") : (isSaved ? "♥ 찜 해제" : "♡ 찜하기");
     if (btn.textContent !== label) btn.textContent = label;
-    btn.setAttribute("aria-label", btn.dataset.uxTitle + (isSaved ? " 찜 해제" : " 찜하기"));
+    btn.setAttribute("aria-label", btn.dataset.uxTitle + (isSaved ? " 찜 해제" : " 찜 하기"));
   });
 }
 function injectButtons() {
@@ -182,7 +189,7 @@ function injectButtons() {
     button.dataset.uxKey = bookKey(book.title,book.author);
     button.dataset.uxTitle = book.title;
     button.setAttribute("aria-pressed","false");
-    button.textContent = "♡ 찜하기";
+    button.textContent = variant === "improved" ? "☆ 찜 하기" : "♡ 찜하기";
     button.addEventListener("click",async () => {
       if (!configured || !currentUser) {
         location.assign(accountUrl);
