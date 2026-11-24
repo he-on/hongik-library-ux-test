@@ -1,12 +1,19 @@
-import { configured, watchUser, suggestId, enterWithId, leaveId, listenBookmarks, removeBookmark, friendlyError } from "./firebase-service.js?v=20261120-details-fix";
+import { configured, watchUser, suggestId, enterWithId, leaveId, listenBookmarks, removeBookmark, toggleBookmark, friendlyError } from "./firebase-service.js?v=20261120-details-fix";
 const params = new URLSearchParams(location.search);
 const variant = params.get("ui") === "original" ? "original" : "improved";
+const improved = variant === "improved";
+// Keep just-removed books visible with the outlined ☆ 찜 하기 button until navigation.
+const recentlyUnstarred = new Map();
+let latestBooks = [];
 const $ = id => document.getElementById(id);
 const msg = (text, error = false) => {
   $("message").textContent = text;
   $("message").classList.toggle("error", error);
 };
 const searchUrl = variant === "improved" ? "../improved/search.html" : "../original/";
+if (improved) {
+  $("list-description").textContent = "웹 사이트와 모바일에서 같은 아이디로 조회할 수 있습니다. 소장정보와 대출 상태는 실시간 반영까지 시간이 다소 걸릴 수 있습니다.";
+}
 $("return-link").href = searchUrl;
 let currentUser = "";
 let unsubscribeBooks = () => {};
@@ -97,13 +104,31 @@ function hasPhysicalShelf(book) {
   // Unknown types remain eligible so older saved books still offer a map preview.
   return !/(전자자료|전자책|학술논문|학술지|데이터베이스)/.test(materialType);
 }
+function secondaryHoldings(details) {
+  const raw = String(details?.holdingsText || "").trim();
+  if (!raw) return [];
+  const lines = raw.split(/\r?\n/).map(text => text.trim()).filter(Boolean);
+  const library = String(details?.library || "").trim();
+  const primary = String(details?.location || "").trim();
+  // Preserve catalog-provided strings; only hide the line already represented by
+  // the visible primary holding. Never fabricate another library's holdings.
+  const remaining = lines.filter(line =>
+    !(library && line.includes(library)) &&
+    !(primary && line.includes(primary))
+  );
+  return library || primary ? remaining : lines.length > 1 ? lines.slice(1) : [];
+}
 function paintBooks(books) {
+  latestBooks = Array.isArray(books) ? [...books] : [];
   const list = $("bookmarks");
   list.replaceChildren();
-  $("list-empty").hidden = books.length > 0;
-  $("list-empty").textContent = books.length ? "" : "아직 찜한 도서가 없습니다.";
-  books.sort((a,b) => a.title.localeCompare(b.title, "ko"));
-  books.forEach(book => {
+  const listBooks = improved
+    ? [...latestBooks, ...[...recentlyUnstarred.values()].filter(book => !latestBooks.some(item => item.id === book.id))]
+    : [...latestBooks];
+  $("list-empty").hidden = listBooks.length > 0;
+  $("list-empty").textContent = listBooks.length ? "" : "아직 찜한 도서가 없습니다.";
+  listBooks.sort((a,b) => a.title.localeCompare(b.title, "ko"));
+  listBooks.forEach(book => {
     const li = document.createElement("li");
     li.className = "saved-book";
     const heading = document.createElement("div");
@@ -119,15 +144,38 @@ function paintBooks(books) {
     info.append(title,author);
 
     const del = document.createElement("button");
-    del.className = "btn";
+    del.className = improved ? "bookmark-button" : "btn";
     del.type = "button";
-    del.textContent = "찜 해제";
-    del.setAttribute("aria-label",book.title + " 찜 해제");
+    const starred = !recentlyUnstarred.has(book.id);
+    if (improved) {
+      del.innerHTML = '<span class="star" aria-hidden="true">' + (starred ? "★" : "☆") + '</span><span>' + (starred ? "찜 해제" : "찜 하기") + '</span>';
+      del.setAttribute("aria-pressed",String(starred));
+    } else {
+      del.textContent = "찜 해제";
+    }
+    del.setAttribute("aria-label",book.title + (starred ? " 찜 해제" : " 찜 하기"));
     del.addEventListener("click",async () => {
-      if (!currentUser) return;
+      if (!currentUser || del.disabled) return;
       del.disabled = true;
-      try { await removeBookmark(currentUser,book.id); }
-      catch(error) { msg(friendlyError(error),true); del.disabled = false; }
+      const userAtClick = currentUser;
+      try {
+        if (improved && !starred) {
+          const saved = await toggleBookmark(userAtClick,variant,book);
+          if (saved) recentlyUnstarred.delete(book.id);
+          else recentlyUnstarred.set(book.id,book);
+        } else {
+          if (improved) recentlyUnstarred.set(book.id,book);
+          await removeBookmark(userAtClick,book.id);
+        }
+        if (userAtClick === currentUser) {
+          msg("");
+          paintBooks(latestBooks);
+        }
+      } catch(error) {
+        if (improved && starred) recentlyUnstarred.delete(book.id);
+        msg(friendlyError(error),true);
+        if (userAtClick === currentUser) paintBooks(latestBooks);
+      }
     });
     heading.append(info,del);
     li.append(heading);
@@ -153,7 +201,7 @@ function paintBooks(books) {
     });
     if (grid.childElementCount) li.append(grid);
 
-    if (details?.holdingsText?.trim()) {
+    if (details?.holdingsText?.trim() && !improved) {
       const holdings = document.createElement("div");
       holdings.className = "book-holdings";
       const label = document.createElement("strong");
@@ -165,7 +213,7 @@ function paintBooks(books) {
     }
     if (!details || (!grid.childElementCount && !details.holdingsText?.trim())) {
       const hint = document.createElement("p");
-      hint.className = "muted";
+      hint.className = "muted saved-hint";
       hint.textContent = "이전에 저장된 상세정보가 없습니다. 도서 검색 결과에서 같은 도서를 다시 열면 확인 가능한 소장정보가 자동으로 보완됩니다.";
       li.append(hint);
     }
@@ -181,10 +229,11 @@ function paintBooks(books) {
     }
     const source = document.createElement("a");
     source.href = safeSource(book.sourceUrl);
+    if (improved) source.className = "btn search-result-link";
     source.textContent = "검색 결과로 이동";
     actions.append(source);
     const detailUrl = safeDetailUrl(details?.detailUrl);
-    if (detailUrl) {
+    if (detailUrl && !improved) {
       const detail = document.createElement("a");
       detail.href = detailUrl;
       detail.target = "_blank";
@@ -193,11 +242,39 @@ function paintBooks(books) {
       actions.append(detail);
     }
     li.append(actions);
+    if (improved) {
+      const other = secondaryHoldings(details);
+      if (other.length) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "other-holdings";
+        const toggle = document.createElement("button");
+        toggle.className = "holding-toggle";
+        toggle.type = "button";
+        toggle.setAttribute("aria-expanded","false");
+        const panelId = "other-holdings-" + String(book.id || "").replace(/[^a-zA-Z0-9-]/g,"").slice(0,80);
+        toggle.setAttribute("aria-controls",panelId);
+        toggle.innerHTML = '<span>다른 도서관 소장 정보 보기</span><span class="chevron" aria-hidden="true"></span>';
+        const rows = document.createElement("div");
+        rows.className = "holding-details";
+        rows.id = panelId;
+        rows.hidden = true;
+        rows.textContent = other.join("\n");
+        toggle.addEventListener("click",() => {
+          const open = rows.hidden;
+          rows.hidden = !open;
+          toggle.setAttribute("aria-expanded",String(open));
+        });
+        wrapper.append(toggle,rows);
+        li.append(wrapper);
+      }
+    }
     list.append(li);
   });
 }
 watchUser(user => {
   currentUser = user || "";
+  recentlyUnstarred.clear();
+  latestBooks = [];
   $("auth-forms").hidden = !!user || !configured;
   $("signed-in").hidden = !user;
   $("account-id").textContent = user || "";
