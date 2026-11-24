@@ -8,10 +8,10 @@
 <title>서가 위치 찾기 | 홍익대학교 중앙도서관 UX</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/earlyaccess/jejugothic.css" rel="stylesheet">
 <style>
 :root{--blue:#0039db;--blue-soft:#e8edff;--ink:#121c32;--muted:#647086;--line:#d4dcef;--page:#f4f6fc;--red:#ff8378;--purple:#ab37b0;--orange:#ee8b18;--green:#218a29;--teal:#00a299;box-sizing:border-box}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:var(--page);font:15px/1.6 "Noto Sans KR",sans-serif}button,select{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}:focus-visible{outline:3px solid #2453fa;outline-offset:3px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:var(--page);font:15px/1.6 "Jeju Gothic",sans-serif}button,select{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}:focus-visible{outline:3px solid #2453fa;outline-offset:3px}
 header{background:#fff;border-bottom:1px solid var(--line)}
 .top{z-index:100;border:0}.header-line{height:89px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;gap:14px}
 .logo{color:#0033d7;font-size:24px;font-weight:900;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;letter-spacing:-.05em}
@@ -102,6 +102,13 @@ main{max-width:1330px;margin:auto;padding:28px 26px 55px}h1{font-size:23px;color
 .map-layer .path-dash{pointer-events:none}
 @media(max-width:1000px){.layout{gap:14px;grid-template-columns:minmax(0,1fr) 292px}main{padding:20px 14px}.card{padding:15px}}
 @media(max-width:780px){.layout{grid-template-columns:minmax(0,1fr)}.left-card{padding:13px}.floor-row button{padding:7px 13px;min-width:50px}main{padding:18px 10px}.room-name{font-size:19px}.mobile-note{display:block;color:var(--muted);font-size:11px;margin:6px 0}.map-canvas svg{min-width:720px}.side-card{padding:16px}.target{font-size:20px}.sum strong{font-size:18px}h1{font-size:21px;margin-bottom:12px}}
+
+/* JejuGothic is the sole UI typeface on the shelf-location page.
+   Keep the user-supplied Q7 SVG artwork unchanged; text outlined as vector
+   paths inside that asset cannot be restyled through this page's CSS. */
+body, body *, #ux-improved-header, #ux-improved-header *, .map-layer text{
+ font-family:"Jeju Gothic",sans-serif !important;
+}
 </style>
 <script type="text/javascript">(function(w,d,a){w.__beusablerumclient__={load:function(src){var b=d.createElement("script");b.src=src;b.async=true;b.type="text/javascript";d.getElementsByTagName("head")[0].appendChild(b)}};w.__beusablerumclient__.load(a+"?url="+encodeURIComponent(d.URL));})(window,document,"//rum.beusable.net/load/b261115e130800u338");</script>
 <script src="../shared/ux-task-panel.js?v=20261123-persistent-close-v4" defer></script>
