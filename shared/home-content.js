@@ -103,9 +103,9 @@ const styleText=[
 '.ux-home-snapshot .snap-infographic .snap-section-heading{margin-bottom:20px}',
 '.ux-home-snapshot .snap-graph-title{font-weight:800;font-size:12px;margin:0 0 11px}',
 '.ux-home-snapshot .snap-graph{display:grid;grid-template-columns:74px minmax(0,1fr);height:235px;gap:8px;align-items:stretch;font-size:10px;color:#888}',
-'.ux-home-snapshot .snap-graph-labels{display:grid;grid-template-rows:repeat(10,1fr);gap:2px;text-align:right;white-space:nowrap;overflow:hidden}',
+'.ux-home-snapshot .snap-graph-labels{display:grid;grid-template-rows:repeat(12,1fr);gap:2px;text-align:right;white-space:nowrap;overflow:hidden}',
 '.ux-home-snapshot .snap-graph-labels span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
-'.ux-home-snapshot .snap-graph-bars{display:grid;grid-template-rows:repeat(10,1fr);gap:2px;background:repeating-linear-gradient(to right,transparent 0,transparent 19.5%,#e2e2e2 19.5%,#e2e2e2 20%)}',
+'.ux-home-snapshot .snap-graph-bars{display:grid;grid-template-rows:repeat(12,1fr);gap:2px;background:repeating-linear-gradient(to right,transparent 0,transparent 19.5%,#e2e2e2 19.5%,#e2e2e2 20%)}',
 '.ux-home-snapshot .snap-graph-bars i{display:block;background:#8bb7d7;height:100%;max-width:100%;box-shadow:inset 0 -1px #fff}',
 '.ux-home-snapshot .snap-rails{margin:33px 0 2px;padding:0 18px;position:relative}',
 '.ux-home-snapshot .snap-rail-heading{display:flex;align-items:center;justify-content:space-between;margin:0 0 10px;font-size:17px;color:#1c1c1c;font-weight:900}',
@@ -178,9 +178,9 @@ function mount(target,options){
      '<span class="rapid-pill">신청방법</span><p class="rapid-footer">도서관 홈페이지 로그인 › 자료이용 › 원문복사 › RapidILL 신청하기</p>'+
      '<span class="rapid-pill">문의</span><p class="rapid-footer">열람팀 참고자료실 02-320-1306</p><div class="rapid-dots"><i></i><i></i><i></i><i></i></div></div></section>'+
     '<section class="snap-panel snap-infographic"><h2 class="snap-section-heading">인포그래픽 <button type="button" aria-label="인포그래픽 더보기" data-snap-sample="인포그래픽 더보기">···</button></h2>'+
-    '<p class="snap-graph-title">인기대출 도서 현황(최근 1개월간)</p><div class="snap-graph">'+
-    '<div class="snap-graph-labels">'+['몬슨: 양...','현대미술의...','궁정학자...','철학: 구...','정통 이론...','중의 기원...','한율 수업...','프로젝트 해...','데미안','행동 사유...'].map(v=>'<span>'+escape(v)+'</span>').join('')+'</div>'+
-    '<div class="snap-graph-bars">'+[94,78,69,62,61,59,57,53,49,47].map(v=>'<i style="width:'+v+'%"></i>').join('')+'</div></div></section></div>'+
+    '<p class="snap-graph-title">인기대출 도서 현황(최근 1개월간)</p><div style="display:flex;justify-content:center;align-items:center;gap:5px;color:#999;font-size:10px;margin-bottom:7px"><span style="width:22px;height:8px;background:#8bb7d7"></span>대출건수</div><div class="snap-graph">'+
+    '<div class="snap-graph-labels">'+['모순: 양...','현대미술의...','공정하다는...','철학: 구...','정통 이론...','종의 기원...','참을 수 없...','프로젝트 해...','데미안','행동 사유...','스토너:...','지각의 현상...'].map(v=>'<span>'+escape(v)+'</span>').join('')+'</div>'+
+    '<div class="snap-graph-bars">'+[90,70,60,60,60,60,60,60,50,50,50,50].map(v=>'<i style="width:'+v+'%"></i>').join('')+'</div></div></section></div>'+
    '<section class="snap-rails" aria-label="신규 포스트"><h2 class="snap-rail-heading">신규 포스트 <button type="button" data-snap-sample="신규 포스트 전체 보기" aria-label="신규 포스트 더보기">···</button></h2>'+
      '<div class="snap-rail" data-snap-rail="posts">'+imgPosts+'</div><div class="snap-rail-arrows"><button type="button" data-snap-move="posts:-1" aria-label="이전 신규 포스트">‹</button><button type="button" data-snap-move="posts:1" aria-label="다음 신규 포스트">›</button></div></section>'+
    '<section class="snap-rails" aria-label="홍익 Hot Paper"><h2 class="snap-rail-heading">홍익 Hot Paper <button type="button" data-snap-sample="홍익 Hot Paper 전체 보기" aria-label="홍익 Hot Paper 더보기">···</button></h2>'+
