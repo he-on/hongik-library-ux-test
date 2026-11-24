@@ -88,7 +88,7 @@
     const data = record || scenario;
     return escape(data.dateLabel) + " <b>" + escape(data.timeLabel) +
       "</b>에 <b>" + escape(data.facility) +
-      "</b>을(를) 이용하려고 합니다. 그 시간에 이용할 수 있는지와 운영시간을 알려주세요.";
+      "</b>을 이용하려고 합니다. 그 시간에 이용할 수 있는지와 운영시간을 알려주세요.";
   }
   // Once dismissed, open only through the explicit reopen button (including after navigation).
   let collapsed = read(localStorage, dismissedKey, false) === true || state.stage === "task";
