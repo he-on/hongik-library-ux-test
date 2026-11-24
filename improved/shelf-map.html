@@ -97,6 +97,8 @@ main{max-width:1330px;margin:auto;padding:28px 26px 55px}h1{font-size:23px;color
 .map-layer.q-reference-map .q-hitbox rect{pointer-events:all}
 .map-layer.q-reference-map .q-hitbox:focus-visible{outline:none}
 .map-layer.q-reference-map .q-hitbox:focus-visible rect{stroke:#2854e8;stroke-width:3}
+.map-layer.q-reference-map .q-zone-active{fill:#3456e4;stroke:none;pointer-events:none}
+.map-layer.q-reference-map .q-zone-label{fill:#fff;font-family:"Noto Sans KR","Malgun Gothic",sans-serif;font-size:12px;font-weight:800!important;pointer-events:none}
 .map-layer .path-dash{pointer-events:none}
 @media(max-width:1000px){.layout{gap:14px;grid-template-columns:minmax(0,1fr) 292px}main{padding:20px 14px}.card{padding:15px}}
 @media(max-width:780px){.layout{grid-template-columns:minmax(0,1fr)}.left-card{padding:13px}.floor-row button{padding:7px 13px;min-width:50px}main{padding:18px 10px}.room-name{font-size:19px}.mobile-note{display:block;color:var(--muted);font-size:11px;margin:6px 0}.map-canvas svg{min-width:720px}.side-card{padding:16px}.target{font-size:20px}.sum strong{font-size:18px}h1{font-size:21px;margin-bottom:12px}}
@@ -259,23 +261,33 @@ function hMap(){
  return o;
 }
 function qMap(){
- /* Draw the supplied Q7 PNG as an image, not a redrawn SVG map. Keep interactive
-    hit targets invisible so original typography, colors and dimensions remain. */
+ /* The exact, user-supplied 752x533 Q7 SVG is the immutable background.
+    Only the selected shelf and route/interactive hit targets are overlays. */
  const areas=[
   ["entry","7층 출입구",303,159,76,53],
   ["corridor","연결통로",166,239,45,50],
   ["desk","안내데스크",391,316,71,20],
-  ["paper","신간잡지",567,348,116,20],
-  ["pc","검색 PC",293,347,24,67],
-  ["copy","복사기",245,347,24,67],
-  ["old","과월신문",708,150,20,122],
+  ["paper","신간잡지",566,347,117,20],
+  ["pc","검색 PC",294,348,22,66],
+  ["copy","복사기",246,348,23,66],
+  ["old","과월신문",710,151,17,121],
   ["newspaper","금일신문·이달의잡지",245,293,137,43]
  ];
- let o='<image class="q-source-image" href="./assets/q7-reference.png" x="0" y="0" width="752" height="533" preserveAspectRatio="none" role="img" aria-label="Q동 7층 원본 서가 도면"/>';
- o+=areas.map(([id,name,x,y,w,h])=>'<g class="q-hitbox" data-start="'+id+'" tabindex="0" role="button" aria-label="'+name+'에서 출발"><rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="3" fill="transparent" stroke="none"/></g>').join("");
- if(selectedZone?.label==="700–999"){
-  o+='<rect class="q-selected-outline" x="573" y="7" width="130" height="225" rx="5" fill="none" stroke="#2553e8" stroke-width="3" stroke-dasharray="7 5" pointer-events="none"/>';
+ let o='<image class="q-source-image" href="./assets/q7-floor-original.svg" x="0" y="0" width="752" height="533" preserveAspectRatio="none" role="img" aria-label="사용자가 제공한 Q동 7층 원본 도면"/>';
+ if(selectedZone?.label==="000–399"){
+  // The complete original 000 >> 399 rectangle (114.5,347,128,124).
+  o+='<rect class="q-zone-active" x="114.5" y="347" width="128" height="124" rx="5"/>';
+  o+='<text class="q-zone-label" x="178.5" y="409" text-anchor="middle" dominant-baseline="middle">000 ≫ 399</text>';
+ } else if(selectedZone?.label==="700–999"){
+  // The original 700 >> 999 section consists of two separate pale-blue rectangles.
+  o+='<rect class="q-zone-active" x="460" y="56" width="105" height="175" rx="5"/>';
+  o+='<rect class="q-zone-active" x="575" y="9" width="125" height="222" rx="5"/>';
+  o+='<text class="q-zone-label" x="633" y="140" text-anchor="middle" dominant-baseline="middle">700 ≫ 999</text>';
  }
+ o+=areas.map(([id,name,x,y,w,h])=>
+  '<g class="q-hitbox" data-start="'+id+'" tabindex="0" role="button" aria-label="'+name+'에서 출발">'+
+  '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="3" fill="transparent" stroke="none"/></g>'
+ ).join("");
  return o;
 }
 function currentLandmark(){return landmarks[building]?.find(p=>p.id===state.start)||landmarks[building]?.[0]}
@@ -332,12 +344,9 @@ function pathSvg(points){
  if(points.length<2)return "";
  const coords=points.map(p=>p.join(",")).join(" ");
  const [sx,sy]=points[0],dst=points[points.length-1];
- // The original Q7 PNG already contains the demo route and its red pins.
- // Avoid drawing an identical second route or markers over the original image.
- if(building==="Q"&&selectedZone?.label==="000–399"&&state.start==="entry"&&state.mode==="fast")return "";
+ // No opaque white halo: the original SVG and all labels show through gaps.
  let o='<polyline class="path-dash" points="'+coords+'"/>';
- if(building==="Q")return o;
- o+='<circle cx="'+sx+'" cy="'+sy+'" r="12" fill="#ff786c" stroke="white" stroke-width="2"/>';
+ o+='<circle cx="'+sx+'" cy="'+sy+'" r="12" fill="'+(building==="Q"?"#ff6550":"#ff786c")+'" stroke="white" stroke-width="2"/>';
  if(selectedZone)o+=marker(dst[0],dst[1]-4);
  return o;
 }
