@@ -332,14 +332,14 @@ const DATA=[];
 const GROUPS=[["lib","소장 도서관",[CEN,MJ,EL]],["st","대출 상태",[A,B]],["type","자료 유형",["단행본","학술논문","전자자료"]]];
 const LABEL={[A]:"대출 가능",[EL]:"전자도서관 (온라인)"};
 const safeHtml=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const TAG={100:"제목 일치",80:"제목이 검색어로 시작",60:"제목에 포함",40:"제목 일부 포함",30:"저자명 일부 포함",20:"본문에서 언급"};
+const TAG={105:"검색 도서 우선",100:"제목 일치",80:"제목이 검색어로 시작",60:"제목에 포함",40:"제목 일부 포함",30:"저자명 일부 포함",20:"본문에서 언급"};
 const sel={lib:new Set(),st:new Set(),type:new Set(["단행본"])};
 const $=s=>document.querySelector(s);
 const Q=()=>$("#q").value.trim();
 const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
 const cell=(d,k)=>(d.l.concat(d.r).find(x=>x[0]===k)||[0,""])[1];
 const norm=t=>t.replace(/[『』「」()\[\]:,]/g," ").replace(/\s+/g," ").trim();
-function score(d,q){if(!q)return 0;const t=norm(d.t).normalize("NFKC").toLowerCase(),term=norm(q).normalize("NFKC").toLowerCase();if(t===term)return 100;if(t.startsWith(term))return 80;if(t.split(" ").some(w=>w.startsWith(term)))return 60;if(t.includes(term))return 40;if(d.by.toLowerCase().includes(term))return 30;return 20}
+function score(d,q){if(!q)return 0;const t=norm(d.t).normalize("NFKC").toLowerCase(),term=norm(q).normalize("NFKC").toLowerCase();const compact=s=>s.replace(/\s+/g,"");if(["디자인매거진","디자인매거진ca"].includes(compact(term))&&compact(t).startsWith("디자인매거진ca"))return 105;if(t===term)return 100;if(t.startsWith(term))return 80;if(t.split(" ").some(w=>w.startsWith(term)))return 60;if(t.includes(term))return 40;if(d.by.toLowerCase().includes(term))return 30;return 20}
 let fieldTouched=false;
 function found(d,q){if(!q||!fieldTouched)return true;const f=$("#field").value;const h={제목:d.t,저자:d.by,출판사:cell(d,"출판사"),청구기호:cell(d,"청구기호")}[f]||"";return String(h).toLowerCase().includes(q.toLowerCase())}
 const base=()=>{const q=Q();return DATA.map((d,i)=>({...d,rowId:i,s:score(d,q)})).filter(d=>found(d,q))};
@@ -379,7 +379,7 @@ function render(){
     return;
   }
   const rank=d=>d.s+(d.st===A?5:0)+(d.lib===CEN?1:0);
-  const exactFirst=(a,b)=>Number(b.s===100)-Number(a.s===100);
+  const exactFirst=(a,b)=>Number(b.s>=100)-Number(a.s>=100)||b.s-a.s;
   const r=filtered().sort($("#sort").value==="avail"?(a,b)=>exactFirst(a,b)||(b.st===A)-(a.st===A)||b.s-a.s:(a,b)=>exactFirst(a,b)||rank(b)-rank(a));
   $("#count").innerHTML=`검색 결과 ${r.length}건<span>시연용 도서 정보</span>`;
   $("#list").innerHTML=r.length?r.map(card).join(""):`<div class="empty"><p>선택한 조건에 맞는 자료가 없어요. 필터를 줄이면 더 많은 결과를 볼 수 있어요.</p><button class="btn btn-primary" id="reset2">필터 초기화</button></div>`;
@@ -404,7 +404,7 @@ render();
 })();
 </script>
 <script src="../original/catalog-fallback.js?v=20261115"></script>
-<script src="./search-live.js?v=20261125-exact-title-page2-v2"></script>
+<script src="./search-live.js?v=20261125-title-priority-ca-v3"></script>
 <script type="module" src="../shared/bookmarks-ui.js?v=20261125-search-card-jeju-v3"></script>
 </body>
 </html>
