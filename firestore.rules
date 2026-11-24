@@ -35,6 +35,51 @@ service cloud.firestore {
         && request.resource.data.startedAt is timestamp
         && request.resource.data.answeredAt is timestamp
         && request.resource.data.completedAt is timestamp;
+
+      // New UX task 1: only the current scenario payload is accepted.
+      // Preserve the original task schema above for older saved responses.
+      allow create: if request.auth != null
+        && responseId.matches('^[0-9a-f-]{32,40}$')
+        && request.resource.data.keys().hasOnly([
+          'anonymousUid', 'participantId', 'variant', 'taskId', 'taskDate',
+          'taskTime', 'facility', 'scenarioAccessedAt',
+          'answer', 'difficulty', 'elapsedSeconds',
+          'startedAt', 'answeredAt', 'completedAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'anonymousUid', 'participantId', 'variant', 'taskId', 'taskDate',
+          'taskTime', 'facility', 'scenarioAccessedAt',
+          'answer', 'difficulty', 'elapsedSeconds',
+          'startedAt', 'answeredAt', 'completedAt'
+        ])
+        && request.resource.data.anonymousUid == request.auth.uid
+        && request.resource.data.participantId is string
+        && request.resource.data.participantId.matches('^uxp-[0-9a-f]{12}$')
+        && request.resource.data.variant in ['original', 'improved']
+        && request.resource.data.taskId == 'library-hours-access-facility-v2'
+        && request.resource.data.taskDate is string
+        && request.resource.data.taskDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && request.resource.data.taskTime is string
+        && request.resource.data.taskTime.matches('^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$')
+        && request.resource.data.facility in [
+          '중앙도서관 대출자료실',
+          '중앙도서관 정기간행물실',
+          '중앙도서관 학위논문실',
+          '중앙도서관 일반열람실'
+        ]
+        && request.resource.data.scenarioAccessedAt is timestamp
+        && request.resource.data.answer is string
+        && request.resource.data.answer.size() > 0
+        && request.resource.data.answer.size() <= 300
+        && request.resource.data.difficulty is int
+        && request.resource.data.difficulty >= 1
+        && request.resource.data.difficulty <= 5
+        && request.resource.data.elapsedSeconds is int
+        && request.resource.data.elapsedSeconds >= 0
+        && request.resource.data.elapsedSeconds <= 86400
+        && request.resource.data.startedAt is timestamp
+        && request.resource.data.answeredAt is timestamp
+        && request.resource.data.completedAt is timestamp;
     }
 
     // UX test only: a shared ID is public to anyone who knows it.
