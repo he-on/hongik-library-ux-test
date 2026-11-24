@@ -77,6 +77,7 @@ html.improved-library-view .session-info{display:flex;justify-content:space-betw
 html.improved-library-view .session-info .muted{margin:0;color:#626262;font-size:12px}
 html.improved-library-view .signed-status{display:flex;align-items:center;gap:8px;color:#626262;font-size:12px;white-space:nowrap;margin:0}
 html.improved-library-view .signed-status::before{content:"";width:10px;height:10px;border-radius:50%;display:inline-block;background:#00e934}
+html:not(.improved-library-view) .account-improved-label,html:not(.improved-library-view) .signed-status{display:none}
 html.improved-library-view .account-original-label{display:none}
 html.improved-library-view #message:empty{display:none}
 html.improved-library-view .panel:has(#signed-in:not([hidden])) #message:not(.error){display:none}
@@ -176,7 +177,7 @@ html.improved-library-view .improved-library-footer{display:none}
 <ul id="bookmarks"></ul>
 <p id="list-empty">아이디를 입력하면 찜한 도서가 표시됩니다.</p>
 </section>
-<div class="row" style="margin-top:20px"><a id="return-link" href="../original/">← 도서 검색으로 돌아가기</a></div>
+<div class="row improved-library-footer" style="margin-top:20px"><a id="return-link" href="../original/">← 도서 검색으로 돌아가기</a></div>
 </main>
 <script type="module" src="../shared/account-page.js?v=20261125-library-matched-v2"></script>
 </body>
