@@ -289,7 +289,10 @@ function qMap(){
   // The original 700 >> 999 section consists of two separate pale-blue rectangles.
   o+='<rect class="q-zone-active" x="460" y="56" width="105" height="175" rx="5"/>';
   o+='<rect class="q-zone-active" x="575" y="9" width="125" height="222" rx="5"/>';
-  o+='<text class="q-zone-label" x="633" y="140" text-anchor="middle" dominant-baseline="middle">700 ≫ 999</text>';
+  // Center one shared label across both shelf rectangles. A small blue bridge
+  // behind the label preserves its legibility over the original 10px white gap.
+  o+='<rect x="548" y="132" width="64" height="24" fill="#3456e4" pointer-events="none"/>';
+  o+='<text class="q-zone-label" x="580" y="144" text-anchor="middle" dominant-baseline="middle">700 ≫ 999</text>';
  }
  o+=areas.map(([id,name,x,y,w,h])=>
   '<g class="q-hitbox" data-start="'+id+'" tabindex="0" role="button" aria-label="'+name+'에서 출발">'+
