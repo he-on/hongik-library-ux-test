@@ -4,14 +4,16 @@
   if (window.__improvedTopbarInstalled) return;
   const isAccount=/\/account\/?(?:index\.html)?$/.test(location.pathname);
   const isImproved=/\/improved\/(?:index\.html|search\.html|shelf-map\.html)?$/.test(location.pathname);
-  if (!isImproved && !isAccount) return;
+  const isReading=/\/improved\/community\/library-introduction\/reading-time\/(?:index\.html)?$/.test(location.pathname);
+  if (!isImproved && !isAccount && !isReading) return;
   if (isAccount && new URLSearchParams(location.search).get("ui")==="original") return;
   const existing=document.querySelector("body > header");
   if (!existing) return;
   window.__improvedTopbarInstalled=true;
-  const home=isAccount?"../improved/":"./";
-  const search=isAccount?"../improved/search.html":"./search.html";
-  const account=isAccount?"./?ui=improved":"../account/?ui=improved";
+  const home=isAccount?"../improved/":isReading?"../../../":"./";
+  const search=isAccount?"../improved/search.html":isReading?"../../../search.html":"./search.html";
+  const account=isAccount?"./?ui=improved":isReading?"../../../../account/?ui=improved":"../account/?ui=improved";
+  const readingHref=isAccount?"../improved/community/library-introduction/reading-time/":isReading?"./":"./community/library-introduction/reading-time/";
   const style=document.createElement("style");
   style.id="shared-improved-topbar-style";
   style.textContent=[
@@ -62,7 +64,7 @@
     '<aside class="hours-popup" id="hours-popup" hidden aria-label="시설 운영 시간">'+
     '<div class="hours-popup-title"><h2>시설 운영 시간</h2><time id="today"></time></div>'+
     '<div class="hours-popup-body"><div id="hl"></div><p>학기 중 기준 시간으로, 시험기간, 방학, 공휴일에는 달라질 수 있습니다.</p>'+
-    '<a href="https://honors.hongik.ac.kr/community/library-introduction/reading-time/">자세히보기</a></div></aside></div>'+
+    '<a href="'+readingHref+'">자세히보기</a></div></aside></div>'+
     '<button type="button" class="header-tool help" aria-label="도움말"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 9c0-3 5-3 5 .5 0 2-3 2-3 4M12 17h.01"/></svg></button>'+
     '<a class="header-tool user-top" href="'+account+'" aria-label="내 계정"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-8 16-8 16 0"/></svg></a>'+
     '<button type="button" class="header-lang" aria-label="언어 선택">EN</button>'+
