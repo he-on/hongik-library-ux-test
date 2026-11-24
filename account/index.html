@@ -127,16 +127,19 @@ html.improved-library-view .improved-library-footer{display:none}
  html.improved-library-view .other-holdings{margin:24px -8px 0}
 }
 
+
+html:not(.improved-library-view) .original-brand-cropped{display:block;width:309px;max-width:100%;height:auto;object-fit:contain}
+@media(max-width:900px){html:not(.improved-library-view) .original-brand-cropped{width:210px}}
 </style>
 <!-- Shared UX task survey: original/improved comparison -->
 <script src="../shared/ux-task-panel.js?v=20261123-persistent-close-v4" defer></script>
 </head>
 <body>
 <header><div class="header-inner">
-  <a class="brand" href="../improved/" aria-label="개선 UI 홈으로 이동">홍익대학교 중앙도서관<small>My Library</small></a>
+  <a class="brand" href="../improved/" aria-label="개선 UI 홈으로 이동"><img class="original-brand-cropped" src="../shared/assets/hongik-library-brand-crop.png" width="309" height="34" alt="홍익대학교 | 중앙도서관"></a>
   <nav aria-label="내 서재"><a class="header-library-link" href="./?ui=improved" aria-current="page">내 서재</a></nav>
 </div></header>
-<script src="../shared/improved-header.js?v=20261125-reading-v2"></script>
+<script src="../shared/improved-header.js?v=20261125-brand-crop-v3"></script>
 <main>
 <h1>My Library</h1>
 <p class="muted">실험용 아이디로 찜 도서를 기억해요. 이메일이나 비밀번호는 필요하지 않습니다.</p>
