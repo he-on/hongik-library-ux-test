@@ -342,7 +342,7 @@ const Q=()=>$("#q").value.trim();
 const esc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
 const cell=(d,k)=>(d.l.concat(d.r).find(x=>x[0]===k)||[0,""])[1];
 const norm=t=>t.replace(/[『』「」()\[\]:,]/g," ").replace(/\s+/g," ").trim();
-function score(d,q){if(!q)return 0;const t=norm(d.t);if(d.t===q)return 100;if(t.startsWith(q))return 80;if(t.split(" ").some(w=>w.startsWith(q)))return 60;if(t.includes(q))return 40;if(d.by.includes(q))return 30;return 20}
+function score(d,q){if(!q)return 0;const t=norm(d.t).normalize("NFKC").toLowerCase(),term=norm(q).normalize("NFKC").toLowerCase();if(t===term)return 100;if(t.startsWith(term))return 80;if(t.split(" ").some(w=>w.startsWith(term)))return 60;if(t.includes(term))return 40;if(d.by.toLowerCase().includes(term))return 30;return 20}
 let fieldTouched=false;
 function found(d,q){if(!q||!fieldTouched)return true;const f=$("#field").value;const h={제목:d.t,저자:d.by,출판사:cell(d,"출판사"),청구기호:cell(d,"청구기호")}[f]||"";return String(h).toLowerCase().includes(q.toLowerCase())}
 const base=()=>{const q=Q();return DATA.map((d,i)=>({...d,rowId:i,s:score(d,q)})).filter(d=>found(d,q))};
@@ -382,7 +382,8 @@ function render(){
     return;
   }
   const rank=d=>d.s+(d.st===A?5:0)+(d.lib===CEN?1:0);
-  const r=filtered().sort($("#sort").value==="avail"?(a,b)=>(b.st===A)-(a.st===A)||b.s-a.s:(a,b)=>rank(b)-rank(a));
+  const exactFirst=(a,b)=>Number(b.s===100)-Number(a.s===100);
+  const r=filtered().sort($("#sort").value==="avail"?(a,b)=>exactFirst(a,b)||(b.st===A)-(a.st===A)||b.s-a.s:(a,b)=>exactFirst(a,b)||rank(b)-rank(a));
   $("#count").innerHTML=`검색 결과 ${r.length}건<span>시연용 도서 정보</span>`;
   $("#list").innerHTML=r.length?r.map(card).join(""):`<div class="empty"><p>선택한 조건에 맞는 자료가 없어요. 필터를 줄이면 더 많은 결과를 볼 수 있어요.</p><button class="btn btn-primary" id="reset2">필터 초기화</button></div>`;
   const r2=$("#reset2");if(r2)r2.onclick=reset;
@@ -406,7 +407,7 @@ render();
 })();
 </script>
 <script src="../original/catalog-fallback.js?v=20261115"></script>
-<script src="./search-live.js?v=20261120-bookdetails-fix"></script>
+<script src="./search-live.js?v=20261125-exact-title-page2-v2"></script>
 <script type="module" src="../shared/bookmarks-ui.js?v=20261125-search-card-jeju-v3"></script>
 </body>
 </html>
