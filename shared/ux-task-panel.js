@@ -140,6 +140,13 @@
   function goNext(destination){
     if(!destination)return;
     const targetState=introState(destination.number);
+    // "Next task" is an explicit user action opening the next instruction.
+    // Normal page navigation still respects the user's previously closed panel.
+    write(localStorage,"hongik-ux-task-panel-dismissed-v1:"+destination.variant,false);
+    if(destination.variant===variant){
+      collapsed=false;
+      host.removeAttribute("data-collapsed");
+    }
     const targetKey="hongik-ux-task-state-v2:"+destination.variant;
     write(sessionStorage,targetKey,targetState);
     if(destination.variant===variant){
@@ -185,6 +192,7 @@
     ".scale{display:flex;justify-content:space-between;gap:8px;color:#596c86;font-size:11px;}",
     ".message{margin:11px 0 0;padding:10px;background:#f2f5ff;border-radius:7px;color:#334b7e;font-size:12px;word-break:break-word;}",
     ".message.error{color:#994327;background:#fff3ea;}.foot{border-top:1px solid #e0e6ee;padding:10px 17px;color:#687991;font-size:11px;background:#fafbfd;}",
+    ".next-task{margin-top:17px;border-top:1px solid #d8e2f2;padding-top:16px}.next-task .instruction{font-size:13px}.next-task h2{font-size:17px}.next-task .actions{margin-top:10px}",
     ".reopen{display:none;border:1px solid #ccd8e8;box-shadow:0 6px 24px #18233a44;padding:12px 14px;background:#182b51;color:white;font-weight:bold;border-radius:11px;}",
     ":host([data-collapsed]) .panel{display:none;}:host([data-collapsed]) .reopen{display:block;}",
     "@media(max-width:600px){:host{top:auto;bottom:12px;right:12px;}.panel{max-height:min(70dvh,550px);width:min(330px,calc(100vw - 24px));}.main{padding:14px;}}",
@@ -263,11 +271,17 @@
           '<p class="instruction">'+(next.number===1?taskPrompt(scenario):nextTask.prompt())+'</p>'+
           '<p class="sub">'+(next.variant===variant?"같은 사이트에서 계속 진행합니다.":"이제 "+(next.variant==="original"?"기존 UI(original)":"개선 UI(improved)")+"에서 진행합니다.")+
           '</p><div class="actions"><button class="primary" type="button" data-action="nexttask">'+
-          (next.variant===variant?"과업 "+next.number+"로 이동":"다음 사이트에서 과업 "+next.number+" 진행")+'</button></div></div>';
+          (next.variant===variant?"과업 "+next.number+(next.number===3?"으로":"로")+" 이동":"다음 사이트에서 과업 "+next.number+" 진행")+'</button></div></div>';
       }else{
         html+='<p class="message">공통 과업 1~3과 개선안 찜하기 과업까지 모두 완료했습니다.</p>'+
           '<div class="actions"><button class="secondary" type="button" data-action="nextparticipant">진행자: 다음 참가자 설정</button></div>';
       }
+    }
+    const pending=results().filter(record=>!record.synced);
+    if(state.stage!=="done"&&pending.length){
+      html+='<div class="message error" role="status">서버에 아직 전송되지 않은 응답 '+pending.length+
+        '건이 이 브라우저에 보관돼 있습니다.'+
+        '<div class="actions"><button type="button" class="secondary" data-action="retryall">미전송 응답 재전송</button></div></div>';
     }
     body.innerHTML=html;
     const reopen=shell.querySelector(".reopen");
@@ -368,6 +382,11 @@
     }else if(action==="retry"){
       const existing=activeResult();
       if(existing&&!existing.synced)upload(existing);
+    }else if(action==="retryall"){
+      (async()=>{
+        for(const entry of results().filter(row=>!row.synced))await upload(entry);
+        render();
+      })();
     }else if(action==="nexttask"){
       goNext(nextDestination());
     }else if(action==="nextparticipant"){
