@@ -4,7 +4,8 @@ service cloud.firestore {
     // UX task research: anonymous, write-only submissions (no public reads).
     match /uxTaskResponses/{responseId} {
       allow get, list, update, delete: if false;
-      allow create: if request.auth != null
+      allow create: if (
+        request.auth != null
         && responseId.matches('^[0-9a-f-]{32,40}$')
         && request.resource.data.keys().hasOnly([
           'anonymousUid', 'participantId', 'variant', 'taskId', 'taskDate',
@@ -34,11 +35,9 @@ service cloud.firestore {
         && request.resource.data.elapsedSeconds <= 86400
         && request.resource.data.startedAt is timestamp
         && request.resource.data.answeredAt is timestamp
-        && request.resource.data.completedAt is timestamp;
-
-      // New UX task 1: only the current scenario payload is accepted.
-      // Preserve the original task schema above for older saved responses.
-      allow create: if request.auth != null
+        && request.resource.data.completedAt is timestamp
+      ) || (
+        request.auth != null
         && responseId.matches('^[0-9a-f-]{32,40}$')
         && request.resource.data.keys().hasOnly([
           'anonymousUid', 'participantId', 'variant', 'taskId', 'taskDate',
@@ -79,7 +78,8 @@ service cloud.firestore {
         && request.resource.data.elapsedSeconds <= 86400
         && request.resource.data.startedAt is timestamp
         && request.resource.data.answeredAt is timestamp
-        && request.resource.data.completedAt is timestamp;
+        && request.resource.data.completedAt is timestamp
+      );
     }
 
     // UX test only: a shared ID is public to anyone who knows it.
