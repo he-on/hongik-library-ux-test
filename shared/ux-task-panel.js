@@ -9,21 +9,34 @@
       ? (new URLSearchParams(location.search).get("ui") === "original" ? "original" : "improved") : "");
   if (!variant || document.querySelector("[data-ux-task-panel]")) return;
 
-  const stateKey = "hongik-ux-task-state-v1:" + variant;
+  const stateKey = "hongik-ux-task-state-v2:" + variant;
   // Keep a dismissed panel minimized across refreshes and page navigation for each UI variant.
   const dismissedKey = "hongik-ux-task-panel-dismissed-v1:" + variant;
   const resultsKey = "hongik-ux-task-responses-v1";
   const participantKey = "hongik-ux-task-participant-v1";
-  const taskId = "library-hours-today-v1";
-
-  const parts = new Intl.DateTimeFormat("ko-KR", {
-    timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit", weekday: "long"
-  }).formatToParts(new Date());
-  const getPart = type => (parts.find(p => p.type === type) || {}).value || "";
-  const dateKey = getPart("year") + "-" + getPart("month") + "-" + getPart("day");
-  const dateLabel = getPart("year") + "년 " + Number(getPart("month")) + "월 " +
-    Number(getPart("day")) + "일 " + getPart("weekday");
-
+  const taskId = "library-hours-access-facility-v2";
+  const scenarioKey = "hongik-ux-hours-scenario-v2";
+  const rotationKey = "hongik-ux-hours-facility-rotation-v2";
+  // These four facility names occur in both prototype reading-hours tables.
+  const facilities = [
+    "중앙도서관 대출자료실",
+    "중앙도서관 정기간행물실",
+    "중앙도서관 학위논문실",
+    "중앙도서관 일반열람실"
+  ];
+  function koreanTimestamp(date) {
+    const parts = new Intl.DateTimeFormat("ko-KR", {
+      timeZone: "Asia/Seoul", year: "numeric", month: "2-digit", day: "2-digit",
+      weekday: "long", hour: "2-digit", minute: "2-digit", hourCycle: "h23"
+    }).formatToParts(date);
+    const get = type => (parts.find(part => part.type === type) || {}).value || "";
+    return {
+      dateKey: get("year") + "-" + get("month") + "-" + get("day"),
+      dateLabel: get("year") + "년 " + Number(get("month")) + "월 " +
+        Number(get("day")) + "일 (" + get("weekday") + ")",
+      timeLabel: get("hour") + ":" + get("minute")
+    };
+  }
   const read = (storage, key, fallback) => {
     try {
       const value = storage.getItem(key);
@@ -47,8 +60,36 @@
     participant = "uxp-" + newId().replace(/-/g, "").slice(0, 12);
     try { localStorage.setItem(participantKey, participant); } catch (_) {}
   }
+  // A participant receives one access-time / facility scenario shared by both
+  // variants, even when the second prototype is opened several minutes later.
+  let scenario = read(localStorage, scenarioKey, null);
+  function createScenario() {
+    const previous = read(localStorage, rotationKey, -1);
+    const index = (Number.isInteger(previous) ? previous + 1 : 0) % facilities.length;
+    write(localStorage, rotationKey, index);
+    const date = new Date();
+    return {
+      participantId: participant, facility: facilities[index], facilityIndex: index,
+      accessedAt: date.toISOString(), ...koreanTimestamp(date)
+    };
+  }
+  if (!scenario || scenario.participantId !== participant ||
+      !facilities.includes(scenario.facility) || !scenario.timeLabel ||
+      !scenario.dateLabel || !scenario.accessedAt) {
+    scenario = createScenario();
+    write(localStorage, scenarioKey, scenario);
+  }
   let state = read(sessionStorage, stateKey, { stage: "intro" });
-  if (!["intro", "task", "difficulty", "done"].includes(state.stage)) state = { stage: "intro" };
+  if (!["intro", "task", "difficulty", "done"].includes(state.stage) ||
+      (state.participantId && state.participantId !== participant)) {
+    state = { stage: "intro" };
+  }
+  function taskPrompt(record) {
+    const data = record || scenario;
+    return escape(data.dateLabel) + " <b>" + escape(data.timeLabel) +
+      "</b>에 <b>" + escape(data.facility) +
+      "</b>을(를) 이용하려고 합니다. 그 시간에 이용할 수 있는지와 운영시간을 알려주세요.";
+  }
   // Once dismissed, open only through the explicit reopen button (including after navigation).
   let collapsed = read(localStorage, dismissedKey, false) === true || state.stage === "task";
   function dismissPanel() {
@@ -112,17 +153,18 @@
   function render() {
     let html = '<div class="variant">' + (variant === "original" ? "기존 UI · ORIGINAL" : "개선 UI · IMPROVED") + '</div>';
     if (state.stage === "intro") {
-      html += '<p class="step">과업 안내</p><h2>오늘 중앙도서관 이용 시간 찾기</h2>' +
-        '<p class="instruction"><b>' + escape(dateLabel) + '</b> 기준, 중앙도서관을 방문할 수 있는 시간대를 홈페이지에서 찾아 주세요.</p>' +
-        '<p>찾은 이용 가능 시간대를 직접 입력한 다음, 정보를 찾는 과정의 난이도를 평가해 주세요.</p>' +
+      html += '<p class="step">과업 1 · 운영시간 확인</p><h2>운영시간 확인</h2>' +
+        '<p class="instruction">' + taskPrompt(scenario) + '</p>' +
+        '<p>홈페이지에서 이용 가능 여부와 운영시간을 확인해 주세요.</p>' +
         '<p class="sub">웹사이트를 자유롭게 탐색하세요. 정답은 이 패널에 미리 표시되지 않습니다. 과업 시작 후 패널이 자동으로 접히며, 답을 찾으면 오른쪽의 답변 입력 버튼을 눌러 주세요.</p>' +
         '<p class="sub">연구용 익명 식별자, 답변, 난이도, 소요 시간을 저장합니다. 이름·학번 등 개인정보는 입력하지 마세요.</p>' +
-        '<div class="actions"><button class="primary" type="button" data-action="start">과업 시작</button></div>';
+        '<div class="actions"><button class="primary" type="button" data-action="start">과업 시작</button>' +
+        '<button class="secondary" type="button" data-action="nextparticipant">진행자: 새 참가자 설정</button></div>';
     } else if (state.stage === "task") {
-      html += '<p class="step">1 / 2 · 과업 수행 및 답변</p><h2>오늘 중앙도서관에 방문 가능한 시간대는?</h2>' +
-        '<p class="instruction">홈페이지에서 <b>' + escape(state.dateLabel || dateLabel) + '</b>의 이용 가능 시간대를 찾아 적어 주세요.</p>' +
-        '<label class="field" for="taskAnswer">확인한 이용 가능 시간대</label>' +
-        '<textarea id="taskAnswer" maxlength="300" placeholder="홈페이지에서 확인한 시간대를 입력해 주세요.">' + escape(state.draft || "") + '</textarea>' +
+      html += '<p class="step">1 / 2 · 과업 수행 및 답변</p><h2>운영시간을 확인해 주세요</h2>' +
+        '<p class="instruction">' + taskPrompt(state) + '</p>' +
+        '<label class="field" for="taskAnswer">이용 가능 여부 및 확인한 운영시간</label>' +
+        '<textarea id="taskAnswer" maxlength="300" placeholder="예: 이용 가능 / 운영시간 09:00~20:00">' + escape(state.draft || "") + '</textarea>' +
         '<p class="sub">답변 제출 시 과업 수행 시간이 기록됩니다.</p>' +
         '<div class="actions"><button class="primary" type="button" data-action="answer">답변 제출</button>' +
         '<button class="secondary" type="button" data-action="notfound">정보를 찾지 못했어요</button></div>' +
@@ -151,7 +193,8 @@
           (state.error ? '<br>오류: ' + escape(state.error) : '') + '</p>' +
           '<div class="actions"><button class="primary" type="button" data-action="retry">재전송</button></div>';
       }
-      html += '<div class="actions"><button class="secondary" type="button" data-action="restart">같은 화면 다시 평가하기</button></div>';
+      html += '<div class="actions"><button class="secondary" type="button" data-action="restart">같은 참가자로 다시 평가</button>' +
+        '<button class="secondary" type="button" data-action="nextparticipant">진행자: 다음 참가자 (두 사이트 완료 후)</button></div>';
     }
     body.innerHTML = html;
     const reopen = shell.querySelector(".reopen");
@@ -183,6 +226,9 @@
         variant: record.variant,
         taskId: record.taskId,
         taskDate: record.taskDate,
+        taskTime: record.taskTime,
+        facility: record.facility,
+        scenarioAccessedAt: new Date(record.scenarioAccessedAt),
         answer: record.answer,
         difficulty: record.difficulty,
         elapsedSeconds: record.elapsedSeconds,
@@ -208,7 +254,13 @@
     } else if (action === "expand") {
       collapsed = false; host.removeAttribute("data-collapsed");
     } else if (action === "start") {
-      updateState({ stage: "task", startedAt: Date.now(), taskDate: dateKey, dateLabel, draft: "", answer: "", difficulty: null });
+      updateState({
+        stage: "task", participantId: participant, startedAt: Date.now(),
+        taskDate: scenario.dateKey, dateLabel: scenario.dateLabel,
+        timeLabel: scenario.timeLabel, facility: scenario.facility,
+        scenarioAccessedAt: scenario.accessedAt,
+        draft: "", answer: "", difficulty: null
+      });
       dismissPanel();
       shell.querySelector(".reopen").focus();
     } else if (action === "answer" || action === "notfound") {
@@ -224,7 +276,11 @@
       if (!(state.difficulty >= 1 && state.difficulty <= 5)) return;
       const response = {
         id: newId(), participantId: participant, variant, taskId,
-        taskDate: state.taskDate || dateKey, answer: String(state.answer || "").slice(0, 300),
+        taskDate: state.taskDate || scenario.dateKey,
+        taskTime: state.timeLabel || scenario.timeLabel,
+        facility: state.facility || scenario.facility,
+        scenarioAccessedAt: state.scenarioAccessedAt || scenario.accessedAt,
+        answer: String(state.answer || "").slice(0, 300),
         difficulty: Number(state.difficulty),
         elapsedSeconds: Math.max(0, Math.min(86400, Math.round((state.answeredAt - state.startedAt) / 1000))),
         startedAt: state.startedAt, answeredAt: state.answeredAt, synced: false
@@ -236,7 +292,21 @@
     } else if (action === "retry") {
       upload(activeResult());
     } else if (action === "restart") {
-      state = { stage: "intro" }; saveState(); render();
+      state = { stage: "intro", participantId: participant }; saveState(); render();
+    } else if (action === "nextparticipant") {
+      // Rotate only after the facilitator explicitly advances to a new person.
+      // Both site variants continue to use the same stored scenario.
+      participant = "uxp-" + newId().replace(/-/g, "").slice(0, 12);
+      try { localStorage.setItem(participantKey, participant); } catch (_) {}
+      scenario = createScenario();
+      write(localStorage, scenarioKey, scenario);
+      try {
+        sessionStorage.removeItem("hongik-ux-task-state-v2:original");
+        sessionStorage.removeItem("hongik-ux-task-state-v2:improved");
+      } catch (_) {}
+      state = { stage: "intro", participantId: participant };
+      saveState();
+      render();
     }
   });
   shell.addEventListener("input", event => {
