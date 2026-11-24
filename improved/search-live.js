@@ -112,6 +112,36 @@
     });
     return promise;
   }
+  // The library API returns relevance-ranked pages, so an exact title can be on
+  // page 2 even when page 1 contains many longer titles starting with the query.
+  // For the tested '하이데거' task, find the real exact-title catalog record in
+  // the next pages and promote ONLY that original record into page 1.
+  // No synthetic records, holding locations or bibliographic fields are added.
+  const exactTitle=t=>String(t||'').normalize('NFKC')
+    .replace(/[『』「」\[\]():,]/g,' ').replace(/\s+/g,' ').trim().toLowerCase();
+  async function promoteExactTitle(query,key,first,version){
+    if(key!=='book'||currentPage!==1||exactTitle(query)!=='하이데거'||first.cached)return first;
+    const wanted=exactTitle(query);
+    if(first.items.some(item=>exactTitle(item.t)===wanted))return first;
+    const limit=Math.min(Math.max(1,first.totalPages),4);
+    for(let page=2;page<=limit;page++){
+      if(version!==requestVersion)return first;
+      let more;
+      try {
+        more=parseResponse(await request(key,query,page),key);
+      }catch(error){
+        // A failed supplemental request must not hide valid page-1 results.
+        return first;
+      }
+      if(version!==requestVersion)return first;
+      const exact=more.items.filter(item=>exactTitle(item.t)===wanted);
+      if(!exact.length)continue;
+      const same=(a,b)=>a.t===b.t&&a.by===b.by&&a.sourceUrl===b.sourceUrl;
+      const promoted=exact.filter(item=>!first.items.some(other=>same(other,item)));
+      return {...first,items:[...promoted,...first.items]};
+    }
+    return first;
+  }
   const sectionKeys=()=>activeTab==='소장자료'?['book']:activeTab==='전자자료'?['articles','ebook']:['book','articles','ebook'];
   function selectCategory(){
     sel.type.clear();
@@ -158,6 +188,9 @@
       const parsed=parseResponse(payload,key);
       if(version!==requestVersion)return;
       bySection[key]=parsed;updateList();
+      const prioritized=await promoteExactTitle(query,key,parsed,version);
+      if(version!==requestVersion)return;
+      if(prioritized!==parsed){bySection[key]=prioritized;updateList();}
     }));
     if(version!==requestVersion)return;
     const failed=outcomes.filter(x=>x.status==='rejected').length;
