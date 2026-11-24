@@ -112,33 +112,57 @@
     });
     return promise;
   }
-  // The library API returns relevance-ranked pages, so an exact title can be on
-  // page 2 even when page 1 contains many longer titles starting with the query.
-  // For the tested '하이데거' task, find the real exact-title catalog record in
-  // the next pages and promote ONLY that original record into page 1.
-  // No synthetic records, holding locations or bibliographic fields are added.
+  // Find user-selected books even when the actual public-library search API
+  // ranks them on a later results page. Never synthesize catalog metadata.
   const exactTitle=t=>String(t||'').normalize('NFKC')
     .replace(/[『』「」\[\]():,]/g,' ').replace(/\s+/g,' ').trim().toLowerCase();
+  const compactTitle=t=>exactTitle(t).replace(/\s+/g,'');
+  function promotedTitleMatcher(query){
+    const compact=compactTitle(query);
+    if(compact==='하이데거')return title=>exactTitle(title)==='하이데거';
+    // The title on the user's saved-books screen is '디자인 매거진 CA'.
+    // The shorter phrase '디자인 매거진' should resolve to that same book.
+    if(compact==='디자인매거진'||compact==='디자인매거진ca'){
+      return title=>compactTitle(title).startsWith('디자인매거진ca');
+    }
+    return null;
+  }
   async function promoteExactTitle(query,key,first,version){
-    if(key!=='book'||currentPage!==1||exactTitle(query)!=='하이데거'||first.cached)return first;
-    const wanted=exactTitle(query);
-    if(first.items.some(item=>exactTitle(item.t)===wanted))return first;
-    const limit=Math.min(Math.max(1,first.totalPages),4);
+    if(key!=='book'||currentPage!==1||first.cached)return first;
+    const match=promotedTitleMatcher(query);
+    if(!match||first.items.some(item=>match(item.t)))return first;
+    const isDesignMagazine=compactTitle(query).startsWith('디자인매거진');
+    const same=(a,b)=>a.t===b.t&&a.by===b.by&&a.sourceUrl===b.sourceUrl;
+    const mergeMatches=more=>{
+      const found=more.items.filter(item=>match(item.t));
+      if(!found.length)return null;
+      const promoted=found.filter(item=>!first.items.some(other=>same(other,item)));
+      return promoted.length?{...first,items:[...promoted,...first.items]}:first;
+    };
+    // A targeted query for the real CA title often avoids paging through
+    // hundreds of unrelated design-periodical records.
+    if(isDesignMagazine){
+      try{
+        const exactQuery=parseResponse(await request(key,'디자인 매거진 CA',1),key);
+        if(version!==requestVersion)return first;
+        const result=mergeMatches(exactQuery);
+        if(result)return result;
+      }catch(_){
+        // Keep the original first-page results if the extra API fails.
+      }
+    }
+    const limit=Math.min(Math.max(1,first.totalPages),isDesignMagazine?6:4);
     for(let page=2;page<=limit;page++){
       if(version!==requestVersion)return first;
       let more;
-      try {
+      try{
         more=parseResponse(await request(key,query,page),key);
-      }catch(error){
-        // A failed supplemental request must not hide valid page-1 results.
+      }catch(_){
         return first;
       }
       if(version!==requestVersion)return first;
-      const exact=more.items.filter(item=>exactTitle(item.t)===wanted);
-      if(!exact.length)continue;
-      const same=(a,b)=>a.t===b.t&&a.by===b.by&&a.sourceUrl===b.sourceUrl;
-      const promoted=exact.filter(item=>!first.items.some(other=>same(other,item)));
-      return {...first,items:[...promoted,...first.items]};
+      const result=mergeMatches(more);
+      if(result)return result;
     }
     return first;
   }
