@@ -8,7 +8,7 @@
 <title>홍익대학교 중앙도서관 검색 결과 개선안</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/earlyaccess/jejugothic.css" rel="stylesheet">
 <style>
 :root{
   --bg:#F3F5FB;--surface:#FFFFFF;--ink:#141A2E;--muted:#586178;--line:#DCE1EE;
@@ -22,7 +22,7 @@
 
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:15px;line-height:1.6;letter-spacing:-.01em}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Jeju Gothic",sans-serif;font-size:15px;line-height:1.6;letter-spacing:-.01em}
 button,select,input{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--brand);outline-offset:2px}
 .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
@@ -146,6 +146,140 @@ dialog#book-detail::backdrop{background:#141a2e99}
  #book-detail .book-info{grid-template-columns:90px 1fr}
 }
 .holding-select{display:grid;gap:6px;margin:0 0 16px}.holding-select[hidden]{display:none!important}.holding-select label{font-size:13px;font-weight:700;color:var(--muted)}.holding-select select{width:100%;min-width:0;max-width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink);font-size:13px}
+
+/* Supplied reference Group 41: compact search-result card and JejuGothic. */
+body,button,select,input,textarea,dialog,#ux-improved-header,#ux-improved-header *{font-family:"Jeju Gothic",sans-serif!important}
+.card{
+ grid-template-columns:96px minmax(0,1fr) 180px;
+ gap:14px;
+ padding:20px 45px 20px 20px;
+ border-radius:14px;
+ background:#fff;
+ align-items:stretch;
+ min-height:249px;
+}
+.card .cover{
+ width:96px;
+ height:134px;
+ border-radius:8px;
+ align-self:start;
+ font-size:11px;
+ line-height:1.35;
+ color:#173a90;
+}
+.card h3{
+ font-size:18px;
+ line-height:1.4;
+ margin:0;
+ font-weight:800;
+ color:#0033d7;
+}
+.card .by{
+ margin:2px 0 16px;
+ color:#3f4f72;
+ font-size:13px;
+ line-height:1.5;
+}
+.card .tag{display:inline-block;vertical-align:middle;border:1px solid #cbd6ed;border-radius:999px;background:#fff;padding:2px 9px;font-size:11px;line-height:1.35;color:#374e75}
+.card .tag.top{background:#fff;border-color:#cbd6ed;color:#374e75}
+.card mark{background:#fff2a0;color:inherit;border-radius:3px;padding:1px 2px}
+.card .cols{
+ min-height:136px;
+ border:1px solid #d7def0;
+ border-radius:10px;
+ background:#fff;
+ grid-template-columns:1fr 1fr;
+}
+.card .col{
+ padding:12px 19px;
+ min-width:0;
+ background:#fff;
+}
+.card .col+.col{background:#fff;border-left:1px solid #d7def0}
+.card .col h4{
+ font-size:12px;
+ color:#555c6d;
+ font-weight:700;
+ margin:0 0 8px;
+ line-height:1.55;
+}
+.card .holdings-heading{display:flex;align-items:center;gap:8px;justify-content:flex-start;flex-wrap:wrap;margin-bottom:8px}
+.card .holdings-heading h4{margin:0;flex:0 0 auto}
+.card dl{
+ grid-template-columns:65px minmax(0,1fr);
+ gap:3px 9px;
+ font-size:12px;
+ line-height:1.5;
+}
+.card dt{color:#737373;white-space:nowrap}
+.card dd{color:#767676;white-space:normal;overflow-wrap:anywhere}
+.card .badges{gap:5px;margin:0;align-items:center}
+.card .badge{padding:3px 9px;font-size:10px;font-weight:700;line-height:1.25;white-space:nowrap}
+.card .badge.ok::before,.card .badge.warn::before{width:6px;height:6px}
+.card .actions{
+ display:flex;
+ flex-direction:column;
+ gap:9px;
+ justify-content:center;
+ align-self:stretch;
+ padding-left:25px;
+ min-width:0;
+}
+.card .actions .btn,.card .actions .ux-bookmark-btn{
+ width:100%;
+ min-height:35px;
+ max-height:none;
+ margin:0;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ border-radius:4px;
+ padding:7px 8px;
+ font-size:13px;
+ font-weight:700;
+ line-height:1.35;
+ text-align:center;
+}
+.card .actions .btn-primary{background:#0033dc;color:#fff;border:1px solid #0033dc}
+.card .actions .btn-line{background:#fff;color:#0033dc;border:1px solid #0033dc}
+.card .actions .ux-bookmark-btn{
+ background:#0033dc;
+ color:#fff;
+ border:1px solid #0033dc;
+ border-radius:4px;
+}
+.card .actions .ux-bookmark-btn[aria-pressed="false"]{
+ background:#e7ecff;
+ color:#0033dc;
+ border-color:#0033dc;
+}
+@media(max-width:1100px){
+ .card{grid-template-columns:80px minmax(0,1fr) 150px;gap:12px;padding:18px}
+ .card .cover{width:80px;height:113px}
+ .card .actions{padding-left:0}
+ .card .col{padding:11px}
+ .card dl{grid-template-columns:62px minmax(0,1fr)}
+}
+@media(max-width:860px){
+ .card{grid-template-columns:78px minmax(0,1fr) 140px;gap:12px}
+ .card .cover{width:78px;height:110px}
+ .card .actions{grid-column:auto;flex-direction:column;gap:8px}
+ .card .cols{grid-template-columns:1fr 1fr}
+ .card .col+.col{border-top:0;border-left:1px solid #d7def0}
+}
+@media(max-width:620px){
+ .card{grid-template-columns:72px minmax(0,1fr);gap:11px;padding:13px;min-height:0}
+ .card .cover{width:72px;height:103px;font-size:10px}
+ .card h3{font-size:15px}
+ .card .by{font-size:12px;margin-bottom:10px}
+ .card .cols{grid-template-columns:1fr}
+ .card .col{padding:10px 12px}
+ .card .col+.col{border-left:0;border-top:1px solid #d7def0}
+ .card .actions{grid-column:1/-1;flex-direction:row;gap:8px;flex-wrap:wrap}
+ .card .actions .btn,.card .actions .ux-bookmark-btn{flex:1 1 100px;font-size:12px;padding:8px 6px}
+ .card dl{grid-template-columns:62px minmax(0,1fr);font-size:12px}
+ .card .badge{font-size:10px}
+}
 </style><meta name="ux-build" content="2026-11-20-improved-bookmark-visibility-v2"><!-- Shared UX task survey: original/improved comparison -->
 <script src="../shared/ux-task-panel.js?v=20261123-persistent-close-v4" defer></script>
 </head>
@@ -229,15 +363,16 @@ function card(d){
   return `<article class="card" data-ux-row="${d.rowId}">
    <div class="cover${bk?"":" alt"}" aria-hidden="true">${cov}</div>
    <div>
-    <h3>${hl(d.t)}</h3><p class="by">${hl(d.by)}${q?`<span class="tag${d.s===100?" top":""}">${TAG[d.s]}</span>`:""}</p><button type="button" class="ux-bookmark-btn" aria-pressed="false" aria-label="${safeHtml(d.t)} 찜하기">♡ 찜하기</button>
+    <h3>${hl(d.t)}</h3><p class="by">${hl(d.by)}${q?`<span class="tag${d.s===100?" top":""}">${TAG[d.s]}</span>`:""}</p>
     <div class="cols">
      <div class="col"><h4>${d.L}</h4><dl>${rows(d.l)}</dl></div>
-     <div class="col"><h4>${d.R}</h4>
-      <div class="badges"><span class="badge">${d.lib}</span><span class="badge ${unknown?"":ok?"ok":"warn"}">${badge}</span></div>
-      <dl>${rows(d.r)}</dl></div>
+     <div class="col">
+      <div class="holdings-heading"><h4>${d.R}</h4><div class="badges"><span class="badge">${safeHtml(d.lib)}</span><span class="badge ${unknown?"":ok?"ok":"warn"}">${safeHtml(badge)}</span></div></div>
+      <dl>${rows(d.r)}</dl>
+     </div>
     </div>
    </div>
-   <div class="actions"><button class="btn btn-primary" data-action="detail" data-row="${d.rowId}">상세정보</button><button class="btn btn-line" data-action="map" data-row="${d.rowId}" ${sub.includes("준비 중")?'aria-label="'+sub+' · 시연 미지원"':""}>${sub}</button></div>
+   <div class="actions"><button type="button" class="ux-bookmark-btn" aria-pressed="false" aria-label="${safeHtml(d.t)} 찜 하기">☆ 찜 하기</button><button class="btn btn-primary" data-action="detail" data-row="${d.rowId}">상세정보</button><button class="btn btn-line" data-action="map" data-row="${d.rowId}" ${sub.includes("준비 중")?'aria-label="'+sub+' · 시연 미지원"':""}>${sub}</button></div>
   </article>`}
 function render(){
   renderFilters();
@@ -272,6 +407,6 @@ render();
 </script>
 <script src="../original/catalog-fallback.js?v=20261115"></script>
 <script src="./search-live.js?v=20261120-bookdetails-fix"></script>
-<script type="module" src="../shared/bookmarks-ui.js?v=20261120-improved-visible-v2"></script>
+<script type="module" src="../shared/bookmarks-ui.js?v=20261125-search-card-jeju-v3"></script>
 </body>
 </html>
