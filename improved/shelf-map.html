@@ -378,18 +378,36 @@ function renderMap(){
   $("#map-viewport").scrollLeft=scrollToX;
  }
  $("#steps").innerHTML="";
- let steps=[currentLandmark().name+"에서 출발"];
- if(building==="H"){
-  if(selectedZone&&selectedZone.x>900)steps.push("상단 통로를 따라 이동한 뒤 연결통로 쪽으로 진행");
-  else if(selectedZone&&selectedZone.y>280)steps.push("4층 대출자료실의 좌측 하단 서가 구역으로 진행");
-  else steps.push("4층 대출자료실 내부 통로를 따라 이동");
+ // Screenshot-based five-step example for the Heidegger / philosophy (100) shelf.
+ // Keep it scoped to the 4F elevator + fastest route, so changing the start
+ // point or route preference still produces the corresponding generic guidance.
+ const isHeideggerGuide=building==="H" &&
+  state.start==="elev" && state.mode==="fast" &&
+  selectedZone?.label==="100–199" &&
+  (!title || /하이데거|heidegger|존재와 시간/i.test(title));
+ let steps;
+ if(isHeideggerGuide){
+  steps=[
+   "4층 엘리베이터 앞에서 출발",
+   "하차 기준 우측으로 약 12m 직진",
+   "검색 PC를 지나 약 35m 직진",
+   "800번 서가에서 우측으로 약 7m 직진",
+   "연결통로를 지나 약 7m 직진, 목표서가 철학 (100) 도착"
+  ];
  }else{
-  if(selectedZone&&selectedZone.x<300)steps.push("7층 출입구에서 금일신문 / 이달의잡지 방향으로 이동");
-  else steps.push("7층 정기간행물실 내부 통로를 따라 이동");
+  steps=[currentLandmark().name+"에서 출발"];
+  if(building==="H"){
+   if(selectedZone&&selectedZone.x>900)steps.push("상단 통로를 따라 이동한 뒤 연결통로 쪽으로 진행");
+   else if(selectedZone&&selectedZone.y>280)steps.push("4층 대출자료실의 좌측 하단 서가 구역으로 진행");
+   else steps.push("4층 대출자료실 내부 통로를 따라 이동");
+  }else{
+   if(selectedZone&&selectedZone.x<300)steps.push("7층 출입구에서 금일신문 / 이달의잡지 방향으로 이동");
+   else steps.push("7층 정기간행물실 내부 통로를 따라 이동");
+  }
+  if(state.mode==="quiet")steps.push("안내데스크 및 열람석 주변을 피해서 이동");
+  if(state.mode==="wide")steps.push("가급적 넓은 통로를 따라 이동");
+  steps.push(selectedZone?"청구기호 "+(call||"미제공")+"가 속한 "+selectedZone.label+" 구역 도착":"소장실 도착 후 서가 표지를 확인해 주세요 (정확한 서가 위치 미확인)");
  }
- if(state.mode==="quiet")steps.push("안내데스크 및 열람석 주변을 피해서 이동");
- if(state.mode==="wide")steps.push("가급적 넓은 통로를 따라 이동");
- steps.push(selectedZone?"청구기호 "+(call||"미제공")+"가 속한 "+selectedZone.label+" 구역 도착":"소장실 도착 후 서가 표지를 확인해 주세요 (정확한 서가 위치 미확인)");
  $("#steps").innerHTML=steps.map(s=>"<li>"+esc(s)+"</li>").join("");
 }
 function renderFloor(){
