@@ -95,25 +95,21 @@
     {
       id:"library-hours-access-facility-v2", title:"운영시간 확인",
       label:"이용 가능 여부 및 운영시간",
-      placeholder:"예: 이용 가능 / 운영시간 09:00~20:00",
       prompt:()=>taskPrompt(scenario)
     },
     {
       id:"library-loan-status-v1", title:"대출 상태 확인",
       label:"확인한 대출 상태 및 반납 예정일",
-      placeholder:"예: 하이데거 / 대출 가능 (반납 예정일이 표시되면 함께 작성)",
       prompt:()=>'"<b>하이데거</b>"의 <b>종이책</b>을 지금 빌릴 수 있는지 확인해 주세요. 대출 중이라면 화면에 표시된 반납 예정일도 알려주세요.'
     },
     {
       id:"library-revisit-books-v1", title:"도서 재탐색",
       label:"두 도서의 소장 위치 및 X를 다시 찾은 방법",
-      placeholder:"예: 하이데거 위치 확인 → 디자인 매거진 CA 검색 → 이전 화면으로 돌아가 하이데거 재확인",
       prompt:()=>'<b>하이데거</b>의 위치를 확인한 다음 <b>디자인 매거진 CA</b>를 찾아주세요. 마지막으로 <b>하이데거</b>의 위치를 다시 확인해 주세요.'
     },
     {
       id:"library-bookmark-v1", title:"찜하기",
       label:"책을 저장한 방법 및 확인 결과",
-      placeholder:"예: 하이데거를 찜하고 My Library에서 저장 여부 확인",
       prompt:()=>'<b>하이데거</b>를 나중에 다시 쉽게 찾을 수 있도록 웹사이트에서 해보세요. 저장 결과도 확인해 주세요.'
     }
   ];
@@ -236,7 +232,7 @@
       html+='<p class="step">과업 '+number+' 진행 중</p><h2>'+task.title+'</h2>'+
         '<p class="instruction">'+task.prompt()+'</p>'+
         '<label class="field" for="taskAnswer">'+task.label+'</label>'+
-        '<textarea id="taskAnswer" maxlength="300" placeholder="'+escape(task.placeholder)+'">'+escape(state.draft||"")+'</textarea>'+
+        '<textarea id="taskAnswer" maxlength="300">'+escape(state.draft||"")+'</textarea>'+
         '<p class="sub">정보를 확인한 뒤 답변을 제출하면 수행 시간이 기록됩니다.</p>'+
         '<div class="actions"><button class="primary" type="button" data-action="answer">답변 제출</button>'+
         '<button class="secondary" type="button" data-action="notfound">완료하지 못했어요</button></div>'+
