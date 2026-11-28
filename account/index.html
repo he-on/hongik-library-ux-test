@@ -1,6 +1,18 @@
 <!doctype html>
 <html lang="ko">
 <head>
+<!-- Google Tag Manager: Hongik Library UX test -->
+<script>
+window.dataLayer = window.dataLayer || [];
+window.dataLayer.push({ux_variant: (new URLSearchParams(location.search).get("ui") === "original" ? "original" : "improved")});
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-NR3RGG3Z');
+</script>
+<!-- End Google Tag Manager -->
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light">
@@ -159,6 +171,10 @@ html:not(.improved-library-view) .account-original-language{width:32px;height:32
 <script src="../shared/ux-task-panel.js?v=20261125-neutral-answer-v9" defer></script>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NR3RGG3Z" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
 <header class="account-original-header"><div class="account-original-headbar">
 <a class="account-original-brand" href="../original/" aria-label="홍익대학교 중앙도서관 기존 UI 홈"><img src="../shared/assets/hongik-library-brand-crop.png" width="309" height="34" alt="홍익대학교 | 중앙도서관"></a>
 <div class="account-original-tools">
